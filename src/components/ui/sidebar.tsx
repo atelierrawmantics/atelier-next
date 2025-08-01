@@ -486,7 +486,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
 const sidebarMenuButtonVariants = cva(
   cn(
     'peer/menu-button flex w-full items-center gap-[8px] overflow-hidden outline-hidden ring-sidebar-ring transition-[width,height,padding] disabled:pointer-events-none  aria-disabled:pointer-events-none [&>svg]:shrink-0',
-    'bg-transparent typo-pre-body-5 text-grey-10 hover:bg-secondary-2 data-[active=true]:border-l-[2.5px] data-[active=true]:border-primary-3 data-[active=true]:bg-secondary-3 rounded-none px-[20px] py-[15px] h-[52px] data-[state=collapsed]:[&>span]:hidden',
+    'bg-transparent typo-pre-body-5 text-grey-10 hover:bg-secondary-2 border-l-[2.5px] data-[active=true]:border-primary-3 data-[active=false]:border-transparent data-[active=true]:bg-secondary-3 rounded-none pr-[20px] pl-[17.5px] py-[15px] h-[52px] data-[state=collapsed]:[&>span]:hidden',
   ),
   {
     variants: {
