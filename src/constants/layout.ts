@@ -1,5 +1,5 @@
 export const LAYOUT = {
   HEADER: {
-    HEIGHT: '80px',
+    HEIGHT: '60px',
   },
 }

@@ -2,8 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 
-import { Flex, Text } from '@chakra-ui/react'
-
 /**
  *
  * @see https://nextjs.org/docs/app/building-your-application/routing/error-handling
@@ -19,8 +17,8 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
     router.back()
   }
   return (
-    <Flex flex={1} bg="black" h="100vh">
-      <Text>Internet Server Error</Text>
-    </Flex>
+    <div className="flex-1 h-screen bg-black">
+      <div>Internet Server Error</div>
+    </div>
   )
 }

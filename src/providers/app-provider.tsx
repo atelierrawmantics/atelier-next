@@ -2,6 +2,8 @@
 
 import { PropsWithChildren } from 'react'
 
+import { ThemeProvider } from 'next-themes'
+
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
@@ -17,7 +19,16 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <GlobalStoreProvider>{children}</GlobalStoreProvider>
+      <GlobalStoreProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </GlobalStoreProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )

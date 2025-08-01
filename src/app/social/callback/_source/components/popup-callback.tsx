@@ -1,21 +1,43 @@
+import { useRouter } from 'next/navigation'
+
 import { useOauthPopupCallback } from '@toktokhan-dev/react-web'
 
-import { Splash } from '@/components/splash'
+import setToken from '@/actions/set-token'
+import { UserSocialLoginRequestStateEnumType } from '@/generated/apis/@types/data-contracts'
+import { useUserSocialLoginCreateMutation } from '@/generated/apis/User/User.query'
 
 import { OauthCallback } from '../types'
 
 export const PopupCallback = () => {
+  const router = useRouter()
+  const { mutate: socialLoginMutate } = useUserSocialLoginCreateMutation({})
   useOauthPopupCallback<OauthCallback>({
-    onSuccess: (res) => {
-      console.log('succeed to login', res)
-      // res?.closePopup({
-      //   code: 'extra data',
-      // })
+    onSuccess: (oAuthResponse) => {
+      const { code, state } = oAuthResponse || {}
+      if (!code || !state) return
+      socialLoginMutate(
+        {
+          data: {
+            code: code,
+            state: state.type as UserSocialLoginRequestStateEnumType,
+          },
+        },
+        {
+          onSuccess: async (loginResponse) => {
+            const { accessToken, refreshToken } = loginResponse || {}
+            await setToken({
+              accessToken,
+              refreshToken,
+            })
+            router.replace('/join')
+          },
+        },
+      )
+      oAuthResponse?.closePopup()
     },
-    onFail: (res) => {
-      console.log('failed to login', res)
-      // res?.closePopup()
+    onFail: (oAuthResponse) => {
+      oAuthResponse?.closePopup()
     },
   })
-  return <Splash />
+  return <div>PopupCallback</div>
 }

@@ -4,7 +4,7 @@
   "description": "Simple project that shows the usage of Next.js with TypeScript",
   "author": "TOKTOKHAN.DEV<dev@toktokhan.dev>",
   "scripts": {
-    "dev": "pnpm theme && next dev",
+    "dev": "next dev",
     "build": "next build",
     "analyze": "ANALYZE=true next build",
     "type-check": "tsc --skipLibCheck --noEmit",
@@ -21,12 +21,19 @@
     "format": "prettier --loglevel warn --write \"**/*.{ts,tsx,css,md}\"",
     "semantic-release": "semantic-release",
     "checklist:progress": "node src/scripts/update-checklist-progress.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "ui": "pnpm dlx shadcn@latest",
+    "tw:watch": "pnpm @tailwindcss/cli -i ./src/app/global.css -o ./src/output.css --watch",
+    "gen:icon": "node ./src/scripts/ui/gen-icon.js"
   },
   "dependencies": {
-    "@chakra-ui/react": "3.13.0",
-    "@emotion/react": "11.14.0",
-    "@hookform/resolvers": "^3.0.0",
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.7",
     "@tanstack/react-query": "^5.45.1",
     "@tanstack/react-query-devtools": "^5.45.1",
     "@toktokhan-dev/react-universal": "^0.0.12",
@@ -34,30 +41,38 @@
     "@toktokhan-dev/universal": "^0.0.8",
     "@toktokhan-dev/zustand-react": "^0.0.3",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "chakra-react-select": "6.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.11",
     "immer": "^10.1.1",
     "isomorphic-dompurify": "^2.12.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
+    "lucide-react": "^0.532.0",
     "next": "^14.2.0",
     "next-themes": "^0.4.6",
+    "postcss": "^8.5.3",
     "react": "^18.3.1",
     "react-cookie": "^7.1.4",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.52.0",
+    "sonner": "^2.0.6",
+    "tailwind-merge": "^3.3.1",
+    "vaul": "^1.1.2",
     "yup": "^1.4.0",
+    "zod": "^4.0.11",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
-    "@chakra-ui/cli": "3.2.3",
     "@next/bundle-analyzer": "^14.2.4",
     "@next/eslint-plugin-next": "^14.2.4",
+    "@tailwindcss/cli": "^4.1.6",
+    "@tailwindcss/postcss": "^4.1.6",
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/react": "^16.0.0",
     "@toktokhan-dev/cli": "^0.0.11",
     "@toktokhan-dev/cli-plugin-commit": "0.0.10",
-    "@toktokhan-dev/cli-plugin-gen-api-react-query": "0.1.3",
+    "@toktokhan-dev/cli-plugin-gen-api-react-query": "0.1.4",
     "@toktokhan-dev/cli-plugin-gen-icon-chakra": "0.0.13",
     "@toktokhan-dev/cli-plugin-gen-img": "^0.0.11",
     "@toktokhan-dev/cli-plugin-gen-theme-chakra": "^0.0.17",
@@ -70,6 +85,7 @@
     "@types/node": "20.14.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.21",
     "dotenv": "^16.4.5",
     "eslint": "^8.56.0",
     "husky": "^9.0.11",
@@ -77,18 +93,29 @@
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.2",
+    "tailwindcss": "^4.1.6",
+    "tw-animate-css": "^1.3.6",
     "typescript": "^5.4.5"
   },
-  "msw": { "workerDirectory": "public" },
+  "msw": {
+    "workerDirectory": "public"
+  },
   "engines": {
     "node": ">= 20.0.0",
     "npm": ">= 7.10.0",
     "yarn": ">= 1.22.17",
     "pnpm": ">= 8.15.9"
   },
-  "os": ["darwin", "win64", "linux"],
+  "os": [
+    "darwin",
+    "win64",
+    "linux"
+  ],
   "engineStrict": true,
   "pnpm": {
-    "patchedDependencies": { "lodash@4.17.21": "patches/lodash@4.17.21.patch" }
-  }
+    "patchedDependencies": {
+      "lodash@4.17.21": "patches/lodash@4.17.21.patch"
+    }
+  },
+  "packageManager": "pnpm@9.14.0"
 }

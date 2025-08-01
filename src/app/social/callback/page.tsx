@@ -1,5 +1,5 @@
-import { SocialCallback } from './_source/components/social-callback'
+import { PopupCallback } from './_source/components/popup-callback'
 
 export default function SocialCallbackPage() {
-  return <SocialCallback />
+  return <PopupCallback />
 }

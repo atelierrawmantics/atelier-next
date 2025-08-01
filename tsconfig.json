@@ -27,7 +27,9 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "tailwind.config.mjs",
+    "src/scripts/ui/gen-icon.js"
   ],
   "exclude": ["node_modules", "./public/mockServiceWorker.js"]
 }
