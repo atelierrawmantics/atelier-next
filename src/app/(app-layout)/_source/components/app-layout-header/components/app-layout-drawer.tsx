@@ -22,9 +22,9 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import {
-  AtelierIcon,
   FolderIcon,
   ListIcon,
+  LogoIcon,
   UserIcon,
   XIcon,
 } from '@/generated/icons/MyIcons'
@@ -82,7 +82,7 @@ export const AppLayoutDrawer = () => {
           <DrawerHeader className="flex flex-row items-center justify-between h-[60px] px-[20px] py-[12px] border-b border-border-basic-1">
             <Button variant="ghost" size="fit" asChild>
               <Link href="/">
-                <AtelierIcon className="w-[80px] h-[20px] my-[6.4px]" />
+                <LogoIcon className="w-[80px] h-[20px] my-[6.4px]" />
               </Link>
             </Button>
             <DrawerClose asChild className="size-[32px]">

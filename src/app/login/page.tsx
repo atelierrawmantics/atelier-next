@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 
-import { AtelierIcon } from '@/generated/icons/MyIcons'
+import { LogoIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
 import { SocialButton } from './_source/components/social-button'
@@ -52,7 +52,7 @@ const LoginSection = () => {
         'bg-[linear-gradient(215deg,_#D5E3FC_0.31%,_#F6FAF6_104.05%)] md:bg-none',
       )}
     >
-      <AtelierIcon className="w-[109px] h-[26px]" />
+      <LogoIcon className="w-[109px] h-[26px]" />
       <p className="px-[16px] mt-[16px] typo-pre-body-6 text-grey-9 whitespace-pre-line sm:whitespace-normal text-center">
         {'패션 디자이너를 위한 협업,\n지금 간편 로그인으로 시작해보세요.'}
       </p>
