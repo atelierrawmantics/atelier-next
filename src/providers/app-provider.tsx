@@ -6,6 +6,7 @@ import { ThemeProvider } from 'next-themes'
 
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { OverlayProvider } from '@toss/use-overlay'
 
 import { getQueryClient } from '@/configs/react-query/get-query-client'
 import { GlobalStoreProvider } from '@/stores/global/store'
@@ -26,7 +27,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <OverlayProvider>{children}</OverlayProvider>
         </ThemeProvider>
       </GlobalStoreProvider>
       <ReactQueryDevtools initialIsOpen={false} />

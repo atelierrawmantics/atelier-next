@@ -12,6 +12,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerFooter,
   DrawerHeader,
   DrawerTrigger,
 } from '@/components/ui/drawer'
@@ -121,6 +122,11 @@ export const AppLayoutDrawer = () => {
               </SidebarMenuItem>
             </SidebarMenu>
           </div>
+          <DrawerFooter className="w-full flex flex-col items-end justify-center">
+            <Button variant="outline-grey" size="sm" className="w-[61px]">
+              로그아웃
+            </Button>
+          </DrawerFooter>
         </div>
       </DrawerContent>
     </Drawer>

@@ -8,7 +8,7 @@ import { Loader2Icon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap cursor-pointer pointer-events-auto transition-all disabled:cursor-not-allowed w-full hover:cursor-pointer',
+  'inline-flex items-center justify-center gap-[4px] whitespace-nowrap cursor-pointer pointer-events-auto transition-all disabled:cursor-not-allowed w-full hover:cursor-pointer',
   {
     variants: {
       variant: {

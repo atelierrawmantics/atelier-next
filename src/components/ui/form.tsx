@@ -99,7 +99,12 @@ function FormLabel({
     <Label
       data-slot="form-label"
       data-error={!!error}
-      className={cn('typo-pre-body-5 text-grey-9', className)}
+      className={cn(
+        'typo-pre-body-5 text-grey-9',
+        props['aria-required'] &&
+          'after:content-["*"] after:text-accent-red2 after:-ml-0.5',
+        className,
+      )}
       htmlFor={formItemId}
       {...props}
     />
