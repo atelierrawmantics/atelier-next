@@ -1,9 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
+import { useRouter } from 'next/navigation'
+
+import { jwtDecode } from '@toktokhan-dev/universal'
+
+import dayjs from 'dayjs'
 import { omit } from 'lodash-es'
 
+import setToken from '@/actions/set-token'
 import { Button } from '@/components/ui/button'
 import { ClearableInput } from '@/components/ui/clearable-input'
 import {
@@ -15,6 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { VerificationInput } from '@/components/ui/verification-input'
+import { COOKIE_KEYS } from '@/constants/cookie-keys'
 import {
   usePhoneVerifierConfirmCreateMutation,
   usePhoneVerifierCreateMutation,
@@ -22,17 +29,22 @@ import {
 import { useUserRegisterCreateMutation } from '@/generated/apis/User/User.query'
 import { ArticleIcon } from '@/generated/icons/MyIcons'
 import { toast } from '@/hooks/useToast'
+import { clientCookie } from '@/stores/cookie/store'
 
 import { useJoinForm } from '../hooks/use-join-form'
 
 export const JoinForm = () => {
+  const router = useRouter()
+
   const form = useJoinForm()
   const {
     control,
     formState: { isDirty, isValid, errors },
     getValues,
     handleSubmit,
+    reset,
   } = form
+
   const [isVerificationSent, setIsVerificationSent] = useState(false)
   const [isTimerActive, setIsTimerActive] = useState(false)
 
@@ -40,16 +52,22 @@ export const JoinForm = () => {
   const isDisabledToSendVerification =
     !hasPhoneValue || !!errors.phone || isTimerActive
 
-  const { mutate: createPhoneVerifier } = usePhoneVerifierCreateMutation({})
-  const { mutate: createPhoneVerifierConfirm } =
-    usePhoneVerifierConfirmCreateMutation({})
-  const { mutate: createUserRegister } = useUserRegisterCreateMutation({})
+  const {
+    mutate: createPhoneVerifier,
+    isPending: isCreatePhoneVerifierPending,
+  } = usePhoneVerifierCreateMutation({})
+  const {
+    mutate: createPhoneVerifierConfirm,
+    isPending: isCreatePhoneVerifierConfirmPending,
+  } = usePhoneVerifierConfirmCreateMutation({})
+  const { mutate: createUserRegister, isPending: isCreateUserRegisterPending } =
+    useUserRegisterCreateMutation({})
 
   const handleSendVerification = () => {
     createPhoneVerifier(
       {
         data: {
-          phone: getValues('phone'),
+          phone: getValues('phone').replace(/-/g, ''),
         },
       },
       {
@@ -146,7 +164,7 @@ export const JoinForm = () => {
     createPhoneVerifierConfirm(
       {
         data: {
-          phone,
+          phone: phone.replace(/-/g, ''),
           code: verificationCode,
         },
       },
@@ -159,16 +177,32 @@ export const JoinForm = () => {
               onClick: () => {},
             },
           })
-          createUserRegister({
-            data: {
-              phone,
-              birth: '',
-              phoneToken: token,
-              registerToken: '',
+          createUserRegister(
+            {
+              data: {
+                phone,
+                birth: data.birthday,
+                phoneToken: token,
+                registerToken: clientCookie.get(
+                  COOKIE_KEYS.AUTH.REGISTER_TOKEN,
+                ),
+              },
             },
-          })
+            {
+              onSuccess: async (registerRes) => {
+                const { accessToken, refreshToken } = registerRes
+                await setToken({
+                  accessToken,
+                  refreshToken,
+                })
+                clientCookie.remove(COOKIE_KEYS.AUTH.REGISTER_TOKEN)
+                router.replace('/')
+              },
+            },
+          )
         },
-        onError: () => {
+        onError: (res) => {
+          console.log(res)
           toast(
             '인증번호가 일치하지 않아요.',
             {
@@ -182,9 +216,22 @@ export const JoinForm = () => {
         },
       },
     )
-
-    console.log(data)
   })
+
+  useEffect(() => {
+    const registerToken = clientCookie.get(COOKIE_KEYS.AUTH.REGISTER_TOKEN)
+    const decoded: {
+      name: string
+      birth: string
+      phone: string
+    } = jwtDecode(registerToken)
+    const { name, birth, phone } = decoded
+    reset({
+      name,
+      birthday: birth ? dayjs(birth).format('YYYY-MM-DD') : '',
+      phone,
+    })
+  }, [])
 
   return (
     <Form {...form}>
@@ -254,6 +301,7 @@ export const JoinForm = () => {
                       className="max-w-[147px] w-full"
                       onClick={handleSendVerification}
                       disabled={isDisabledToSendVerification}
+                      loading={isCreatePhoneVerifierPending}
                     >
                       인증번호 전송
                     </Button>
@@ -289,6 +337,9 @@ export const JoinForm = () => {
             size="lg"
             disabled={!isDirty || !isValid}
             onClick={handleJoinFormSubmit}
+            loading={
+              isCreateUserRegisterPending || isCreatePhoneVerifierConfirmPending
+            }
           >
             회원가입
           </Button>

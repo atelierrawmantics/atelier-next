@@ -24,12 +24,13 @@ export const SocialButton = () => {
         <KakaoButton
           colorMode="light"
           onClick={() =>
-            kakao.loginToPopup({
+            kakao.loginToLink({
               redirect_uri: `${window.origin}/social/callback`,
               state: {
                 returnUrl: returnUrl || '/',
                 type: 'kakao',
               },
+              prompt: 'login',
             })
           }
         />
@@ -38,7 +39,7 @@ export const SocialButton = () => {
         <NaverButton
           colorMode="light"
           onClick={() =>
-            naver.loginToPopup({
+            naver.loginToLink({
               redirect_uri: `${window.origin}/social/callback`,
               state: {
                 returnUrl: returnUrl || '/',

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { type VariantProps } from 'class-variance-authority'
 
@@ -22,6 +22,11 @@ export const VerificationInput = ({
   const [timeLeft, setTimeLeft] = useState(180) // 3분 = 180초
   const [isActive, setIsActive] = useState(isTimerActive)
 
+  // onTimerExpired 콜백을 메모이제이션
+  const handleTimerExpired = useCallback(() => {
+    onTimerExpired?.()
+  }, [onTimerExpired])
+
   useEffect(() => {
     setIsActive(isTimerActive)
   }, [isTimerActive])
@@ -34,7 +39,7 @@ export const VerificationInput = ({
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
             setIsActive(false)
-            onTimerExpired?.()
+            handleTimerExpired()
             return 0
           }
           return prevTime - 1
@@ -47,7 +52,7 @@ export const VerificationInput = ({
         clearInterval(interval)
       }
     }
-  }, [isActive, timeLeft, onTimerExpired])
+  }, [isActive, timeLeft, handleTimerExpired])
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
