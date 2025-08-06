@@ -15,6 +15,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { VerificationInput } from '@/components/ui/verification-input'
+import {
+  usePhoneVerifierConfirmCreateMutation,
+  usePhoneVerifierCreateMutation,
+} from '@/generated/apis/PhoneVerifier/PhoneVerifier.query'
+import { useUserRegisterCreateMutation } from '@/generated/apis/User/User.query'
 import { ArticleIcon } from '@/generated/icons/MyIcons'
 import { toast } from '@/hooks/useToast'
 
@@ -35,11 +40,25 @@ export const JoinForm = () => {
   const isDisabledToSendVerification =
     !hasPhoneValue || !!errors.phone || isTimerActive
 
+  const { mutate: createPhoneVerifier } = usePhoneVerifierCreateMutation({})
+  const { mutate: createPhoneVerifierConfirm } =
+    usePhoneVerifierConfirmCreateMutation({})
+  const { mutate: createUserRegister } = useUserRegisterCreateMutation({})
+
   const handleSendVerification = () => {
-    // TODO: 실제 인증번호 전송 API 호출
-    console.log('인증번호 전송:', form.getValues('phone'))
-    setIsVerificationSent(true)
-    setIsTimerActive(true)
+    createPhoneVerifier(
+      {
+        data: {
+          phone: getValues('phone'),
+        },
+      },
+      {
+        onSuccess: () => {
+          setIsVerificationSent(true)
+          setIsTimerActive(true)
+        },
+      },
+    )
   }
 
   const handleTimerExpired = () => {
@@ -123,22 +142,47 @@ export const JoinForm = () => {
   }
 
   const handleJoinFormSubmit = handleSubmit((data) => {
-    // toast(
-    //   '인증번호가 일치하지 않아요.',
-    //   {
-    //     action: {
-    //       label: '닫기',
-    //       onClick: () => {},
-    //     },
-    //   },
-    //   'error',
-    // )
-    // toast('인증이 완료되었습니다.', {
-    //   action: {
-    //     label: '닫기',
-    //     onClick: () => {},
-    //   },
-    // })
+    const { phone, verificationCode } = data
+    createPhoneVerifierConfirm(
+      {
+        data: {
+          phone,
+          code: verificationCode,
+        },
+      },
+      {
+        onSuccess: (res) => {
+          const { token } = res
+          toast('인증이 완료되었습니다.', {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          })
+          createUserRegister({
+            data: {
+              phone,
+              birth: '',
+              phoneToken: token,
+              registerToken: '',
+            },
+          })
+        },
+        onError: () => {
+          toast(
+            '인증번호가 일치하지 않아요.',
+            {
+              action: {
+                label: '닫기',
+                onClick: () => {},
+              },
+            },
+            'error',
+          )
+        },
+      },
+    )
+
     console.log(data)
   })
 

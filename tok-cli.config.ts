@@ -22,8 +22,7 @@ const config: RootConfig<{
     basePath: '/images',
   },
   'gen:api': {
-    swaggerSchemaUrl:
-      'https://tidy-cheaply-gobbler.ngrok-free.app/openapi.json/',
+    swaggerSchemaUrl: 'https://api.atelierfashion.co.kr/openapi.json/',
     httpClientType: 'fetch',
     instancePath: '@/configs/fetch/fetch-extend',
     paginationSets: [

@@ -1,6 +1,10 @@
+'use client'
+
 import { useRouter } from 'next/navigation'
 
 import { useOauthPopupCallback } from '@toktokhan-dev/react-web'
+
+import { Loader2Icon } from 'lucide-react'
 
 import setToken from '@/actions/set-token'
 import { UserSocialLoginRequestStateEnumType } from '@/generated/apis/@types/data-contracts'
@@ -29,15 +33,26 @@ export const PopupCallback = () => {
               accessToken,
               refreshToken,
             })
-            router.replace('/join')
+            router.replace('/')
+            oAuthResponse?.closePopup()
+          },
+          onError: (res) => {
+            if (res.error) {
+              console.log('res', res)
+            }
+            // router.replace('/join')
+            // oAuthResponse?.closePopup()
           },
         },
       )
-      oAuthResponse?.closePopup()
     },
     onFail: (oAuthResponse) => {
       oAuthResponse?.closePopup()
     },
   })
-  return <div>PopupCallback</div>
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <Loader2Icon className="animate-spin" size={36} />
+    </div>
+  )
 }

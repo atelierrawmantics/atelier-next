@@ -1,18 +1,18 @@
+'use client'
+
+import { useParams } from 'next/navigation'
+
 import { ClassNameValue } from 'tailwind-merge'
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import { useProjectShareCreateMutation } from '@/generated/apis/Project/Project.query'
 import {
   DownloadSimpleIcon,
   LinkIcon,
   PencilSimpleIcon,
   TrashIcon,
 } from '@/generated/icons/MyIcons'
+import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
 import { ProjectInfoForm } from './components/project-info-form'
@@ -87,6 +87,42 @@ const ProjectInfoContent = () => {
 }
 
 const ProjectInfo = () => {
+  const { id } = useParams<{ id: string }>()
+  const { mutate: createProjectShare, isPending: isPendingCreateProjectShare } =
+    useProjectShareCreateMutation({})
+
+  const handleCreateProjectShare = () => {
+    createProjectShare(
+      {
+        slug: id,
+        data: {
+          isShared: true,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast('링크가 생성되었어요.', {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          })
+        },
+        onError: () => {
+          toast(
+            '링크 생성 중 문제가 발생했습니다. 다시 시도해 주세요.',
+            {
+              action: {
+                label: '닫기',
+                onClick: () => {},
+              },
+            },
+            'error',
+          )
+        },
+      },
+    )
+  }
   return (
     <div className="md:max-w-[405px] max-w-full w-full">
       <div
@@ -104,6 +140,8 @@ const ProjectInfo = () => {
           variant="outline-grey"
           size="sm"
           className="w-fit hidden md:flex"
+          onClick={handleCreateProjectShare}
+          loading={isPendingCreateProjectShare}
         >
           <LinkIcon />
           <p>공유 링크 생성</p>
