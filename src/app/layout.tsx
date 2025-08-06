@@ -26,12 +26,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   ...(ENV.DOMAIN && { metadataBase: new URL(ENV.DOMAIN) }),
   title: {
-    default: '똑똑한개발자',
-    template: `%s | 똑똑한개발자`,
+    default: 'Atelier',
+    template: `%s | Atelier`,
   },
   description: '디지털프로덕트의 TOKTOK한 경험',
-  applicationName: '똑똑한개발자',
-  keywords: ['똑똑한개발자', '디지털프로덕트의 TOKTOK한 경험', '...'],
+  applicationName: 'Atelier',
+  keywords: ['Atelier', '디지털프로덕트의 TOKTOK한 경험', '...'],
   icons: [
     { rel: 'apple-touch-icon', url: '/icons/120.png', sizes: '120x120' },
     { rel: 'apple-touch-icon', url: '/icons/152.png', sizes: '152x152' },
@@ -53,10 +53,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'ko',
-    siteName: '똑똑한개발자',
+    siteName: 'Atelier',
     title: {
-      default: '똑똑한개발자',
-      template: `똑똑한개발자 | %s`,
+      default: 'Atelier',
+      template: `Atelier | %s`,
     },
     description: '디지털프로덕트의 TOKTOK한 경험',
     images: [
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     images: `/images/new_og.png`,
-    title: '똑똑한개발자',
+    title: 'Atelier',
     description: '디지털프로덕트의 TOKTOK한 경험',
     site: '@site',
   },
