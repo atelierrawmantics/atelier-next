@@ -180,8 +180,8 @@ export const JoinForm = () => {
           createUserRegister(
             {
               data: {
-                phone,
-                birth: data.birthday,
+                phone: phone.replace(/-/g, ''),
+                birth: data.birthday.replace(/-/g, ''),
                 phoneToken: token,
                 registerToken: clientCookie.get(
                   COOKIE_KEYS.AUTH.REGISTER_TOKEN,

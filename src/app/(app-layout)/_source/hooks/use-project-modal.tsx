@@ -1,8 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useOverlay } from '@toss/use-overlay'
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -20,7 +20,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  QUERY_KEY_PROJECT_API,
+  useProjectCreateMutation,
+} from '@/generated/apis/Project/Project.query'
 import { InfoFillIcon, XIcon } from '@/generated/icons/MyIcons'
+import { toast } from '@/hooks/useToast'
 
 import { useProjectForm } from './use-proejct-form'
 
@@ -33,7 +38,6 @@ interface ProjectCreateModalProps {
   isOpen: boolean
   onClose: () => void
   data?: ProjectModalData
-  onSubmit: (slug?: string) => void
 }
 
 // 폼 필드 설정
@@ -44,6 +48,7 @@ const FORM_FIELDS = [
     placeholder: '한글 2-20자',
     maxLength: 20,
     component: Input,
+    isRequired: true,
   },
   {
     name: 'projectDescription' as const,
@@ -52,6 +57,7 @@ const FORM_FIELDS = [
     maxLength: 500,
     component: Textarea,
     className: 'h-[200px]',
+    isRequired: true,
   },
   {
     name: 'clientName' as const,
@@ -59,6 +65,7 @@ const FORM_FIELDS = [
     placeholder: '한글 2-20자',
     maxLength: 20,
     component: Input,
+    isRequired: false,
   },
   {
     name: 'clientDescription' as const,
@@ -67,6 +74,7 @@ const FORM_FIELDS = [
     maxLength: 500,
     component: Textarea,
     className: 'h-[200px]',
+    isRequired: false,
   },
 ] as const
 
@@ -75,14 +83,46 @@ const ProjectCreateModal = ({
   isOpen,
   onClose,
   data,
-  onSubmit,
 }: ProjectCreateModalProps) => {
   const form = useProjectForm()
-  const { control } = form
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = form
 
-  const handleFormSubmit = () => {
-    onSubmit()
-  }
+  const queryClient = useQueryClient()
+
+  const { mutate: createProject, isPending } = useProjectCreateMutation({})
+
+  //FIXME: 입력 했을 때 뒤로가기 막기
+  // 옵셔널 밸류
+  const handleProjectFormSubmit = handleSubmit((data) => {
+    createProject(
+      {
+        data: {
+          name: data.projectName,
+          description: data.projectDescription,
+          clientName: data.clientName ?? '',
+          clientDescription: data.clientDescription ?? '',
+        },
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEY_PROJECT_API.LIST_INFINITE(),
+          })
+          toast('프로젝트가 생성되었어요.', {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          })
+          onClose()
+        },
+      },
+    )
+  })
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -106,10 +146,7 @@ const ProjectCreateModal = ({
 
         <div className="px-[16px] py-[20px] overflow-y-auto">
           <Form {...form}>
-            <form
-              id="project-form"
-              onSubmit={form.handleSubmit(handleFormSubmit)}
-            >
+            <form id="project-form" onSubmit={handleProjectFormSubmit}>
               <div className="flex flex-col gap-[24px]">
                 {FORM_FIELDS.map((field) => {
                   const Component = field.component
@@ -120,7 +157,9 @@ const ProjectCreateModal = ({
                       name={field.name}
                       render={({ field: formField }) => (
                         <FormItem>
-                          <FormLabel aria-required>{field.label}</FormLabel>
+                          <FormLabel aria-required={field.isRequired}>
+                            {field.label}
+                          </FormLabel>
                           <FormControl>
                             <Component
                               required
@@ -146,9 +185,14 @@ const ProjectCreateModal = ({
         </div>
 
         <AlertDialogFooter className="p-[12px_16px_16px_16px] border-t border-border-basic-1">
-          <AlertDialogAction type="submit" form="project-form">
-            {data?.projectName}
-          </AlertDialogAction>
+          <Button
+            type="submit"
+            form="project-form"
+            loading={isSubmitting || isPending}
+            onClick={handleProjectFormSubmit}
+          >
+            프로젝트 생성
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -164,17 +208,9 @@ interface OpenProjectCreateModalParams {
 export const useProjectModal = () => {
   const { open } = useOverlay()
 
-  const openProjectCreateModal = ({
-    data,
-    onClose,
-  }: OpenProjectCreateModalParams) => {
+  const openProjectCreateModal = ({ data }: OpenProjectCreateModalParams) => {
     open(({ isOpen, close }) => (
-      <ProjectCreateModal
-        isOpen={isOpen}
-        onClose={close}
-        data={data}
-        onSubmit={onClose}
-      />
+      <ProjectCreateModal isOpen={isOpen} onClose={close} data={data} />
     ))
   }
 

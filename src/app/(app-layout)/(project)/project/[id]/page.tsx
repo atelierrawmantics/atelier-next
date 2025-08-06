@@ -3,7 +3,7 @@ import { Children } from 'react'
 import { FolderIcon } from '@/generated/icons/MyIcons'
 
 import { ProjectContent } from '../../../_source/components/project-content'
-import { ProjectDetail } from './_source/components/project-detail/instruction'
+import { ProjectDetail } from './_source/components/project-detail/project-detail'
 import { ProjectTabs } from './_source/components/project-tabs'
 import { Schematic } from './_source/components/schematic/schematic'
 import { Task } from './_source/components/task/task'
