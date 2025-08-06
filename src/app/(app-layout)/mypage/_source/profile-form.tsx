@@ -1,6 +1,11 @@
 'use client'
 
-import { omit } from 'lodash-es'
+import { useEffect } from 'react'
+
+import { useQueryClient } from '@tanstack/react-query'
+
+import dayjs from 'dayjs'
+import { omit } from 'lodash'
 
 import { Button } from '@/components/ui/button'
 import { ClearableInput } from '@/components/ui/clearable-input'
@@ -12,24 +17,48 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import {
+  QUERY_KEY_USER_API,
+  useUserDestroyMutation,
+  useUserRetrieveQuery,
+  useUserUpdateMutation,
+} from '@/generated/apis/User/User.query'
 import { UserIcon } from '@/generated/icons/MyIcons'
 import { toast } from '@/hooks/useToast'
+import { formatPhoneNumber } from '@/lib/utils'
 
 import { useProfileForm } from './hooks/use-profile-form'
 
 export const ProfileForm = () => {
-  const form = useProfileForm({
-    defaultValues: {
-      name: '홍길동',
-      birthday: '1990-01-01',
-      phone: '010-1234-5678',
-    },
-  })
+  const form = useProfileForm({})
   const {
     control,
-    formState: { isDirty, isValid, errors },
+    formState: { isDirty, isValid, isSubmitting },
     handleSubmit,
+    reset,
   } = form
+
+  const queryClient = useQueryClient()
+
+  const { data: userData } = useUserRetrieveQuery({
+    variables: {
+      id: 'me',
+    },
+  })
+
+  const { mutate: updateUser, isPending: isPendingUpdateUser } =
+    useUserUpdateMutation({})
+
+  const { mutate: deleteUser } = useUserDestroyMutation({
+    options: {
+      onSuccess: () => {
+        //FIXME: 회원탈퇴 후 로그아웃 처리
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEY_USER_API.RETRIEVE({ id: 'me' }),
+        })
+      },
+    },
+  })
 
   // 생년월일 입력 핸들러 - 숫자만 허용, 자동 하이픈 삽입
   const handleBirthdayChange = (
@@ -86,36 +115,46 @@ export const ProfileForm = () => {
       onChange(inputValue)
     } else {
       // 입력 중일 때는 포맷팅 적용
-      let formattedValue = numbers
-      if (numbers.length >= 7) {
-        formattedValue = `${numbers.substring(0, 3)}-${numbers.substring(3, 7)}-${numbers.substring(7)}`
-      } else if (numbers.length >= 3) {
-        formattedValue = `${numbers.substring(0, 3)}-${numbers.substring(3)}`
-      }
-
+      const formattedValue = formatPhoneNumber(numbers)
       onChange(formattedValue)
     }
   }
 
   const handleJoinFormSubmit = handleSubmit((data) => {
-    // toast(
-    //   '인증번호가 일치하지 않아요.',
-    //   {
-    //     action: {
-    //       label: '닫기',
-    //       onClick: () => {},
-    //     },
-    //   },
-    //   'error',
-    // )
-    // toast('인증이 완료되었습니다.', {
-    //   action: {
-    //     label: '닫기',
-    //     onClick: () => {},
-    //   },
-    // })
-    console.log(data)
+    const { name, birthday } = data
+    updateUser(
+      {
+        id: 'me',
+        data: {
+          name,
+          birth: birthday.replace(/-/g, ''),
+        },
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEY_USER_API.RETRIEVE({ id: 'me' }),
+          })
+          toast('프로필이 수정되었어요.', {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          })
+        },
+      },
+    )
   })
+
+  useEffect(() => {
+    const { name, birth, phone } = userData || {}
+
+    reset({
+      name: name || '',
+      birthday: birth ? dayjs(birth).format('YYYY-MM-DD') : '',
+      phone: phone ? formatPhoneNumber(phone) : '',
+    })
+  }, [userData])
 
   return (
     <Form {...form}>
@@ -190,6 +229,7 @@ export const ProfileForm = () => {
           variant="solid-primary"
           size="lg"
           disabled={!isDirty || !isValid}
+          loading={isPendingUpdateUser || isSubmitting}
           onClick={handleJoinFormSubmit}
         >
           프로필 수정
@@ -199,6 +239,11 @@ export const ProfileForm = () => {
             variant="ghost"
             size="fit"
             className="underline text-grey-7 typo-pre-body-6"
+            onClick={() => {
+              deleteUser({
+                id: 'me',
+              })
+            }}
           >
             회원탈퇴
           </Button>
