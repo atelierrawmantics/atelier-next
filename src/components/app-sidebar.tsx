@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useSelectedLayoutSegment } from 'next/navigation'
 
 import {
   Sidebar,
@@ -15,7 +15,9 @@ import { FolderIcon, UserIcon } from '@/generated/icons/MyIcons'
 
 // 사이드바 콘텐츠 컴포넌트
 function SidebarContentComponent() {
-  const pathname = usePathname()
+  const segment = useSelectedLayoutSegment()
+
+  const isProject = segment?.includes('project')
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -30,7 +32,7 @@ function SidebarContentComponent() {
             <SidebarMenuButton
               tooltip="프로젝트 관리"
               asChild
-              isActive={pathname === '/'}
+              isActive={isProject}
             >
               <Link href="/">
                 <FolderIcon className="size-[20px] text-transparent" />
@@ -44,7 +46,7 @@ function SidebarContentComponent() {
             <SidebarMenuButton
               tooltip="마이페이지"
               asChild
-              isActive={pathname === '/mypage'}
+              isActive={!isProject}
             >
               <Link href="/mypage">
                 <UserIcon className="size-[20px]" />
