@@ -1,3 +1,5 @@
+import { Suspense } from 'react'
+
 import { Metadata } from 'next'
 
 import { LogoIcon } from '@/generated/icons/MyIcons'
@@ -56,7 +58,9 @@ const LoginSection = () => {
       <p className="px-[16px] mt-[16px] typo-pre-body-6 text-grey-9 whitespace-pre-line sm:whitespace-normal text-center">
         {'패션 디자이너를 위한 협업,\n지금 간편 로그인으로 시작해보세요.'}
       </p>
-      <SocialButton />
+      <Suspense fallback={<></>}>
+        <SocialButton />
+      </Suspense>
     </div>
   )
 }
