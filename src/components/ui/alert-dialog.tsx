@@ -137,7 +137,10 @@ function AlertDialogCancel({
 }: React.ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
   return (
     <AlertDialogPrimitive.Cancel
-      className={cn(buttonVariants({ variant: 'outline-grey' }), className)}
+      className={cn(
+        buttonVariants({ variant: 'solid-grey', size: 'lg' }),
+        className,
+      )}
       {...props}
     />
   )

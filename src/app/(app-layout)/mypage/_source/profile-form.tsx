@@ -2,11 +2,16 @@
 
 import { useEffect } from 'react'
 
+import { useRouter } from 'next/navigation'
+
 import { useQueryClient } from '@tanstack/react-query'
+import { useOverlay } from '@toss/use-overlay'
 
 import dayjs from 'dayjs'
 import { omit } from 'lodash'
 
+import { logout } from '@/actions/logout'
+import { CommonAlert } from '@/components/common-alert'
 import { Button } from '@/components/ui/button'
 import { ClearableInput } from '@/components/ui/clearable-input'
 import {
@@ -38,7 +43,9 @@ export const ProfileForm = () => {
     reset,
   } = form
 
+  const router = useRouter()
   const queryClient = useQueryClient()
+  const { open } = useOverlay()
 
   const { data: userData } = useUserRetrieveQuery({
     variables: {
@@ -49,16 +56,17 @@ export const ProfileForm = () => {
   const { mutate: updateUser, isPending: isPendingUpdateUser } =
     useUserUpdateMutation({})
 
-  const { mutate: deleteUser } = useUserDestroyMutation({
-    options: {
-      onSuccess: () => {
-        //FIXME: 회원탈퇴 후 로그아웃 처리
-        queryClient.invalidateQueries({
-          queryKey: QUERY_KEY_USER_API.RETRIEVE({ id: 'me' }),
-        })
+  const { mutate: deleteUser, isPending: isPendingDeleteUser } =
+    useUserDestroyMutation({
+      options: {
+        onSuccess: () => {
+          //FIXME: 회원탈퇴 후 로그아웃 처리
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEY_USER_API.RETRIEVE({ id: 'me' }),
+          })
+        },
       },
-    },
-  })
+    })
 
   // 생년월일 입력 핸들러 - 숫자만 허용, 자동 하이픈 삽입
   const handleBirthdayChange = (
@@ -145,6 +153,47 @@ export const ProfileForm = () => {
       },
     )
   })
+
+  const handleWithdrawal = () => {
+    open(({ isOpen, close }) => (
+      <CommonAlert
+        isOpen={isOpen}
+        onClose={close}
+        loading={isPendingDeleteUser}
+        title="정말 탈퇴하시겠어요?"
+        description={
+          '회원탈퇴 시, 모든 정보가 삭제되며, 복구할 수 없습니다.\n그래도 탈퇴하시겠어요?'
+        }
+        confirmText="탈퇴하기"
+        onConfirm={() => {
+          deleteUser(
+            {
+              id: 'me',
+            },
+            {
+              onSuccess: () => {
+                queryClient.invalidateQueries({
+                  queryKey: QUERY_KEY_USER_API.RETRIEVE({ id: 'me' }),
+                })
+                close()
+                toast('그동안 아뜰리에 서비스를 이용해 주셔서 감사합니다.', {
+                  action: {
+                    label: '닫기',
+                    onClick: () => {},
+                  },
+                })
+                queryClient.clear()
+                logout()
+              },
+              onError: () => {
+                close()
+              },
+            },
+          )
+        }}
+      />
+    ))
+  }
 
   useEffect(() => {
     const { name, birth, phone } = userData || {}
@@ -239,11 +288,7 @@ export const ProfileForm = () => {
             variant="ghost"
             size="fit"
             className="underline text-grey-7 typo-pre-body-6"
-            onClick={() => {
-              deleteUser({
-                id: 'me',
-              })
-            }}
+            onClick={handleWithdrawal}
           >
             회원탈퇴
           </Button>

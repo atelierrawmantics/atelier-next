@@ -1,15 +1,18 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 
 import { useQueryClient } from '@tanstack/react-query'
+import { useOverlay } from '@toss/use-overlay'
 
 import dayjs from 'dayjs'
 import { ClassNameValue } from 'tailwind-merge'
 
+import { CommonAlert } from '@/components/common-alert'
 import { Button } from '@/components/ui/button'
 import {
   QUERY_KEY_PROJECT_API,
+  useProjectDestroyMutation,
   useProjectRetrieveQuery,
   useProjectShareCreateMutation,
 } from '@/generated/apis/Project/Project.query'
@@ -24,6 +27,51 @@ import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
 const ProjectInfoHeader = () => {
+  const router = useRouter()
+  const { id } = useParams<{ id: string }>()
+
+  const queryClient = useQueryClient()
+  const { open } = useOverlay()
+
+  const { mutate: deleteProject, isPending: isPendingDeleteProject } =
+    useProjectDestroyMutation({})
+
+  const handleDeleteProject = () => {
+    open(({ isOpen, close }) => (
+      <CommonAlert
+        isOpen={isOpen}
+        onClose={close}
+        loading={isPendingDeleteProject}
+        title="정말 프로젝트를 삭제하시겠어요?"
+        description="프로젝트를 삭제하면 복구할 수 없습니다. 그래도 삭제하시겠어요?"
+        onConfirm={() => {
+          deleteProject(
+            {
+              slug: id,
+            },
+            {
+              onSuccess: () => {
+                close()
+                toast('프로젝트가 삭제되었어요.', {
+                  action: {
+                    label: '닫기',
+                    onClick: () => {},
+                  },
+                })
+                queryClient.invalidateQueries({
+                  queryKey: QUERY_KEY_PROJECT_API.RETRIEVE({
+                    slug: id,
+                  }),
+                })
+                router.push('/')
+              },
+            },
+          )
+        }}
+      />
+    ))
+  }
+
   return (
     <div
       className={cn(
@@ -37,7 +85,7 @@ const ProjectInfoHeader = () => {
         <Button size="fit" variant="ghost">
           <PencilSimpleIcon />
         </Button>
-        <Button size="fit" variant="ghost">
+        <Button size="fit" variant="ghost" onClick={handleDeleteProject}>
           <TrashIcon />
         </Button>
       </div>
