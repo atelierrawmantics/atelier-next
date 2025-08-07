@@ -42,8 +42,10 @@ const ProjectInfoHeader = () => {
         isOpen={isOpen}
         onClose={close}
         loading={isPendingDeleteProject}
-        title="정말 프로젝트를 삭제하시겠어요?"
-        description="프로젝트를 삭제하면 복구할 수 없습니다. 그래도 삭제하시겠어요?"
+        title="프로젝트를 삭제하시겠어요?"
+        description={
+          '삭제한 프로젝트는 다시 복구할 수 없어요.\n작업 지시서와 파일도 함께 삭제되는데,\n정말 삭제하시겠어요?'
+        }
         onConfirm={() => {
           deleteProject(
             {

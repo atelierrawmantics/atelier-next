@@ -20,6 +20,7 @@ interface CommonAlertProps {
   confirmText?: string
   cancelText?: string
   loading?: boolean
+  onCancel?: () => void
 }
 
 export function CommonAlert({
@@ -31,6 +32,7 @@ export function CommonAlert({
   confirmText = '확인',
   cancelText = '취소',
   loading = false,
+  onCancel,
 }: CommonAlertProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -44,7 +46,7 @@ export function CommonAlert({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="p-0">
-          <AlertDialogCancel>{cancelText}</AlertDialogCancel>
+          <AlertDialogCancel onClick={onCancel}>{cancelText}</AlertDialogCancel>
           <Button onClick={onConfirm} loading={loading}>
             {confirmText}
           </Button>

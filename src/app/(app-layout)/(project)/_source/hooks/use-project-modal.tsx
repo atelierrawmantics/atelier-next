@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useOverlay } from '@toss/use-overlay'
 
+import { CommonAlert } from '@/components/common-alert'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -88,10 +89,11 @@ const ProjectCreateModal = ({
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isDirty },
   } = form
 
   const queryClient = useQueryClient()
+  const { open } = useOverlay()
 
   const { mutate: createProject, isPending } = useProjectCreateMutation({})
 
@@ -123,6 +125,30 @@ const ProjectCreateModal = ({
     )
   })
 
+  const handleClose = () => {
+    if (isDirty) {
+      open(({ isOpen, close }) => (
+        <CommonAlert
+          isOpen={isOpen}
+          onClose={close}
+          title="작성 중인 내용이 있어요!"
+          description={
+            '저장하지 않고 나가면 작성한 내용은 복구할 수 없습니다.\n정말 닫으시겠어요?'
+          }
+          confirmText="계속 작성하기"
+          cancelText="닫기"
+          onConfirm={close}
+          onCancel={() => {
+            close()
+            onClose()
+          }}
+        />
+      ))
+    } else {
+      onClose()
+    }
+  }
+
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="rounded-none min-w-screen sm:rounded-[12px] sm:min-w-[600px] w-screen sm:max-h-[800px] h-screen">
@@ -130,7 +156,7 @@ const ProjectCreateModal = ({
           <AlertDialogTitle className="typo-pre-heading-2 text-grey-10">
             {data?.projectName}
           </AlertDialogTitle>
-          <Button variant="ghost" size="fit" onClick={onClose} asChild>
+          <Button variant="ghost" size="fit" onClick={handleClose} asChild>
             <XIcon className="size-[40px]" />
           </Button>
         </AlertDialogHeader>

@@ -45,7 +45,7 @@ export const ProjectHeader = ({ projectCount }: ProjectHeaderProps) => {
   return (
     <div className="sticky w-full container flex items-center justify-between pt-[12px] sm:pt-[20px] md:pt-[28px] pb-[12px]">
       <p className="typo-pre-heading-4 text-grey-9">
-        나의 프로젝트 {projectCount || '-'}
+        나의 프로젝트 {projectCount || 0}
       </p>
       <Button
         size="sm"
