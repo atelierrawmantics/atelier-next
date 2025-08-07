@@ -118,7 +118,13 @@ export const Project = () => {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useProjectListInfiniteQuery({})
+  } = useProjectListInfiniteQuery({
+    variables: {
+      query: {
+        page_size: 10,
+      },
+    },
+  })
 
   const projectListData = useMemo(
     () =>

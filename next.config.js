@@ -95,7 +95,7 @@ module.exports = withBundleAnalyzer({
   images: {
     remotePatterns: [
       {
-        hostname: '*.s3.*.amazonaws.com',
+        hostname: 'atelier-prod-bucket.s3.amazonaws.com',
       },
     ],
   },

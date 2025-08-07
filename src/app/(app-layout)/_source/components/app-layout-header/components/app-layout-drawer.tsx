@@ -36,8 +36,6 @@ export const AppLayoutDrawer = () => {
 
   const pathname = usePathname()
 
-  console.log(pathname)
-
   const handleOpenChange = (v: boolean) => {
     if (isAnimating) return
     setOpen(v)

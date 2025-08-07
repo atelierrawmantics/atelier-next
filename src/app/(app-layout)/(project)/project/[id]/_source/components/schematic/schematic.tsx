@@ -16,6 +16,8 @@ import {
 import { ImagesIcon, MagicWandIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
+import { SchematicHistoryDrawer } from './components/schematic-history-drawer'
+
 const EXAMPLE_TEXT = [
   '5:5 비율의 반팔 티셔츠 도식화',
   '하이웨스트 와이드 팬츠 정면 도식화',
@@ -46,9 +48,10 @@ const ExampleTextBox = ({ text, order }: ExampleTextBoxProps) => {
 
 interface PromptInputProps {
   onSubmit: (prompt: string) => void
+  isPending: boolean
 }
 
-const PromptInput = ({ onSubmit }: PromptInputProps) => {
+const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
   const [prompt, setPrompt] = useState('')
 
   const handleSubmit = () => {
@@ -91,17 +94,10 @@ const PromptInput = ({ onSubmit }: PromptInputProps) => {
           )}
         />
         <div className="flex flex-col gap-[8px]">
-          <Button
-            variant="ghost-primary"
-            size="icon-lg"
-            type="button"
-            title="이미지 업로드"
-          >
-            <ImagesIcon />
-          </Button>
+          <SchematicHistoryDrawer />
           <Button
             onClick={handleSubmit}
-            disabled={!prompt.trim()}
+            disabled={!prompt.trim() || isPending}
             variant="solid-primary"
             size="icon-lg"
             title="전송"
@@ -178,46 +174,48 @@ export const Schematic = () => {
     <div
       className={cn(
         'container',
-        'pt-[160px] text-center w-full',
+        'text-center w-full',
         'flex flex-1 flex-col justify-center items-center gap-[16px]',
+        schematic?.image ? 'pt-[80px]' : 'pt-[160px]',
       )}
     >
-      <div className="flex items-center justify-center size-[56px] rounded-full bg-primary-3">
-        <MagicWandIcon />
-      </div>
-      <h1 className="typo-pre-heading-2 text-grey-10">도식화 제작 도우미</h1>
-      <h2 className="typo-pre-body-6 text-grey-7 whitespace-pre-line mt-[4px]">
-        {`패션 디자이너를 위한 키워드 기반 도식화 제작 도우미입니다.\n간단한 키워드 입력만으로도 빠르고 정확하게 도식화를 완성할 수 있도록 도와드립니다.`}
-      </h2>
-
-      {/* 생성 중 상태 표시 */}
-      {isPolling && (
-        <div className="flex items-center gap-[8px] text-grey-7">
-          <div className="size-[16px] animate-spin rounded-full border-2 border-grey-3 border-t-primary-4"></div>
-          <span className="typo-pre-body-6">도식화를 생성하고 있습니다...</span>
-        </div>
-      )}
-
       {/* 완성된 이미지 표시 */}
-      {schematic?.status === 'SUCCESS' && schematic?.image && (
-        <div className="w-full max-w-[600px]">
+      {schematic?.image ?
+        <div className="relative aspect-[1536/1024] w-full max-w-[600px] h-auto">
           <Image
             src={schematic.image}
             alt="생성된 도식화"
-            className="w-full h-auto rounded-[16px] border border-border-basic-2"
+            className="w-full h-auto"
+            fill
+            objectFit="cover"
+            unoptimized
           />
         </div>
-      )}
+      : <>
+          <div className="flex items-center justify-center size-[56px] rounded-full bg-primary-3">
+            <MagicWandIcon />
+          </div>
+          <h1 className="typo-pre-heading-2 text-grey-10">
+            도식화 제작 도우미
+          </h1>
+          <h2 className="typo-pre-body-6 text-grey-7 whitespace-pre-line mt-[4px]">
+            {`패션 디자이너를 위한 키워드 기반 도식화 제작 도우미입니다.\n간단한 키워드 입력만으로도 빠르고 정확하게 도식화를 완성할 수 있도록 도와드립니다.`}
+          </h2>
 
-      <div className="grid grid-cols-4 gap-[8px] mt-[24px] w-full">
-        {Children.toArray(
-          EXAMPLE_TEXT.map((text, index) => (
-            <ExampleTextBox order={index + 1} text={text} />
-          )),
-        )}
-      </div>
+          <div className="grid grid-cols-4 gap-[8px] mt-[24px] w-full">
+            {Children.toArray(
+              EXAMPLE_TEXT.map((text, index) => (
+                <ExampleTextBox order={index + 1} text={text} />
+              )),
+            )}
+          </div>
+        </>
+      }
 
-      <PromptInput onSubmit={handlePromptSubmit} />
+      <PromptInput
+        onSubmit={handlePromptSubmit}
+        isPending={schematic?.status === 'PENDING'}
+      />
     </div>
   )
 }

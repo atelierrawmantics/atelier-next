@@ -198,6 +198,10 @@ export const JoinForm = () => {
                 clientCookie.remove(COOKIE_KEYS.AUTH.REGISTER_TOKEN)
                 router.replace('/')
               },
+              onError: (res) => {
+                //FIXME: 이미 존재하는 번호입니다.
+                console.log(res)
+              },
             },
           )
         },
