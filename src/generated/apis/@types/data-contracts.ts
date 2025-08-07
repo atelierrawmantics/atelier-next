@@ -210,6 +210,8 @@ export interface PhoneVerifierType {
    * @maxLength 11
    */
   phone: string
+  /** 인증번호 */
+  readonly code: string
 }
 
 export interface PhoneVerifierConfirmType {
@@ -350,13 +352,11 @@ export interface ProjectRequestType {
   description: string
   /**
    * 고객사명
-   * @minLength 1
    * @maxLength 30
    */
   clientName: string
   /**
    * 고객사 설명
-   * @minLength 1
    * @maxLength 500
    */
   clientDescription: string

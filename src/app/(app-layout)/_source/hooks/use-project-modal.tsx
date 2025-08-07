@@ -96,7 +96,6 @@ const ProjectCreateModal = ({
   const { mutate: createProject, isPending } = useProjectCreateMutation({})
 
   //FIXME: 입력 했을 때 뒤로가기 막기
-  // 옵셔널 밸류
   const handleProjectFormSubmit = handleSubmit((data) => {
     createProject(
       {

@@ -1,8 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import Image from 'next/image'
+import { useParams } from 'next/navigation'
 
 import {
   Accordion,
@@ -14,6 +15,11 @@ import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  useProjectInstructionPartialUpdateMutation,
+  useProjectInstructionRetrieveQuery,
+} from '@/generated/apis/Instruction/Instruction.query'
+import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import { ShirtFoldedIcon, SwatchesIcon, XIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
@@ -459,7 +465,40 @@ const AccessoryTableRow = ({
 
 export const ProjectInfoForm = () => {
   const form = useProjectInfoForm()
-  const { watch, setValue } = form
+  const { watch, setValue, reset } = form
+
+  const { id: slug } = useParams<{ id: string }>()
+  const { data: projectData } = useProjectRetrieveQuery({
+    variables: {
+      slug,
+    },
+    options: {
+      enabled: !!slug,
+    },
+  })
+
+  const { data: instructionData } = useProjectInstructionRetrieveQuery({
+    variables: {
+      projectSlug: slug,
+      id: 'me',
+    },
+    options: {
+      enabled: !!slug,
+    },
+  })
+
+  const { mutate: updateInstruction } =
+    useProjectInstructionPartialUpdateMutation({})
+
+  console.log({ instructionData })
+
+  // instructionData가 로드되면 폼을 리셋
+  useEffect(() => {
+    if (instructionData) {
+      const apiFormData = transformApiToFormData(instructionData)
+      reset(apiFormData)
+    }
+  }, [instructionData, reset])
 
   // 순수 함수: 배열 생성
   const createEmptyArray = (rows: number, cols: number) => {
@@ -576,9 +615,48 @@ export const ProjectInfoForm = () => {
   // 개별 섹션 저장 핸들러들
   const createSaveHandler = (sectionName: string, dataExtractor: () => any) => {
     return () => {
-      const data = dataExtractor()
-      console.log(`${sectionName} 저장:`, data)
-      // API 호출 로직 추가
+      const currentFormData = watch() // 현재 폼의 모든 데이터
+      const sectionData = dataExtractor() // 해당 섹션의 데이터
+      console.log(`${sectionName} 저장:`, sectionData)
+
+      // 실제 데이터가 있는지 확인하는 함수
+      const hasActualData = (data: any): boolean => {
+        if (typeof data === 'string') {
+          return data.trim() !== ''
+        }
+        if (Array.isArray(data)) {
+          return data.some((item) => hasActualData(item))
+        }
+        return false
+      }
+
+      // 현재 폼 데이터에서 실제 입력된 데이터가 있는지 확인
+      const hasUserInput =
+        hasActualData(currentFormData.year) ||
+        hasActualData(currentFormData.season) ||
+        hasActualData(currentFormData.style) ||
+        hasActualData(currentFormData.variant) ||
+        hasActualData(currentFormData.item) ||
+        hasActualData(currentFormData.generation) ||
+        hasActualData(currentFormData.sizeValues) ||
+        hasActualData(currentFormData.colorValues) ||
+        hasActualData(currentFormData.fabricValues) ||
+        hasActualData(currentFormData.materialValues)
+
+      // 실제 데이터가 없으면 API 호출하지 않음
+      if (!hasUserInput) {
+        console.log('저장할 데이터가 없습니다.')
+        return
+      }
+
+      // 현재 폼 데이터를 그대로 API에 전송
+      const updateData = transformFormToApiData(currentFormData)
+
+      updateInstruction({
+        projectSlug: slug,
+        id: 'me',
+        data: updateData,
+      })
     }
   }
 
@@ -655,7 +733,7 @@ export const ProjectInfoForm = () => {
     const currentSizeNames = watch('sizeNames') || []
     const newSizeNames = [...currentSizeNames]
     if (newSizeNames[0]) {
-      newSizeNames[0] = ['Part', '', '', '', '', '', '편차']
+      newSizeNames[0] = ['', '', '', '', ''] // Part, 편차 제외한 5개 사이즈네임만
       setValue('sizeNames', newSizeNames)
     }
   }
@@ -717,6 +795,115 @@ export const ProjectInfoForm = () => {
     },
   ]
 
+  // API 데이터를 폼 데이터로 변환하는 함수
+  const transformApiToFormData = (instructionData: any) => {
+    if (!instructionData)
+      return {
+        year: '',
+        season: '',
+        style: '',
+        variant: '',
+        item: '',
+        generation: '',
+        schematic: null,
+        sizeNames: [[], [], [], [], []],
+        sizeValues: Array(15)
+          .fill(null)
+          .map(() => Array(7).fill('')),
+        colorValues: Array(6)
+          .fill(null)
+          .map(() => Array(7).fill('')),
+        fabricValues: Array(6)
+          .fill(null)
+          .map(() => Array(6).fill('')),
+        materialValues: Array(6)
+          .fill(null)
+          .map(() => Array(5).fill('')),
+        swatchSet: [],
+      }
+
+    // sizeNames 변환: [["1"], ["2"], [], ["4"], ["5"]] → [["1", "2", "", "4", "5"], [], [], [], []]
+    const transformSizeNames = (apiSizeNames: any[]) => {
+      if (!Array.isArray(apiSizeNames) || apiSizeNames.length === 0) {
+        return [[], [], [], [], []]
+      }
+
+      const formSizeNames: any[][] = [[], [], [], [], []]
+      formSizeNames[0] = ['', '', '', '', '']
+
+      apiSizeNames.forEach((sizeNameArray, index) => {
+        if (
+          Array.isArray(sizeNameArray) &&
+          sizeNameArray.length > 0 &&
+          index < 5
+        ) {
+          formSizeNames[0][index] = sizeNameArray[0] || ''
+        }
+      })
+
+      return formSizeNames
+    }
+
+    return {
+      year: instructionData.year || '',
+      season: instructionData.season || '',
+      style: instructionData.style || '',
+      variant: instructionData.variant || '',
+      item: instructionData.item || '',
+      generation: instructionData.generation || '',
+      schematic: null,
+      sizeNames: transformSizeNames(instructionData.sizeNames),
+      sizeValues: instructionData.sizeValues,
+      colorValues: instructionData.colorValues,
+      fabricValues: instructionData.fabricValues,
+      materialValues: instructionData.materialValues,
+      swatchSet: [],
+    }
+  }
+
+  // 폼 데이터를 API 데이터로 변환하는 함수
+  const transformFormToApiData = (currentFormData: any) => {
+    // sizeNames 변환: [["1", "2", "", "4", "5"], [], [], [], []] → [["1"], ["2"], [], ["4"], ["5"]]
+    const transformSizeNames = (formSizeNames: any[]) => {
+      if (!Array.isArray(formSizeNames) || formSizeNames.length === 0) {
+        return [[], [], [], [], []]
+      }
+
+      const firstArray = formSizeNames[0]
+      if (!Array.isArray(firstArray)) {
+        return [[], [], [], [], []]
+      }
+
+      const result = []
+      for (let i = 0; i < 5; i++) {
+        const value = firstArray[i]
+        if (value && value !== null && value !== undefined && value !== '') {
+          result.push([value])
+        } else {
+          result.push([])
+        }
+      }
+
+      return result
+    }
+
+    return {
+      year: currentFormData.year || '',
+      season: currentFormData.season || '',
+      style: currentFormData.style || '',
+      variant: currentFormData.variant || '',
+      item: currentFormData.item || '',
+      generation: currentFormData.generation || '',
+      schematic: null,
+      sizeNames: transformSizeNames(currentFormData.sizeNames),
+      sizeValues: currentFormData.sizeValues,
+      colorValues: currentFormData.colorValues,
+      fabricValues: currentFormData.fabricValues,
+      materialValues: currentFormData.materialValues,
+      swatchSet: [],
+    }
+  }
+
   return (
     <Form {...form}>
       <div className="max-w-full md:max-w-[859px] w-full pb-[80px]">
@@ -775,12 +962,12 @@ export const ProjectInfoForm = () => {
                     placeholder="사이즈 입력"
                     size="md"
                     variant="outline-grey"
-                    value={watch('sizeNames')?.[0]?.[index + 1] || ''}
+                    value={watch('sizeNames')?.[0]?.[index] || ''}
                     onChange={(e) => {
                       const sizeNames = watch('sizeNames') || []
                       const newSizeNames = [...sizeNames]
-                      if (!newSizeNames[0]) newSizeNames[0] = Array(7).fill('')
-                      newSizeNames[0][index + 1] = e.target.value
+                      if (!newSizeNames[0]) newSizeNames[0] = Array(5).fill('')
+                      newSizeNames[0][index] = e.target.value
                       setValue('sizeNames', newSizeNames)
                     }}
                   />

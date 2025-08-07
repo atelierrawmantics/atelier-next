@@ -83,10 +83,10 @@ interface ProjectCardProps {
   project: ProjectType
 }
 const ProjectCard = ({ project }: ProjectCardProps) => {
-  const { id, name, clientName, createdAt, updatedAt } = project
+  const { slug, name, clientName, createdAt, updatedAt } = project
   return (
     <Link
-      href={`/project/${id}`}
+      href={`/project/${slug}`}
       className={cn(
         'flex flex-col gap-[12px] w-full py-[16px] px-[20px] h-[108px] border-1 border-border-basic-2 bg-grey-0 rounded-[8px] cursor-pointer',
         'hover:border-primary-3 hover:bg-secondary-2',

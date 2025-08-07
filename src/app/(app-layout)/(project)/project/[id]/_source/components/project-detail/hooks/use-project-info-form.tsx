@@ -65,34 +65,6 @@ export const useProjectInfoForm = (
   return useForm<ProjectInfoFormDataType>({
     resolver: yupResolver(projectInfoFormSchema),
     mode: 'onChange',
-    defaultValues: {
-      year: '',
-      season: '',
-      style: '',
-      variant: '',
-      item: '',
-      generation: '',
-      schematic: null,
-      sizeNames: [
-        ['Part', '', '', '', '', '', '편차'],
-        ['Color', 'XS', 'S', 'M', 'L', 'XL', '수량'],
-        ['구분', '원단명', '컬러', '혼용율', '규격', '요척'],
-        ['자재명', '규격', '컬러', '사용부위', '요척'],
-      ],
-      sizeValues: Array(15)
-        .fill(null)
-        .map(() => Array(7).fill('')),
-      colorValues: Array(5)
-        .fill(null)
-        .map(() => Array(7).fill('')),
-      fabricValues: Array(6)
-        .fill(null)
-        .map(() => Array(6).fill('')),
-      materialValues: Array(5)
-        .fill(null)
-        .map(() => Array(5).fill('')),
-      swatchSet: [],
-    },
     ...options,
   })
 }

@@ -41,7 +41,7 @@ const buttonVariants = cva(
         'icon-md':
           'size-[40px] has-[>svg:not(.animate-spin)]:size-[24px] flex justify-center items-center rounded-full',
         'icon-lg':
-          'size-[48px] has-[>svg:not(.animate-spin)]:size-[24px] flex justify-center items-center rounded-full',
+          'size-[48px] [&>svg]:size-[24px] flex justify-center items-center rounded-full',
         fit: 'size-fit p-0 rounded-none',
       },
     },

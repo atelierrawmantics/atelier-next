@@ -126,6 +126,43 @@ export const CheckCircleFillIcon = forwardRef<SVGSVGElement, IconProps>(
     )
   },
 )
+export const CopyIcon = forwardRef<SVGSVGElement, IconProps>(
+  function CopyIcon(props, ref) {
+    return (
+      <svg
+        ref={ref}
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <g clipPath="url(#clip0_12454_7539)">
+          <path
+            d="M10.5 10.5H13.5V2.5H5.5V5.5"
+            stroke="#4E5053"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M10.5 5.5H2.5V13.5H10.5V5.5Z"
+            stroke="#4E5053"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
+        <defs>
+          <clipPath id="clip0_12454_7539">
+            <rect width="16" height="16" fill="white" />
+          </clipPath>
+        </defs>
+      </svg>
+    )
+  },
+)
 export const DownloadSimpleIcon = forwardRef<SVGSVGElement, IconProps>(
   function DownloadSimpleIcon(props, ref) {
     return (
@@ -177,6 +214,54 @@ export const FolderIcon = forwardRef<SVGSVGElement, IconProps>(
         <defs>
           <clipPath id="clip0_12393_10682">
             <rect width="20" height="20" fill="white" />
+          </clipPath>
+        </defs>
+      </svg>
+    )
+  },
+)
+export const ImagesIcon = forwardRef<SVGSVGElement, IconProps>(
+  function ImagesIcon(props, ref) {
+    return (
+      <svg
+        ref={ref}
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <g clipPath="url(#clip0_12454_8032)">
+          <path
+            d="M20.25 4.5H6.75C6.33579 4.5 6 4.83579 6 5.25V15.75C6 16.1642 6.33579 16.5 6.75 16.5H20.25C20.6642 16.5 21 16.1642 21 15.75V5.25C21 4.83579 20.6642 4.5 20.25 4.5Z"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M16.125 9C16.7463 9 17.25 8.49632 17.25 7.875C17.25 7.25368 16.7463 6.75 16.125 6.75C15.5037 6.75 15 7.25368 15 7.875C15 8.49632 15.5037 9 16.125 9Z"
+            fill="#2F3A56"
+          />
+          <path
+            d="M6 12.0653L9.59437 8.46996C9.66403 8.40023 9.74675 8.34491 9.83779 8.30717C9.92884 8.26943 10.0264 8.25 10.125 8.25C10.2236 8.25 10.3212 8.26943 10.4122 8.30717C10.5033 8.34491 10.586 8.40023 10.6556 8.46996L15.3103 13.1256L17.7188 10.72C17.8594 10.5794 18.0501 10.5005 18.2489 10.5005C18.4477 10.5005 18.6384 10.5794 18.7791 10.72L21 12.9437"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M18 16.5V18.75C18 18.9489 17.921 19.1397 17.7803 19.2803C17.6397 19.421 17.4489 19.5 17.25 19.5H3.75C3.55109 19.5 3.36032 19.421 3.21967 19.2803C3.07902 19.1397 3 18.9489 3 18.75V8.25C3 8.05109 3.07902 7.86032 3.21967 7.71967C3.36032 7.57902 3.55109 7.5 3.75 7.5H6"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
+        <defs>
+          <clipPath id="clip0_12454_8032">
+            <rect width="24" height="24" fill="white" />
           </clipPath>
         </defs>
       </svg>
@@ -300,6 +385,82 @@ export const LogoIcon = forwardRef<SVGSVGElement, IconProps>(
           d="M0.833984 25.571L9.93621 0.875H14.7007L23.8029 25.571H19.2873L12.2829 5.8142L5.27843 25.571H0.833984ZM4.88732 19.7498L6.0251 16.3982H18.2918L19.4295 19.7498H4.88732Z"
           fill="#2F3A56"
         />
+      </svg>
+    )
+  },
+)
+export const MagicWandIcon = forwardRef<SVGSVGElement, IconProps>(
+  function MagicWandIcon(props, ref) {
+    return (
+      <svg
+        ref={ref}
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <g clipPath="url(#clip0_12212_321542)">
+          <path
+            d="M27 16V22"
+            stroke="#D5E3FC"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M24 19H30"
+            stroke="#D5E3FC"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M10 5V11"
+            stroke="#D5E3FC"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M7 8H13"
+            stroke="#D5E3FC"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M21 23V27"
+            stroke="#D5E3FC"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M19 25H23"
+            stroke="#D5E3FC"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M18 10L22 14"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M22.7068 5.29269L5.29256 22.707C4.90203 23.0975 4.90203 23.7306 5.29256 24.1212L7.87791 26.7065C8.26844 27.0971 8.9016 27.0971 9.29213 26.7065L26.7064 9.29226C27.0969 8.90173 27.0969 8.26857 26.7064 7.87804L24.121 5.29269C23.7305 4.90216 23.0974 4.90216 22.7068 5.29269Z"
+            fill="#D5E3FC"
+          />
+        </g>
+        <defs>
+          <clipPath id="clip0_12212_321542">
+            <rect width="32" height="32" fill="white" />
+          </clipPath>
+        </defs>
       </svg>
     )
   },
