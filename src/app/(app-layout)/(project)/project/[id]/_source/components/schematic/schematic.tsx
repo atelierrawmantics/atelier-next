@@ -1,11 +1,18 @@
 'use client'
 
-import { Children, useState } from 'react'
+import { Children, useEffect, useRef, useState } from 'react'
+
+import Image from 'next/image'
+import { useParams } from 'next/navigation'
 
 import { ArrowUpIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Textarea, textareaVariants } from '@/components/ui/textarea'
+import {
+  useProjectSchematicCreateMutation,
+  useProjectSchematicRetrieveQuery,
+} from '@/generated/apis/Schematic/Schematic.query'
 import { ImagesIcon, MagicWandIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
@@ -108,9 +115,63 @@ const PromptInput = ({ onSubmit }: PromptInputProps) => {
 }
 
 export const Schematic = () => {
+  const { id } = useParams<{ id: string }>()
+  const [isPolling, setIsPolling] = useState(false)
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const { data, mutate: createSchematic } = useProjectSchematicCreateMutation(
+    {},
+  )
+
+  const { data: schematic, refetch } = useProjectSchematicRetrieveQuery({
+    variables: {
+      projectSlug: id,
+      id: data?.id ?? 0,
+    },
+    options: {
+      enabled: !!data?.id,
+    },
+  })
+
+  // 폴링 시작
+  const startPolling = () => {
+    setIsPolling(true)
+    pollingIntervalRef.current = setInterval(() => {
+      refetch()
+    }, 2000) // 2초 간격
+  }
+
+  // 폴링 중지
+  const stopPolling = () => {
+    setIsPolling(false)
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current)
+      pollingIntervalRef.current = null
+    }
+  }
+
+  // 스키매틱 상태에 따른 폴링 제어
+  useEffect(() => {
+    if (schematic?.status === 'SUCCESS' && isPolling) {
+      stopPolling()
+    } else if (schematic?.status === 'PENDING' && !isPolling) {
+      startPolling()
+    }
+  }, [schematic?.status, isPolling])
+
+  // 컴포넌트 언마운트 시 폴링 정리
+  useEffect(() => {
+    return () => {
+      stopPolling()
+    }
+  }, [])
+
   const handlePromptSubmit = (prompt: string) => {
-    console.log('제출된 프롬프트:', prompt)
-    // 여기에 프롬프트 처리 로직을 추가하세요
+    createSchematic({
+      projectSlug: id,
+      data: {
+        prompt,
+      },
+    })
   }
 
   return (
@@ -128,6 +189,25 @@ export const Schematic = () => {
       <h2 className="typo-pre-body-6 text-grey-7 whitespace-pre-line mt-[4px]">
         {`패션 디자이너를 위한 키워드 기반 도식화 제작 도우미입니다.\n간단한 키워드 입력만으로도 빠르고 정확하게 도식화를 완성할 수 있도록 도와드립니다.`}
       </h2>
+
+      {/* 생성 중 상태 표시 */}
+      {isPolling && (
+        <div className="flex items-center gap-[8px] text-grey-7">
+          <div className="size-[16px] animate-spin rounded-full border-2 border-grey-3 border-t-primary-4"></div>
+          <span className="typo-pre-body-6">도식화를 생성하고 있습니다...</span>
+        </div>
+      )}
+
+      {/* 완성된 이미지 표시 */}
+      {schematic?.status === 'SUCCESS' && schematic?.image && (
+        <div className="w-full max-w-[600px]">
+          <Image
+            src={schematic.image}
+            alt="생성된 도식화"
+            className="w-full h-auto rounded-[16px] border border-border-basic-2"
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-4 gap-[8px] mt-[24px] w-full">
         {Children.toArray(
