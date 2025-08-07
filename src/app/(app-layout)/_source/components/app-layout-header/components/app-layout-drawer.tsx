@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 
 import { throttle } from 'lodash-es'
 
+import { logout } from '@/actions/logout'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -123,7 +124,12 @@ export const AppLayoutDrawer = () => {
             </SidebarMenu>
           </div>
           <DrawerFooter className="w-full flex flex-col items-end justify-center">
-            <Button variant="outline-grey" size="sm" className="w-[61px]">
+            <Button
+              variant="outline-grey"
+              size="sm"
+              className="w-[61px]"
+              onClick={() => logout()}
+            >
               로그아웃
             </Button>
           </DrawerFooter>

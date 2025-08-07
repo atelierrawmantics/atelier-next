@@ -10,6 +10,7 @@ import { isNotNullish } from '@toktokhan-dev/universal'
 import dayjs from 'dayjs'
 import { PlusIcon } from 'lucide-react'
 
+import { useProjectModal } from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
 import { InfinityContent } from '@/components/infinite-content'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -17,8 +18,6 @@ import { ProjectType } from '@/generated/apis/@types/data-contracts'
 import { useProjectListInfiniteQuery } from '@/generated/apis/Project/Project.query'
 import { FolderIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
-
-import { useProjectModal } from '../hooks/use-project-modal'
 
 const EmptyProject = () => {
   return (

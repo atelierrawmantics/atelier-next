@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 
+import { logout } from '@/actions/logout'
 import { Button } from '@/components/ui/button'
 import { LogoIcon } from '@/generated/icons/MyIcons'
 
@@ -23,6 +24,7 @@ export const AppLayoutHeader = () => {
           variant="outline-grey"
           size="sm"
           className="w-[61px] hidden md:block"
+          onClick={() => logout()}
         >
           로그아웃
         </Button>
