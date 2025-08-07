@@ -1,4 +1,7 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+
+import { useParams } from 'next/navigation'
+
 import { useOverlay } from '@toss/use-overlay'
 
 import { CommonAlert } from '@/components/common-alert'
@@ -21,25 +24,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  QUERY_KEY_PROJECT_API,
-  useProjectCreateMutation,
-} from '@/generated/apis/Project/Project.query'
+import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import { InfoFillIcon, XIcon } from '@/generated/icons/MyIcons'
-import { toast } from '@/hooks/useToast'
 
-import { useProjectForm } from './use-proejct-form'
-
-// 타입 정의
-interface ProjectModalData {
-  projectName: string
-}
-
-interface ProjectCreateModalProps {
-  isOpen: boolean
-  onClose: () => void
-  data?: ProjectModalData
-}
+import { useProjectForm } from './use-project-form'
 
 // 폼 필드 설정
 const FORM_FIELDS = [
@@ -79,82 +67,135 @@ const FORM_FIELDS = [
   },
 ] as const
 
-// 프로젝트 생성 모달 컴포넌트
-const ProjectCreateModal = ({
+// 타입 정의
+interface ProjectModalData {
+  headerTitle?: string
+  footerText?: string
+  projectName?: string
+}
+
+interface ProjectCreateModalProps {
+  isOpen: boolean
+  onClose: () => void
+  data?: ProjectModalData
+  loading?: boolean
+  status: 'create' | 'update'
+  onSubmit?: (data: {
+    projectName: string
+    projectDescription: string
+    clientName?: string
+    clientDescription?: string
+  }) => void
+  onDirtyClose?: () => void
+}
+
+export const useProjectModal = () => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const openProjectCreateModal = () => {
+    setIsOpen(true)
+  }
+
+  const openProjectUpdateModal = () => {
+    setIsOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsOpen(false)
+  }
+
+  return {
+    isOpen,
+    openProjectCreateModal,
+    openProjectUpdateModal,
+    closeModal,
+  }
+}
+
+// 프로젝트 생성/수정 모달 컴포넌트
+export const ProjectCreateModal = ({
   isOpen,
   onClose,
   data,
+  loading: externalLoading,
+  status,
+  onSubmit,
+  onDirtyClose,
 }: ProjectCreateModalProps) => {
   const form = useProjectForm()
   const {
     control,
     handleSubmit,
     formState: { isSubmitting, isDirty },
+    reset,
   } = form
 
-  const queryClient = useQueryClient()
   const { open } = useOverlay()
 
-  const { mutate: createProject, isPending } = useProjectCreateMutation({})
+  const { id } = useParams<{ id: string }>()
 
-  //FIXME: 입력 했을 때 뒤로가기 막기
-  const handleProjectFormSubmit = handleSubmit((data) => {
-    createProject(
-      {
-        data: {
-          name: data.projectName,
-          description: data.projectDescription,
-          clientName: data.clientName ?? '',
-          clientDescription: data.clientDescription ?? '',
-        },
-      },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: QUERY_KEY_PROJECT_API.LIST_INFINITE(),
-          })
-          toast('프로젝트가 생성되었어요.', {
-            action: {
-              label: '닫기',
-              onClick: () => {},
-            },
-          })
-          onClose()
-        },
-      },
-    )
+  const { data: project } = useProjectRetrieveQuery({
+    variables: {
+      slug: id,
+    },
+    options: {
+      enabled: !!id && status === 'update',
+    },
+  })
+
+  const handleProjectFormSubmit = handleSubmit((formData) => {
+    if (onSubmit) {
+      onSubmit(formData)
+    }
   })
 
   const handleClose = () => {
     if (isDirty) {
-      open(({ isOpen, close }) => (
-        <CommonAlert
-          isOpen={isOpen}
-          onClose={close}
-          title="작성 중인 내용이 있어요!"
-          description={
-            '저장하지 않고 나가면 작성한 내용은 복구할 수 없습니다.\n정말 닫으시겠어요?'
-          }
-          confirmText="계속 작성하기"
-          cancelText="닫기"
-          onConfirm={close}
-          onCancel={() => {
-            close()
-            onClose()
-          }}
-        />
-      ))
+      if (onDirtyClose) {
+        onDirtyClose()
+      } else {
+        open(({ isOpen, close }) => (
+          <CommonAlert
+            isOpen={isOpen}
+            onClose={close}
+            title="작성 중인 내용이 있어요!"
+            description={
+              '저장하지 않고 나가면 작성한 내용은 복구할 수 없습니다.\n정말 닫으시겠어요?'
+            }
+            confirmText="계속 작성하기"
+            cancelText="닫기"
+            onConfirm={close}
+            onCancel={() => {
+              close()
+              onClose()
+            }}
+          />
+        ))
+      }
     } else {
       onClose()
     }
   }
+
+  useEffect(() => {
+    if (project && status === 'update') {
+      reset({
+        projectName: project.name,
+        projectDescription: project.description,
+        clientName: project.clientName,
+        clientDescription: project.clientDescription,
+      })
+    }
+  }, [project, status, reset])
+
+  const isLoading = isSubmitting || externalLoading
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="rounded-none min-w-screen sm:rounded-[12px] sm:min-w-[600px] w-screen sm:max-h-[800px] h-screen">
         <AlertDialogHeader className="flex flex-row items-center justify-between">
           <AlertDialogTitle className="typo-pre-heading-2 text-grey-10">
-            {data?.projectName}
+            {data?.headerTitle}
           </AlertDialogTitle>
           <Button variant="ghost" size="fit" onClick={handleClose} asChild>
             <XIcon className="size-[40px]" />
@@ -213,33 +254,13 @@ const ProjectCreateModal = ({
           <Button
             type="submit"
             form="project-form"
-            loading={isSubmitting || isPending}
+            loading={isLoading}
             onClick={handleProjectFormSubmit}
           >
-            프로젝트 생성
+            {data?.footerText}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   )
-}
-
-// 훅 타입 정의
-interface OpenProjectCreateModalParams {
-  data?: ProjectModalData
-  onClose: (slug?: string) => void
-}
-
-export const useProjectModal = () => {
-  const { open } = useOverlay()
-
-  const openProjectCreateModal = ({ data }: OpenProjectCreateModalParams) => {
-    open(({ isOpen, close }) => (
-      <ProjectCreateModal isOpen={isOpen} onClose={close} data={data} />
-    ))
-  }
-
-  return {
-    openProjectCreateModal,
-  }
 }

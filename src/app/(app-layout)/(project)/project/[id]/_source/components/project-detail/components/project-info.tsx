@@ -8,6 +8,8 @@ import { useOverlay } from '@toss/use-overlay'
 import dayjs from 'dayjs'
 import { ClassNameValue } from 'tailwind-merge'
 
+import { useProjectModal } from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
+import { ProjectCreateModal } from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
 import { CommonAlert } from '@/components/common-alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +17,7 @@ import {
   useProjectDestroyMutation,
   useProjectRetrieveQuery,
   useProjectShareCreateMutation,
+  useProjectUpdateMutation,
 } from '@/generated/apis/Project/Project.query'
 import {
   CopyIcon,
@@ -26,7 +29,11 @@ import {
 import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
-const ProjectInfoHeader = () => {
+const ProjectInfoHeader = ({
+  onOpenUpdateModal,
+}: {
+  onOpenUpdateModal: () => void
+}) => {
   const router = useRouter()
   const { id } = useParams<{ id: string }>()
 
@@ -84,7 +91,7 @@ const ProjectInfoHeader = () => {
     >
       <p className="typo-pre-body-5 text-grey-9">프로젝트 정보</p>
       <div className="flex gap-[12px]">
-        <Button size="fit" variant="ghost">
+        <Button size="fit" variant="ghost" onClick={onOpenUpdateModal}>
           <PencilSimpleIcon />
         </Button>
         <Button size="fit" variant="ghost" onClick={handleDeleteProject}>
@@ -163,6 +170,48 @@ export const ProjectInfo = () => {
 
   const { isShared, sharedUrl } = project || {}
 
+  const { isOpen, openProjectUpdateModal, closeModal } = useProjectModal()
+  const { mutate: updateProject, isPending: isPendingUpdate } =
+    useProjectUpdateMutation({})
+
+  const handleUpdateProject = (data: {
+    projectName: string
+    projectDescription: string
+    clientName?: string
+    clientDescription?: string
+  }) => {
+    updateProject(
+      {
+        slug: id,
+        data: {
+          name: data.projectName,
+          description: data.projectDescription,
+          clientName: data.clientName ?? '',
+          clientDescription: data.clientDescription ?? '',
+        },
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEY_PROJECT_API.RETRIEVE({
+              slug: id,
+            }),
+          })
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEY_PROJECT_API.LIST_INFINITE(),
+          })
+          toast('프로젝트가 수정되었어요.', {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          })
+          closeModal()
+        },
+      },
+    )
+  }
+
   const handleCreateProjectShare = () => {
     createProjectShare(
       {
@@ -225,7 +274,7 @@ export const ProjectInfo = () => {
       <div
         className={cn('flex flex-col', 'bg-background-basic-1 rounded-[6px]')}
       >
-        <ProjectInfoHeader />
+        <ProjectInfoHeader onOpenUpdateModal={openProjectUpdateModal} />
         <ProjectInfoContent />
       </div>
       <div className="flex gap-[6px] justify-end">
@@ -264,6 +313,18 @@ export const ProjectInfo = () => {
           </Button>
         </div>
       )}
+
+      <ProjectCreateModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        data={{
+          headerTitle: '프로젝트 수정',
+          footerText: '프로젝트 수정',
+        }}
+        status="update"
+        onSubmit={handleUpdateProject}
+        loading={isPendingUpdate}
+      />
     </div>
   )
 }

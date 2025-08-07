@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 
 import Link from 'next/link'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { EmptyView, LoadingView } from '@toktokhan-dev/react-universal'
 import { isNotNullish } from '@toktokhan-dev/universal'
 
@@ -11,12 +12,18 @@ import dayjs from 'dayjs'
 import { PlusIcon } from 'lucide-react'
 
 import { useProjectModal } from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
+import { ProjectCreateModal } from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
 import { InfinityContent } from '@/components/infinite-content'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ProjectType } from '@/generated/apis/@types/data-contracts'
-import { useProjectListInfiniteQuery } from '@/generated/apis/Project/Project.query'
+import {
+  QUERY_KEY_PROJECT_API,
+  useProjectCreateMutation,
+  useProjectListInfiniteQuery,
+} from '@/generated/apis/Project/Project.query'
 import { FolderIcon } from '@/generated/icons/MyIcons'
+import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
 const EmptyProject = () => {
@@ -39,9 +46,12 @@ const EmptyProject = () => {
 
 interface ProjectHeaderProps {
   projectCount?: number
+  onOpenCreateModal: () => void
 }
-export const ProjectHeader = ({ projectCount }: ProjectHeaderProps) => {
-  const { openProjectCreateModal } = useProjectModal()
+export const ProjectHeader = ({
+  projectCount,
+  onOpenCreateModal,
+}: ProjectHeaderProps) => {
   return (
     <div className="sticky w-full container flex items-center justify-between pt-[12px] sm:pt-[20px] md:pt-[28px] pb-[12px]">
       <p className="typo-pre-heading-4 text-grey-9">
@@ -50,12 +60,7 @@ export const ProjectHeader = ({ projectCount }: ProjectHeaderProps) => {
       <Button
         size="sm"
         className="flex gap-[4px] items-center w-fit"
-        onClick={() =>
-          openProjectCreateModal({
-            onClose: () => {},
-            data: { projectName: '프로젝트 생성' },
-          })
-        }
+        onClick={onOpenCreateModal}
       >
         <PlusIcon className="size-[16px]" />
         <p>프로젝트 생성</p>
@@ -133,11 +138,50 @@ export const Project = () => {
     [projectList],
   )
 
+  const { isOpen, openProjectCreateModal, closeModal } = useProjectModal()
+  const queryClient = useQueryClient()
+  const { mutate: createProject, isPending } = useProjectCreateMutation({})
+
+  const handleCreateProject = (data: {
+    projectName: string
+    projectDescription: string
+    clientName?: string
+    clientDescription?: string
+  }) => {
+    createProject(
+      {
+        data: {
+          name: data.projectName,
+          description: data.projectDescription,
+          clientName: data.clientName ?? '',
+          clientDescription: data.clientDescription ?? '',
+        },
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEY_PROJECT_API.LIST_INFINITE(),
+          })
+          toast('프로젝트가 생성되었어요.', {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          })
+          closeModal()
+        },
+      },
+    )
+  }
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="relative w-full">
         <div className="w-full bg-accent-deepgrey2">
-          <ProjectHeader projectCount={projectList?.pages[0].count} />
+          <ProjectHeader
+            projectCount={projectList?.pages[0].count}
+            onOpenCreateModal={openProjectCreateModal}
+          />
         </div>
       </div>
 
@@ -185,6 +229,18 @@ export const Project = () => {
           </div>
         </div>
       </div>
+
+      <ProjectCreateModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        data={{
+          headerTitle: '프로젝트 생성',
+          footerText: '프로젝트 생성',
+        }}
+        status="create"
+        onSubmit={handleCreateProject}
+        loading={isPending}
+      />
     </div>
   )
 }
