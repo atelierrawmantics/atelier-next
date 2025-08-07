@@ -13,27 +13,27 @@ export interface InstructionType {
    * 년도
    * @maxLength 4
    */
-  year?: string
+  year: string
   /**
    * 시즌
    * @maxLength 100
    */
-  season?: string
+  season: string
   /**
    * 스타일
    * @maxLength 100
    */
-  style?: string
+  style: string
   /**
    * 품명
    * @maxLength 100
    */
-  variant?: string
+  variant: string
   /**
    * 아이템
    * @maxLength 100
    */
-  item?: string
+  item: string
   /**
    * 차수
    * @maxLength 100
@@ -165,6 +165,13 @@ export interface PatchedInstructionRequestType {
 }
 
 export interface PatchedTaskRequestType {
+  /**
+   * 슬러그
+   * @minLength 1
+   * @maxLength 8
+   * @pattern ^[-a-zA-Z0-9_]+$
+   */
+  slug?: string
   /**
    * 태스크명
    * @minLength 1
@@ -419,9 +426,10 @@ export interface TaskType {
   readonly id: number
   /**
    * 슬러그
+   * @maxLength 8
    * @pattern ^[-a-zA-Z0-9_]+$
    */
-  readonly slug: string
+  slug: string
   /**
    * 태스크명
    * @maxLength 30
@@ -436,19 +444,19 @@ export interface TaskType {
    * 메모
    * @maxLength 500
    */
-  memo?: string
+  memo: string
   /**
    * 담당자 이름
    * @maxLength 30
    */
-  managerName?: string
+  managerName: string
   /**
    * 담당자 휴대폰 번호
    * @maxLength 11
    */
-  managerPhone?: string
+  managerPhone: string
   /** 알림 수신 여부 */
-  isAlarm?: boolean
+  isAlarm: boolean
   /**
    * 상태
    * * `pending` - 진행전
@@ -471,6 +479,7 @@ export interface TaskType {
 
 export interface TaskErrorMessageType {
   nonField?: string[]
+  slug?: string[]
   name?: string[]
   description?: string[]
   memo?: string[]
@@ -481,6 +490,13 @@ export interface TaskErrorMessageType {
 }
 
 export interface TaskRequestType {
+  /**
+   * 슬러그
+   * @minLength 1
+   * @maxLength 8
+   * @pattern ^[-a-zA-Z0-9_]+$
+   */
+  slug: string
   /**
    * 태스크명
    * @minLength 1
@@ -497,19 +513,19 @@ export interface TaskRequestType {
    * 메모
    * @maxLength 500
    */
-  memo?: string
+  memo: string
   /**
    * 담당자 이름
    * @maxLength 30
    */
-  managerName?: string
+  managerName: string
   /**
    * 담당자 휴대폰 번호
    * @maxLength 11
    */
-  managerPhone?: string
+  managerPhone: string
   /** 알림 수신 여부 */
-  isAlarm?: boolean
+  isAlarm: boolean
   /**
    * 상태
    * * `pending` - 진행전
@@ -565,6 +581,7 @@ export interface UserRegisterType {
 export interface UserRegisterErrorMessageType {
   nonField?: string[]
   registerToken?: string[]
+  name?: string[]
   birth?: string[]
   phone?: string[]
   phoneToken?: string[]
@@ -576,6 +593,8 @@ export interface UserRegisterRequestType {
    * @minLength 1
    */
   registerToken: string
+  /** @minLength 1 */
+  name: string
   /** @minLength 1 */
   birth: string
   /** @minLength 1 */

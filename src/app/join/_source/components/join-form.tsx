@@ -75,6 +75,18 @@ export const JoinForm = () => {
           setIsVerificationSent(true)
           setIsTimerActive(true)
         },
+        onError: () => {
+          toast(
+            '이미 존재하는 번호입니다.',
+            {
+              action: {
+                label: '닫기',
+                onClick: () => {},
+              },
+            },
+            'error',
+          )
+        },
       },
     )
   }
@@ -160,7 +172,7 @@ export const JoinForm = () => {
   }
 
   const handleJoinFormSubmit = handleSubmit((data) => {
-    const { phone, verificationCode } = data
+    const { phone, verificationCode, name } = data
     createPhoneVerifierConfirm(
       {
         data: {
@@ -180,6 +192,7 @@ export const JoinForm = () => {
           createUserRegister(
             {
               data: {
+                name,
                 phone: phone.replace(/-/g, ''),
                 birth: data.birthday.replace(/-/g, ''),
                 phoneToken: token,
@@ -198,15 +211,10 @@ export const JoinForm = () => {
                 clientCookie.remove(COOKIE_KEYS.AUTH.REGISTER_TOKEN)
                 router.replace('/')
               },
-              onError: (res) => {
-                //FIXME: 이미 존재하는 번호입니다.
-                console.log(res)
-              },
             },
           )
         },
-        onError: (res) => {
-          console.log(res)
+        onError: () => {
           toast(
             '인증번호가 일치하지 않아요.',
             {
