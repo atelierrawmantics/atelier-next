@@ -17,6 +17,7 @@ import { theme } from '@/generated/theme-token'
 import { useTaskModal } from '../../../../hooks/use-task-modal'
 import { DragColumnData } from '../../../../utils/dnd'
 import { TaskCard } from './task-card'
+import { TaskStatusBadge } from './task-status-badge'
 
 interface TaskColumnProps {
   status: TaskStatusEnumType
@@ -24,42 +25,22 @@ interface TaskColumnProps {
 }
 
 type StatusConfig = {
-  label: string
-  labelBgColor: `bg-${keyof typeof theme}`
   bgColor: `bg-${keyof typeof theme}`
-  statusColor: `bg-${keyof typeof theme}`
-  textColor: `text-${keyof typeof theme}`
 }
 
-const statusConfigs: Record<keyof typeof TaskStatusEnumTypeMap, StatusConfig> =
+const STATUS_CONFIGS: Record<keyof typeof TaskStatusEnumTypeMap, StatusConfig> =
   {
     pending: {
-      label: '진행전',
-      labelBgColor: 'bg-background-basic-3',
       bgColor: 'bg-grey-1',
-      statusColor: 'bg-grey-8',
-      textColor: 'text-grey-8',
     },
     in_progress: {
-      label: '진행중',
       bgColor: 'bg-primary-1',
-      labelBgColor: 'bg-accent-blue1',
-      statusColor: 'bg-accent-blue2',
-      textColor: 'text-accent-blue2',
     },
     completed: {
-      label: '진행완료',
       bgColor: 'bg-accent-green1',
-      labelBgColor: 'bg-accent-green2',
-      statusColor: 'bg-accent-green3',
-      textColor: 'text-accent-green3',
     },
     issue: {
-      label: '이슈',
       bgColor: 'bg-accent-red1',
-      labelBgColor: 'bg-accent-red1',
-      statusColor: 'bg-accent-red2',
-      textColor: 'text-accent-red2',
     },
   }
 
@@ -75,7 +56,7 @@ export const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
 
   const { openTaskCreateModal } = useTaskModal()
 
-  const config = statusConfigs[status]
+  const config = STATUS_CONFIGS[status]
 
   return (
     <div
@@ -84,16 +65,7 @@ export const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
     >
       {/* Header */}
       <div className="flex items-center gap-2 w-full p-4 pb-3">
-        <div
-          className={`flex items-center justify-center gap-1 px-2 py-0 rounded-full ${config.labelBgColor}`}
-        >
-          <div className={`w-1.5 h-1.5 rounded-full ${config.statusColor}`} />
-          <span
-            className={`text-xs font-semibold leading-5 tracking-[-0.02em] ${config.textColor} `}
-          >
-            {config.label}
-          </span>
-        </div>
+        <TaskStatusBadge status={status} />
         <span className="typo-pre-body-6 text-grey-8">{tasks.length}</span>
       </div>
 

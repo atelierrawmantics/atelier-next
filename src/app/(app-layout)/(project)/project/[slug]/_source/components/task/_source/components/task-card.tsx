@@ -7,6 +7,7 @@ import { formatDate } from '@/app/_source/utils/date'
 import { TaskType } from '@/generated/apis/@types/data-contracts'
 
 import { DragTaskData } from '../../../../utils/dnd'
+import { useTaskDetailModal } from '../hooks/use-task-detail-modal'
 
 interface TaskCardProps {
   task: TaskType
@@ -33,15 +34,25 @@ export const TaskCard = ({ task, isSelected = false }: TaskCardProps) => {
     opacity: isDragging ? 0.5 : 1,
   }
 
+  const { openTaskCreateModal } = useTaskDetailModal()
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className={`flex flex-col justify-center items-center p-[10px_12px_12px_16px] gap-5 bg-background-basic-1 rounded-[6px] shadow-[0_2px_6px_0_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing hover:shadow-lg transition-all duration-200 touch-none ${
+      className={`flex flex-col justify-center items-center p-[10px_12px_12px_16px] gap-5 bg-background-basic-1 rounded-[6px] shadow-[0_2px_6px_0_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing hover:shadow-lg transition-all duration-200 touch-none pointer ${
         isSelected ? 'bg-secondary-2 border border-primary-3' : ''
       }`}
+      onMouseUp={() => {
+        if (!status) return
+
+        openTaskCreateModal({
+          data: { projectName: '태스크 상세', taskSlug: slug, status },
+          onClose: () => {},
+        })
+      }}
     >
       <div className="w-full flex items-center gap-1.5">
         <p className="typo-pre-caption-2 text-grey-9">
