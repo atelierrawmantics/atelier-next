@@ -51,6 +51,7 @@ export const QUERY_KEY_SCHEMATIC_API = {
   PROJECT_SCHEMATIC_RETRIEVE: (
     variables?: Parameter<typeof schematicApi.projectSchematicRetrieve>,
   ) => ['PROJECT_SCHEMATIC_RETRIEVE', variables].filter(isDefined),
+  PROJECT_SCHEMATIC_DESTROY: () => ['PROJECT_SCHEMATIC_DESTROY'],
   PROJECT_SCHEMATIC_USE_CREATE: () => ['PROJECT_SCHEMATIC_USE_CREATE'],
 }
 
@@ -169,6 +170,29 @@ export const useProjectSchematicRetrieveQuery = <
   return useQuery({
     queryKey,
     queryFn: () => schematicApi.projectSchematicRetrieve(params.variables),
+    ...params?.options,
+  })
+}
+
+/**
+ * No description
+ *
+ * @tags schematic
+ * @name ProjectSchematicDestroy
+ * @summary 도식화 삭제
+ * @request DELETE:/v1/project/{project_slug}/schematic/{id}/
+ * @secure  */
+
+export const useProjectSchematicDestroyMutation = (
+  params: MutationHookParams<
+    typeof schematicApi.projectSchematicDestroy,
+    { error: CommonErrorType }
+  >,
+) => {
+  const mutationKey = QUERY_KEY_SCHEMATIC_API.PROJECT_SCHEMATIC_DESTROY()
+  return useMutation({
+    mutationKey,
+    mutationFn: schematicApi.projectSchematicDestroy,
     ...params?.options,
   })
 }

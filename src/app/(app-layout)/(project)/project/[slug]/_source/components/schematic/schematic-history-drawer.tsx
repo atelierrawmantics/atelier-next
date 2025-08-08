@@ -28,6 +28,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { SchematicType } from '@/generated/apis/@types/data-contracts'
 import { QUERY_KEY_PROJECT_API } from '@/generated/apis/Project/Project.query'
 import {
+  QUERY_KEY_SCHEMATIC_API,
+  useProjectSchematicDestroyMutation,
   useProjectSchematicListInfiniteQuery,
   useProjectSchematicUseCreateMutation,
 } from '@/generated/apis/Schematic/Schematic.query'
@@ -38,6 +40,7 @@ import {
   TrashIcon,
 } from '@/generated/icons/MyIcons'
 import { useDrawerAutoClose } from '@/hooks/use-drawer-auto-close'
+import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
 export const EmptySchematicHistory = () => {
@@ -94,6 +97,8 @@ export const HistoryItemDropDownMenu = ({
     {},
   )
 
+  const { mutate: schematicDestroy } = useProjectSchematicDestroyMutation({})
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -138,7 +143,31 @@ export const HistoryItemDropDownMenu = ({
             <p className={cn(DROPDOWN_MENU_CLASSNAME.TEXT)}>다운로드</p>
           </a>
         </DropdownMenuItem>
-        <DropdownMenuItem className={cn(DROPDOWN_MENU_CLASSNAME.ITEM)}>
+        <DropdownMenuItem
+          className={cn(DROPDOWN_MENU_CLASSNAME.ITEM)}
+          onClick={() =>
+            schematicDestroy(
+              {
+                projectSlug: slug,
+                id,
+              },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey:
+                      QUERY_KEY_SCHEMATIC_API.PROJECT_SCHEMATIC_LIST_INFINITE(),
+                  })
+                  toast('도식화 이미지가 삭제되었어요.', {
+                    action: {
+                      label: '닫기',
+                      onClick: () => {},
+                    },
+                  })
+                },
+              },
+            )
+          }
+        >
           <TrashIcon className={cn(DROPDOWN_MENU_CLASSNAME.ICON)} />
           <p className={cn(DROPDOWN_MENU_CLASSNAME.TEXT)}>삭제</p>
         </DropdownMenuItem>

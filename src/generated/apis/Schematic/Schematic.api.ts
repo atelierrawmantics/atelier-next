@@ -93,6 +93,26 @@ export class SchematicApi<
    * No description
    *
    * @tags schematic
+   * @name ProjectSchematicDestroy
+   * @summary 도식화 삭제
+   * @request DELETE:/v1/project/{project_slug}/schematic/{id}/
+   * @secure
+   */
+
+  projectSchematicDestroy = (variables: {
+    projectSlug: string
+    id: number
+    params?: RequestParams
+  }) =>
+    this.request<void, CommonErrorType>({
+      path: `/v1/project/${variables.projectSlug}/schematic/${variables.id}/`,
+      method: 'DELETE',
+      secure: true,
+      ...variables.params,
+    }) /**
+   * No description
+   *
+   * @tags schematic
    * @name ProjectSchematicUseCreate
    * @summary 도식화 사용
    * @request POST:/v1/project/{project_slug}/schematic/{id}/use/
