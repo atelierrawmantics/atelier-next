@@ -3,22 +3,10 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { UseFormProps, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
-// 폼 데이터 타입 정의 (백엔드 스키마와 정확히 일치)
-export type ProjectInfoFormDataType = {
-  year?: string
-  season?: string
-  style?: string
-  variant?: string
-  item?: string
-  generation?: string
-  schematic?: File | null
-  sizeNames?: string[][]
-  sizeValues?: string[][]
-  colorValues?: string[][]
-  fabricValues?: string[][]
-  materialValues?: string[][]
-  swatchSet?: File[]
-}
+import { PatchedInstructionRequestType } from '@/generated/apis/@types/data-contracts'
+
+// 폼 데이터 타입 정의
+export type ProjectInfoFormDataType = PatchedInstructionRequestType
 
 // 유효성 검사 스키마
 export const projectInfoFormSchema = yup.object({
@@ -31,10 +19,18 @@ export const projectInfoFormSchema = yup.object({
     .string()
     .optional()
     .max(100, '차수는 100자까지 입력 가능합니다'),
-  schematic: yup.mixed<File>().nullable().optional(),
+  schematic: yup
+    .object({
+      image: yup
+        .string()
+        .required('이미지를 선택해주세요')
+        .min(1, '이미지를 선택해주세요'),
+    })
+    .nullable()
+    .optional(),
   sizeNames: yup
     .array()
-    .of(yup.array().of(yup.string().required('값을 입력해주세요')).required())
+    .of(yup.string().required('값을 입력해주세요'))
     .optional(),
   sizeValues: yup
     .array()
@@ -54,7 +50,15 @@ export const projectInfoFormSchema = yup.object({
     .optional(),
   swatchSet: yup
     .array()
-    .of(yup.mixed<File>().required('파일을 선택해주세요'))
+    .of(
+      yup.object({
+        id: yup.number().nullable().default(null),
+        image: yup
+          .string()
+          .required('이미지를 선택해주세요')
+          .min(1, '이미지를 선택해주세요'),
+      }),
+    )
     .optional(),
 })
 

@@ -1,12 +1,12 @@
 import { useMutation } from '@tanstack/react-query'
 import {
-  // assertItemOf,
-  // removeStr,
   createS3UploadFlow,
+  // assertItemOf,
 } from '@toktokhan-dev/universal'
 
 import { fetchExtended } from '@/configs/fetch/fetch-extend'
-// import { presignedUrlApi } from '@/generated/apis/PresignedUrl/PresignedUrl.query'
+import { PresignedRequestFieldChoiceEnumType } from '@/generated/apis/@types/data-contracts'
+import { presignedUrlApi } from '@/generated/apis/PresignedUrl/PresignedUrl.query'
 import { UseMutationParams } from '@/types/module/react-query/use-mutation-params'
 
 import { S3FileUploaderApi } from './S3FileUploaderApi'
@@ -41,50 +41,45 @@ const s3FileUploaderApi = new S3FileUploaderApi({
  */
 
 export const { uploadFile, uploadFiles } = createS3UploadFlow({
-  prepareUpload: async (file: File) => {
-    throw Error('not implemented s3 file uploader prepare logic')
-    // const { name, type } = file
-    // const [mime] = type.split('/')
-    // assertItemOf(
-    //   ['image', 'audio', 'text', 'video', 'application'] as const,
-    //   mime,
-    // )
-    // const { fields, url } = await presignedUrlApi.presignedUrlControllerCreate({
-    //   data: {
-    //     fileName: name,
-    //     fileType: mime,
-    //   },
-    // })
-    // const formData = new FormData()
-    // Object.entries(fields).forEach(([k, v]) => formData.append(k, v))
-    // formData.append('Content-Type', file.type)
-    // formData.append('file', file)
-    // return {
-    //   url,
-    //   formData,
-    //   fields,
-    //   file,
-    // }
+  prepareUpload: async (
+    file: File,
+    fieldChoice?: PresignedRequestFieldChoiceEnumType,
+  ) => {
+    const { name, type } = file
+    const [mime] = type.split('/')
+
+    console.log('S3 prepareUpload 시작:', { name, type, mime, fieldChoice })
+
+    const { fields, url } = await presignedUrlApi.presignedUrlCreate({
+      data: {
+        fileName: name,
+        fileType: mime as 'image' | 'text' | 'audio' | 'video' | 'application',
+        fieldChoice: fieldChoice || 'schematic.Schematic.image',
+      },
+    })
+
+    console.log('presigned URL 생성 완료:', { url, fields })
+
+    const formData = new FormData()
+    Object.entries(fields).forEach(([k, v]) => formData.append(k, v as string))
+    formData.append('Content-Type', file.type)
+    formData.append('file', file)
+
+    console.log('FormData 준비 완료')
+
+    return {
+      url,
+      formData,
+      fields,
+      file,
+    }
   },
   uploadFileToS3: async ({ url, formData, file, fields }) => {
-    // await s3FileUploaderApi.uploadFileToS3({ url, formData })
-    // const removeMedia = removeStr(/\/?_media\//g)
-    // return {
-    //   /**
-    //    * file 의 s3 full url 입니다.
-    //    */
-    //   url: url + fields.key,
-    //   /**
-    //    * 파일의 s3 path 입니다. 똑개 서버로 image 경로를 업로드 할 때 사용됩니다.
-    //    * 똑똑한 개발자의 서버는 s3 파일의 경로를 단순 string 으로 저장하지 않고, 특별한 field 로 구분하여 저장하기 때문에,
-    //    * 이후 서버로 요청 할때 해당 path 값을 사용하여 요청을 보내야 합니다.
-    //    *
-    //    * 특별한 field 로 구분하여 저장 하는 이유는 admin 페이지의 file field 구분, 파일의 실 사용 여부를 판단하기 위해 사용됩니다.
-    //    */
-    //   path: removeMedia(fields.key),
-    //   fields,
-    //   file,
-    // }
+    console.log('S3 업로드 시작:', { url, file: file.name })
+    await s3FileUploaderApi.uploadFileToS3({ url, formData })
+    const resultUrl = url + (fields as any).key
+    console.log('S3 업로드 완료, 결과 URL:', resultUrl)
+    return resultUrl
   },
 })
 

@@ -42,7 +42,7 @@ export interface InstructionType {
   /** 도식화 */
   schematic: InstructionSchematicType | null
   /** 사이즈명 */
-  sizeNames: string[][]
+  sizeNames: string[]
   /** 사이즈 */
   sizeValues: string[][]
   /** 컬러 */
@@ -151,7 +151,7 @@ export interface PatchedInstructionRequestType {
   /** 도식화 */
   schematic?: InstructionSchematicRequestType | null
   /** 사이즈명 */
-  sizeNames?: string[][]
+  sizeNames?: string[]
   /** 사이즈 */
   sizeValues?: string[][]
   /** 컬러 */

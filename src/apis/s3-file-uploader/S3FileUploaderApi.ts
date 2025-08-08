@@ -30,11 +30,15 @@ export class S3FileUploaderApi<
   uploadFileToS3 = async (params: {
     url: string
     formData: FormData
-  }): Promise<void> => {
-    await this.request({
-      method: 'POST',
-      path: params.url,
-      body: params.formData,
-    })
+  }): Promise<boolean | undefined> => {
+    try {
+      const response = await fetch(params.url, {
+        method: 'POST',
+        body: params.formData,
+      })
+      return response.ok
+    } catch (error) {
+      console.error('Error uploading file to S3:', error)
+    }
   }
 }
