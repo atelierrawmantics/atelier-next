@@ -134,7 +134,7 @@ export const Task = () => {
   }, [data])
 
   return (
-    <div className="w-full max-w-[1280px] mx-auto pt-[36px] pb-[80px] px-[20px] h-[100%] flex flex-col">
+    <div className="w-full container mx-auto pt-[36px] pb-[80px] h-[100%] flex flex-col">
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
