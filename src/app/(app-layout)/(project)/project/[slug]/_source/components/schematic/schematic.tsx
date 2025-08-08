@@ -5,15 +5,18 @@ import { Children, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 
+import { useQueryClient } from '@tanstack/react-query'
+
 import { ArrowUpIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Textarea, textareaVariants } from '@/components/ui/textarea'
 import {
+  QUERY_KEY_SCHEMATIC_API,
   useProjectSchematicCreateMutation,
   useProjectSchematicRetrieveQuery,
 } from '@/generated/apis/Schematic/Schematic.query'
-import { MagicWandIcon } from '@/generated/icons/MyIcons'
+import { MagicWandFillIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
 import { SchematicHistoryDrawer } from './schematic-history-drawer'
@@ -111,16 +114,19 @@ const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
 }
 
 export const Schematic = () => {
-  const { id } = useParams<{ id: string }>()
+  const { slug } = useParams<{ slug: string }>()
   const [isPolling, setIsPolling] = useState(false)
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  const queryClient = useQueryClient()
+
   const { data, mutate: createSchematic } = useProjectSchematicCreateMutation(
     {},
   )
 
   const { data: schematic, refetch } = useProjectSchematicRetrieveQuery({
     variables: {
-      projectSlug: id,
+      projectSlug: slug,
       id: data?.id ?? 0,
     },
     options: {
@@ -149,6 +155,9 @@ export const Schematic = () => {
   useEffect(() => {
     if (schematic?.status === 'SUCCESS' && isPolling) {
       stopPolling()
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEY_SCHEMATIC_API.PROJECT_SCHEMATIC_LIST_INFINITE(),
+      })
     } else if (schematic?.status === 'PENDING' && !isPolling) {
       startPolling()
     }
@@ -163,7 +172,7 @@ export const Schematic = () => {
 
   const handlePromptSubmit = (prompt: string) => {
     createSchematic({
-      projectSlug: id,
+      projectSlug: slug,
       data: {
         prompt,
       },
@@ -193,7 +202,7 @@ export const Schematic = () => {
         </div>
       : <>
           <div className="flex items-center justify-center size-[56px] rounded-full bg-primary-3">
-            <MagicWandIcon />
+            <MagicWandFillIcon />
           </div>
           <h1 className="typo-pre-heading-2 text-grey-10">
             도식화 제작 도우미

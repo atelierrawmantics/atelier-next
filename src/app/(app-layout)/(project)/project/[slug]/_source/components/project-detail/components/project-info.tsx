@@ -37,7 +37,7 @@ const ProjectInfoHeader = ({
   onOpenUpdateModal: () => void
 }) => {
   const router = useRouter()
-  const { id } = useParams<{ id: string }>()
+  const { slug } = useParams<{ slug: string }>()
 
   const queryClient = useQueryClient()
   const { open } = useOverlay()
@@ -58,7 +58,7 @@ const ProjectInfoHeader = ({
         onConfirm={() => {
           deleteProject(
             {
-              slug: id,
+              slug,
             },
             {
               onSuccess: () => {
@@ -71,7 +71,7 @@ const ProjectInfoHeader = ({
                 })
                 queryClient.invalidateQueries({
                   queryKey: QUERY_KEY_PROJECT_API.RETRIEVE({
-                    slug: id,
+                    slug,
                   }),
                 })
                 router.push('/')
@@ -120,10 +120,10 @@ const ProjectInfoItem = ({ label, value, className }: ProjectInfoItemProps) => {
 }
 
 const ProjectInfoContent = () => {
-  const { id } = useParams<{ id: string }>()
+  const { slug } = useParams<{ slug: string }>()
   const { data: project } = useProjectRetrieveQuery({
     variables: {
-      slug: id,
+      slug,
     },
   })
 
@@ -161,10 +161,10 @@ const ProjectInfoContent = () => {
 export const ProjectInfo = () => {
   const queryClient = useQueryClient()
 
-  const { id } = useParams<{ id: string }>()
+  const { slug } = useParams<{ slug: string }>()
   const { data: project } = useProjectRetrieveQuery({
     variables: {
-      slug: id,
+      slug,
     },
   })
   const { mutate: createProjectShare, isPending: isPendingCreateProjectShare } =
@@ -184,7 +184,7 @@ export const ProjectInfo = () => {
   }) => {
     updateProject(
       {
-        slug: id,
+        slug,
         data: {
           name: data.projectName,
           description: data.projectDescription,
@@ -196,7 +196,7 @@ export const ProjectInfo = () => {
         onSuccess: () => {
           queryClient.invalidateQueries({
             queryKey: QUERY_KEY_PROJECT_API.RETRIEVE({
-              slug: id,
+              slug,
             }),
           })
           queryClient.invalidateQueries({
@@ -217,7 +217,7 @@ export const ProjectInfo = () => {
   const handleCreateProjectShare = () => {
     createProjectShare(
       {
-        slug: id,
+        slug,
         data: {
           isShared: !isShared,
         },
@@ -226,7 +226,7 @@ export const ProjectInfo = () => {
         onSuccess: (res) => {
           queryClient.invalidateQueries({
             queryKey: QUERY_KEY_PROJECT_API.RETRIEVE({
-              slug: id,
+              slug,
             }),
           })
           if (res.isShared) {

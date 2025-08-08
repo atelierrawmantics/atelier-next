@@ -163,6 +163,100 @@ export const CopyIcon = forwardRef<SVGSVGElement, IconProps>(
     )
   },
 )
+export const DotsThreeIcon = forwardRef<SVGSVGElement, IconProps>(
+  function DotsThreeIcon(props, ref) {
+    return (
+      <svg
+        ref={ref}
+        width="36"
+        height="32"
+        viewBox="0 0 36 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <g
+          clipPath="url(#clip0_12538_11758)"
+          filter="url(#filter0_dd_12538_11758)"
+        >
+          <path
+            d="M17 17.5C17.8284 17.5 18.5 16.8284 18.5 16C18.5 15.1716 17.8284 14.5 17 14.5C16.1716 14.5 15.5 15.1716 15.5 16C15.5 16.8284 16.1716 17.5 17 17.5Z"
+            fill="#6A6D71"
+          />
+          <path
+            d="M25.5 17.5C26.3284 17.5 27 16.8284 27 16C27 15.1716 26.3284 14.5 25.5 14.5C24.6716 14.5 24 15.1716 24 16C24 16.8284 24.6716 17.5 25.5 17.5Z"
+            fill="#6A6D71"
+          />
+          <path
+            d="M8.5 17.5C9.32843 17.5 10 16.8284 10 16C10 15.1716 9.32843 14.5 8.5 14.5C7.67157 14.5 7 15.1716 7 16C7 16.8284 7.67157 17.5 8.5 17.5Z"
+            fill="#6A6D71"
+          />
+        </g>
+        <defs>
+          <filter
+            id="filter0_dd_12538_11758"
+            x="-6"
+            y="-7"
+            width="48"
+            height="48"
+            filterUnits="userSpaceOnUse"
+            colorInterpolationFilters="sRGB"
+          >
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dx="1" dy="1" />
+            <feGaussianBlur stdDeviation="4" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0.105882 0 0 0 0 0.109804 0 0 0 0 0.113725 0 0 0 0.2 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow_12538_11758"
+            />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dx="1" dy="1" />
+            <feGaussianBlur stdDeviation="4" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0.105882 0 0 0 0 0.109804 0 0 0 0 0.113725 0 0 0 0.8 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="effect1_dropShadow_12538_11758"
+              result="effect2_dropShadow_12538_11758"
+            />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect2_dropShadow_12538_11758"
+              result="shape"
+            />
+          </filter>
+          <clipPath id="clip0_12538_11758">
+            <rect
+              width="32"
+              height="32"
+              fill="white"
+              transform="translate(1)"
+            />
+          </clipPath>
+        </defs>
+      </svg>
+    )
+  },
+)
 export const DownloadSimpleIcon = forwardRef<SVGSVGElement, IconProps>(
   function DownloadSimpleIcon(props, ref) {
     return (
@@ -391,6 +485,90 @@ export const LogoIcon = forwardRef<SVGSVGElement, IconProps>(
 )
 export const MagicWandIcon = forwardRef<SVGSVGElement, IconProps>(
   function MagicWandIcon(props, ref) {
+    return (
+      <svg
+        ref={ref}
+        width="29"
+        height="28"
+        viewBox="0 0 29 28"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <g clipPath="url(#clip0_12454_3502)">
+          <path
+            d="M24.125 14V19.25"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M21.5 16.625H26.75"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M9.25 4.375V9.625"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M6.625 7H11.875"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M18.875 20.125V23.625"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M17.125 21.875H20.625"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M16.25 8.75L19.75 12.25"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M20.3684 4.63208L5.13093 19.8696C4.78922 20.2113 4.78922 20.7653 5.13093 21.107L7.39311 23.3692C7.73482 23.7109 8.28884 23.7109 8.63055 23.3692L23.868 8.1317C24.2097 7.78999 24.2097 7.23597 23.868 6.89427L21.6058 4.63208C21.2641 4.29037 20.7101 4.29037 20.3684 4.63208Z"
+            stroke="#2F3A56"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
+        <defs>
+          <clipPath id="clip0_12454_3502">
+            <rect
+              width="28"
+              height="28"
+              fill="white"
+              transform="translate(0.5)"
+            />
+          </clipPath>
+        </defs>
+      </svg>
+    )
+  },
+)
+export const MagicWandFillIcon = forwardRef<SVGSVGElement, IconProps>(
+  function MagicWandFillIcon(props, ref) {
     return (
       <svg
         ref={ref}

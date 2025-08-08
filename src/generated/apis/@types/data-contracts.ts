@@ -166,13 +166,6 @@ export interface PatchedInstructionRequestType {
 
 export interface PatchedTaskRequestType {
   /**
-   * 슬러그
-   * @minLength 1
-   * @maxLength 8
-   * @pattern ^[-a-zA-Z0-9_]+$
-   */
-  slug?: string
-  /**
    * 태스크명
    * @minLength 1
    * @maxLength 30
@@ -436,10 +429,9 @@ export interface TaskType {
   readonly id: number
   /**
    * 슬러그
-   * @maxLength 8
    * @pattern ^[-a-zA-Z0-9_]+$
    */
-  slug: string
+  readonly slug: string
   /**
    * 태스크명
    * @maxLength 30
@@ -489,7 +481,6 @@ export interface TaskType {
 
 export interface TaskErrorMessageType {
   nonField?: string[]
-  slug?: string[]
   name?: string[]
   description?: string[]
   memo?: string[]
@@ -500,13 +491,6 @@ export interface TaskErrorMessageType {
 }
 
 export interface TaskRequestType {
-  /**
-   * 슬러그
-   * @minLength 1
-   * @maxLength 8
-   * @pattern ^[-a-zA-Z0-9_]+$
-   */
-  slug: string
   /**
    * 태스크명
    * @minLength 1

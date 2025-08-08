@@ -132,14 +132,14 @@ export const ProjectCreateModal = ({
 
   const { open } = useOverlay()
 
-  const { id } = useParams<{ id: string }>()
+  const { slug } = useParams<{ slug: string }>()
 
   const { data: project } = useProjectRetrieveQuery({
     variables: {
-      slug: id,
+      slug: slug,
     },
     options: {
-      enabled: !!id && status === 'update',
+      enabled: !!slug && status === 'update',
     },
   })
 

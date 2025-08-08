@@ -467,7 +467,7 @@ export const ProjectInfoForm = () => {
   const form = useProjectInfoForm()
   const { watch, setValue, reset } = form
 
-  const { id: slug } = useParams<{ id: string }>()
+  const { slug } = useParams<{ slug: string }>()
   const { data: projectData } = useProjectRetrieveQuery({
     variables: {
       slug,
