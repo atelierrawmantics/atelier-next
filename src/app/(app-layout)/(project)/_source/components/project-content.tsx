@@ -13,7 +13,7 @@ export const ProjectContent = ({
       {header && (
         <div className="relative w-full border-b border-border-basic-1">
           <div className="w-full bg-background-basic-1">
-            <div className="w-full container h-[56px] flex items-center justify-between">
+            <div className="w-full container h-[92px] sm:h-[56px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[16px] sm:gap-0 pt-[12px] sm:pt-0">
               {header.map((component, index) => (
                 <div key={index}>{component}</div>
               ))}

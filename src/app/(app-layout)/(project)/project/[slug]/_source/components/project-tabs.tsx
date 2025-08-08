@@ -14,7 +14,7 @@ export const ProjectTabs = ({
   tab: 'project' | 'task' | 'schematic'
 }) => {
   return (
-    <div className="flex gap-[16px] h-full">
+    <div className="flex gap-[16px] h-full justify-end sm:justify-start">
       {TABS.map(({ key, label }) => (
         <Button
           key={key}
@@ -22,7 +22,7 @@ export const ProjectTabs = ({
           size="fit"
           asChild
           className={cn(
-            'typo-pre-body-5 h-[56px]',
+            'typo-pre-body-5 h-[40px] sm:h-[56px]',
             'border-b-2',
             tab === key ? 'border-primary-3' : 'border-transparent',
             tab === key ? 'text-primary-3' : 'text-grey-7',

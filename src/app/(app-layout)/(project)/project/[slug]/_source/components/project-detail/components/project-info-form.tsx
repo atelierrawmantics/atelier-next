@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation'
 import { EmptyView, fileToBase64 } from '@toktokhan-dev/react-universal'
 
 import { useFormContext, useWatch } from 'react-hook-form'
+import { ClassNameValue } from 'tailwind-merge'
 
 import {
   useUploadFileToS3Mutation,
@@ -359,7 +360,11 @@ const TableHeader = ({
   )
 }
 
-export const ProjectInfoForm = () => {
+interface ProjectInfoFormProps {
+  className?: ClassNameValue
+}
+
+export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   const form = useProjectInfoForm()
   const { watch, setValue, reset } = form
 
@@ -758,7 +763,12 @@ export const ProjectInfoForm = () => {
 
   return (
     <Form {...form}>
-      <div className="max-w-full md:max-w-[859px] w-full pb-[80px]">
+      <div
+        className={cn(
+          'max-w-full md:max-w-[859px] w-full pb-[80px]',
+          className,
+        )}
+      >
         <Accordion
           type="single"
           collapsible

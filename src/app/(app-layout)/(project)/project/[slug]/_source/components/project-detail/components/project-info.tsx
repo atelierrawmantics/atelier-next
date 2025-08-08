@@ -158,7 +158,11 @@ const ProjectInfoContent = () => {
   )
 }
 
-export const ProjectInfo = () => {
+interface ProjectInfoProps {
+  className?: ClassNameValue
+}
+
+export const ProjectInfo = ({ className }: ProjectInfoProps) => {
   const queryClient = useQueryClient()
 
   const { slug } = useParams<{ slug: string }>()
@@ -272,7 +276,12 @@ export const ProjectInfo = () => {
   }
 
   return (
-    <div className="md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px] pb-[80px]">
+    <div
+      className={cn(
+        'md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px] pb-[80px]',
+        className,
+      )}
+    >
       <div
         className={cn('flex flex-col', 'bg-background-basic-1 rounded-[6px]')}
       >
