@@ -5,7 +5,7 @@ import React, { useEffect, useMemo } from 'react'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 
-import { fileToBase64 } from '@toktokhan-dev/react-universal'
+import { EmptyView, fileToBase64 } from '@toktokhan-dev/react-universal'
 
 import { useFormContext, useWatch } from 'react-hook-form'
 
@@ -237,22 +237,19 @@ const ImageUploadArea = ({
     <div className="w-full">
       {imageUrl ?
         <div className="w-full flex justify-center">
-          <div className="relative w-[400px] h-[233px] flex items-center justify-center overflow-hidden">
-            <Image
-              unoptimized
-              src={imageUrl}
-              alt="Uploaded image"
-              className="w-full h-full object-cover"
-              fill
-              sizes="400px"
-            />
+          <div className="flex gap-[8px] items-start justify-center">
+            <div className="relative w-[400px] h-[233px] flex items-center justify-center">
+              <Image
+                unoptimized
+                src={imageUrl}
+                alt="Uploaded image"
+                className="w-full h-full object-cover"
+                fill
+                sizes="400px"
+              />
+            </div>
             {onDelete && (
-              <Button
-                variant="ghost"
-                size="fit"
-                onClick={onDelete}
-                className="absolute top-0 right-0"
-              >
+              <Button variant="ghost" size="fit" onClick={onDelete}>
                 <XIcon className="size-[32px]" />
               </Button>
             )}
@@ -518,6 +515,104 @@ export const ProjectInfoForm = () => {
     event.target.value = ''
   }
 
+  // 데이터 추출 함수들
+  const extractSeasonStyleData = () => ({
+    year,
+    season,
+    style,
+    variant,
+    item,
+    generation,
+  })
+
+  const extractSchematicData = async (): Promise<Record<string, unknown>> => {
+    let uploadedSchematic = schematic
+
+    if (schematicFile instanceof File) {
+      try {
+        const uploadResult = await uploadFile(schematicFile)
+        uploadedSchematic = { image: uploadResult }
+        console.log('도식화 이미지 S3 업로드 성공:', uploadResult)
+      } catch (e) {
+        console.error('도식화 이미지 업로드 중 오류 발생:', e)
+        return { schematic: uploadedSchematic }
+      }
+    }
+
+    // base64가 아닌 실제 URL만 보내기
+    const schematicUrl =
+      (
+        typeof uploadedSchematic === 'object' &&
+        uploadedSchematic &&
+        'image' in uploadedSchematic &&
+        typeof uploadedSchematic.image === 'string' &&
+        uploadedSchematic.image.startsWith('data:')
+      ) ?
+        null
+      : uploadedSchematic
+
+    return {
+      schematic: schematicUrl ? { image: schematicUrl } : null,
+    }
+  }
+
+  const extractSizeSpecData = () => ({
+    sizeNames,
+    sizeValues,
+  })
+
+  const extractStyleColorData = () => ({
+    colorValues,
+  })
+
+  const extractFabricData = () => ({
+    fabricValues,
+  })
+
+  const extractAccessoryData = () => ({
+    materialValues,
+  })
+
+  const extractSwatchData = async (): Promise<Record<string, unknown>> => {
+    const currentSwatchSet = swatchSet || []
+    let updatedSwatchSet = [...currentSwatchSet]
+
+    // 새로 업로드된 파일들만 S3에 업로드
+    if (swatchFiles.length > 0) {
+      try {
+        const uploadResults = await uploadFiles(swatchFiles)
+        const uploadedUrls = uploadResults.fulfilled
+
+        // 새로 업로드된 파일들을 URL로 교체
+        const newSwatchItems = uploadedUrls.map((url) => ({
+          id: null, // 새로 생성되는 항목
+          image: url,
+        }))
+
+        // 기존 항목들 중 base64가 아닌 것들만 유지하고, 새 항목들 추가
+        const existingItems = currentSwatchSet.filter(
+          (item) => !item.image.startsWith('data:'), // base64가 아닌 기존 항목들만 유지
+        )
+
+        updatedSwatchSet = [...existingItems, ...newSwatchItems]
+        console.log('스와치 이미지 S3 업로드 성공:', uploadedUrls)
+      } catch (e) {
+        console.error('스와치 이미지 업로드 중 오류 발생:', e)
+        return { swatchSet: updatedSwatchSet }
+      }
+    }
+
+    // ID 기반 로직: 기존 항목들은 유지, 새 항목들은 생성
+    const swatchSetToSend = updatedSwatchSet.map((item) => ({
+      id: item.id, // 기존 ID 유지 또는 null (새 항목)
+      image: item.image,
+    }))
+
+    return {
+      swatchSet: swatchSetToSend,
+    }
+  }
+
   // 공통 저장 핸들러 생성 함수
   const createSaveHandler = (
     sectionName: string,
@@ -574,111 +669,35 @@ export const ProjectInfoForm = () => {
   // 각 섹션별 저장 핸들러
   const handleSeasonStyleSave = createSaveHandler(
     '시즌 및 스타일 정보',
-    () => ({
-      year,
-      season,
-      style,
-      variant,
-      item,
-      generation,
-    }),
+    extractSeasonStyleData,
   )
 
   const handleSchematicSave = createSaveHandler(
     '도식화 이미지',
-    async (): Promise<Record<string, unknown>> => {
-      let uploadedSchematic = schematic
-
-      if (schematicFile instanceof File) {
-        try {
-          const uploadResult = await uploadFile(schematicFile)
-          uploadedSchematic = { image: uploadResult }
-          console.log('도식화 이미지 S3 업로드 성공:', uploadResult)
-        } catch (e) {
-          console.error('도식화 이미지 업로드 중 오류 발생:', e)
-          return { schematic: uploadedSchematic }
-        }
-      }
-
-      // base64가 아닌 실제 URL만 보내기
-      const schematicUrl =
-        (
-          typeof uploadedSchematic === 'object' &&
-          uploadedSchematic &&
-          'image' in uploadedSchematic &&
-          typeof uploadedSchematic.image === 'string' &&
-          uploadedSchematic.image.startsWith('data:')
-        ) ?
-          null
-        : uploadedSchematic
-
-      return {
-        schematic: schematicUrl ?? null,
-      }
-    },
+    extractSchematicData,
   )
 
-  const handleSizeSpecSave = createSaveHandler('사이즈 스펙', () => {
-    return {
-      sizeNames,
-      sizeValues,
-    }
-  })
-
-  const handleStyleColorSave = createSaveHandler('스타일 컬러', () => ({
-    colorValues,
-  }))
-
-  const handleFabricSave = createSaveHandler('원단 상세 정보', () => ({
-    fabricValues,
-  }))
-
-  const handleAccessorySave = createSaveHandler('부자재 정보', () => ({
-    materialValues,
-  }))
-
-  const handleSwatchSave = createSaveHandler(
-    'SWATCH',
-    async (): Promise<Record<string, unknown>> => {
-      const currentSwatchSet = swatchSet || []
-      let updatedSwatchSet = [...currentSwatchSet]
-
-      // 새로 업로드된 파일들만 S3에 업로드
-      if (swatchFiles.length > 0) {
-        try {
-          const uploadResults = await uploadFiles(swatchFiles)
-          const uploadedUrls = uploadResults.fulfilled
-
-          // 새로 업로드된 파일들을 URL로 교체
-          const newSwatchItems = uploadedUrls.map((url) => ({
-            id: null, // 새로 생성되는 항목
-            image: url,
-          }))
-
-          // 기존 항목들 중 base64가 아닌 것들만 유지하고, 새 항목들 추가
-          const existingItems = currentSwatchSet.filter(
-            (item) => !item.image.startsWith('data:'), // base64가 아닌 기존 항목들만 유지
-          )
-
-          updatedSwatchSet = [...existingItems, ...newSwatchItems]
-          console.log('스와치 이미지 S3 업로드 성공:', uploadedUrls)
-        } catch (e) {
-          console.error('스와치 이미지 업로드 중 오류 발생:', e)
-          return { swatchSet: updatedSwatchSet }
-        }
-      }
-
-      // ID 기반 로직: 기존 항목들은 유지, 새 항목들은 생성
-      const swatchSetToSend = updatedSwatchSet.map((item) => ({
-        id: item.id, // 기존 ID 유지 또는 null (새 항목)
-        image: item.image,
-      }))
-
-      return {
-        swatchSet: swatchSetToSend,
-      }
-    },
+  const handleSizeSpecSave = createSaveHandler(
+    '사이즈 스펙',
+    extractSizeSpecData,
   )
+
+  const handleStyleColorSave = createSaveHandler(
+    '스타일 컬러',
+    extractStyleColorData,
+  )
+
+  const handleFabricSave = createSaveHandler(
+    '원단 상세 정보',
+    extractFabricData,
+  )
+
+  const handleAccessorySave = createSaveHandler(
+    '부자재 정보',
+    extractAccessoryData,
+  )
+
+  const handleSwatchSave = createSaveHandler('SWATCH', extractSwatchData)
 
   // 각 섹션별 리셋 핸들러
   const handleSeasonStyleReset = () => {
@@ -903,17 +922,29 @@ export const ProjectInfoForm = () => {
             maxImageCount={SECTION_CONFIGS.swatch.maxImageCount}
             currentImageCount={(swatchSet || []).length}
           >
-            {(swatchSet || []).length > 0 ?
-              <div className="grid grid-cols-6 space-x-[8px] py-[20px] px-[36px]">
-                {(swatchSet || []).map((swatchItem: any, index: number) => (
-                  <div key={index} className="relative w-[100px] h-[100px]">
-                    <Image
-                      unoptimized
-                      src={swatchItem.image}
-                      alt={`Swatch ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      fill
-                    />
+            <EmptyView
+              data={swatchSet}
+              fallback={
+                <ImageUploadArea
+                  icon={<SwatchesIcon className="size-[28px]" />}
+                  title="스와치 이미지를 첨부해 주세요. (최대 6개까지 등록 가능)"
+                  description=""
+                  subDescription="지원 형식: jpg, png"
+                />
+              }
+            >
+              <div className="grid grid-cols-4 grid-rows-2 gap-[8px] py-[20px] px-[36px] w-full border-2">
+                {(swatchSet || []).map((swatchItem, index: number) => (
+                  <div key={index} className="flex gap-[8px] w-[132px]">
+                    <div className="relative aspect-square w-[100px] h-[100px] border-1">
+                      <Image
+                        unoptimized
+                        src={swatchItem.image}
+                        alt={`Swatch ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        fill
+                      />
+                    </div>
                     <Button
                       variant="ghost"
                       size="fit"
@@ -929,20 +960,14 @@ export const ProjectInfoForm = () => {
                         setValue('swatchSet', newSwatchSet)
                         setSwatchFiles(newSwatchFiles)
                       }}
-                      className="absolute top-0 right-0 p-0 w-[20px] h-[20px] min-w-0"
+                      className="size-[24px]"
                     >
                       <XIcon className="size-[16px]" />
                     </Button>
                   </div>
                 ))}
               </div>
-            : <ImageUploadArea
-                icon={<SwatchesIcon className="size-[28px]" />}
-                title="스와치 이미지를 첨부해 주세요. (최대 6개까지 등록 가능)"
-                description=""
-                subDescription="지원 형식: jpg, png"
-              />
-            }
+            </EmptyView>
           </AccordionFormItem>
         </Accordion>
       </div>

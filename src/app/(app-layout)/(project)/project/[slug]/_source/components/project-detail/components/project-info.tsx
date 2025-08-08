@@ -272,7 +272,7 @@ export const ProjectInfo = () => {
   }
 
   return (
-    <div className="md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px]">
+    <div className="md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px] pb-[80px]">
       <div
         className={cn('flex flex-col', 'bg-background-basic-1 rounded-[6px]')}
       >
