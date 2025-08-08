@@ -1,11 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-
-import { throttle } from 'lodash-es'
 
 import { logout } from '@/actions/logout'
 import { Button } from '@/components/ui/button'
@@ -29,40 +27,17 @@ import {
   UserIcon,
   XIcon,
 } from '@/generated/icons/MyIcons'
+import { useDrawerAutoClose } from '@/hooks/use-drawer-auto-close'
 
 export const AppLayoutDrawer = () => {
-  const [open, setOpen] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
+  const { open, setOpen, handleOpenChange, handleAnimationEnd } =
+    useDrawerAutoClose()
 
   const pathname = usePathname()
 
-  const handleOpenChange = (v: boolean) => {
-    if (isAnimating) return
-    setOpen(v)
-    setIsAnimating(true)
-  }
-
-  const handleAnimationEnd = () => {
-    setIsAnimating(false)
-  }
-
   useEffect(() => {
     setOpen(false)
-  }, [pathname])
-
-  useEffect(() => {
-    const handleResize = throttle(() => {
-      if (window.innerWidth <= 1440 && open) {
-        setOpen(false)
-      }
-    }, 200)
-
-    window.addEventListener('resize', handleResize)
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      handleResize.cancel()
-    }
-  }, [open])
+  }, [pathname, setOpen])
 
   return (
     <Drawer

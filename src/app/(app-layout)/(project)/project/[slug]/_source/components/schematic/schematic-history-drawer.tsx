@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { EmptyView, LoadingView } from '@toktokhan-dev/react-universal'
 
 import dayjs from 'dayjs'
@@ -25,13 +26,18 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SchematicType } from '@/generated/apis/@types/data-contracts'
-import { useProjectSchematicListInfiniteQuery } from '@/generated/apis/Schematic/Schematic.query'
+import { QUERY_KEY_PROJECT_API } from '@/generated/apis/Project/Project.query'
+import {
+  useProjectSchematicListInfiniteQuery,
+  useProjectSchematicUseCreateMutation,
+} from '@/generated/apis/Schematic/Schematic.query'
 import {
   DotsThreeIcon,
   ImagesIcon,
   MagicWandIcon,
   TrashIcon,
 } from '@/generated/icons/MyIcons'
+import { useDrawerAutoClose } from '@/hooks/use-drawer-auto-close'
 import { cn } from '@/lib/utils'
 
 export const EmptySchematicHistory = () => {
@@ -70,7 +76,24 @@ const DROPDOWN_MENU_CLASSNAME = {
   ICON: 'text-primary-3 size-[20px]',
 }
 
-export const HistoryItemDropDownMemu = () => {
+interface HistoryItemDropDownMenuProps {
+  id: number
+  image: string
+  prompt: string
+}
+
+export const HistoryItemDropDownMenu = ({
+  id,
+  image,
+  prompt,
+}: HistoryItemDropDownMenuProps) => {
+  const { slug } = useParams<{ slug: string }>()
+  const queryClient = useQueryClient()
+
+  const { mutate: schematicUseCreate } = useProjectSchematicUseCreateMutation(
+    {},
+  )
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -82,13 +105,38 @@ export const HistoryItemDropDownMemu = () => {
         className="w-[180px] z-100 rounded-[6px] bg-grey-0 border-border-basic-1 p-0"
         align="end"
       >
-        <DropdownMenuItem className={cn(DROPDOWN_MENU_CLASSNAME.ITEM)}>
+        <DropdownMenuItem
+          className={cn(DROPDOWN_MENU_CLASSNAME.ITEM)}
+          onClick={() =>
+            schematicUseCreate(
+              {
+                projectSlug: slug,
+                id,
+              },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: QUERY_KEY_PROJECT_API.RETRIEVE({ slug }),
+                  })
+                },
+              },
+            )
+          }
+        >
           <CheckIcon className={cn(DROPDOWN_MENU_CLASSNAME.ICON)} />
           <p className={cn(DROPDOWN_MENU_CLASSNAME.TEXT)}>도식화 사용</p>
         </DropdownMenuItem>
         <DropdownMenuItem className={cn(DROPDOWN_MENU_CLASSNAME.ITEM)}>
-          <DownloadIcon className={cn(DROPDOWN_MENU_CLASSNAME.ICON)} />
-          <p className={cn(DROPDOWN_MENU_CLASSNAME.TEXT)}>다운로드</p>
+          <a
+            href={image}
+            download={`${prompt}-${Date.now()}.png`}
+            className="flex gap-[10px] items-center w-full"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <DownloadIcon className={cn(DROPDOWN_MENU_CLASSNAME.ICON)} />
+            <p className={cn(DROPDOWN_MENU_CLASSNAME.TEXT)}>다운로드</p>
+          </a>
         </DropdownMenuItem>
         <DropdownMenuItem className={cn(DROPDOWN_MENU_CLASSNAME.ITEM)}>
           <TrashIcon className={cn(DROPDOWN_MENU_CLASSNAME.ICON)} />
@@ -101,6 +149,7 @@ export const HistoryItemDropDownMemu = () => {
 
 export const SchematicHistoryDrawer = () => {
   const { slug } = useParams<{ slug: string }>()
+  const { open, handleOpenChange, handleAnimationEnd } = useDrawerAutoClose()
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useProjectSchematicListInfiniteQuery({
@@ -144,7 +193,12 @@ export const SchematicHistoryDrawer = () => {
   }, [projectSchematicList])
 
   return (
-    <Drawer direction="right">
+    <Drawer
+      direction="right"
+      open={open}
+      onOpenChange={handleOpenChange}
+      onAnimationEnd={handleAnimationEnd}
+    >
       <DrawerTrigger asChild>
         <Button
           variant="ghost-primary"
@@ -186,22 +240,27 @@ export const SchematicHistoryDrawer = () => {
                       <p className="typo-pre-heading-3 text-grey-9">
                         {group.date}
                       </p>
-                      {group.items.map((item, idx) => (
+                      {group.items.map(({ id, image, prompt }, idx) => (
                         <div
-                          key={item.id}
+                          key={id}
                           className="aspect-[3/2] h-[368px] relative flex flex-col gap-[12px]"
                         >
                           <Image
-                            src={item.image}
-                            alt={item.prompt || '스키매틱 이미지'}
+                            src={image}
+                            alt={prompt || '스키매틱 이미지'}
                             className={cn(
                               'w-full h-full object-cover',
                               idx !== group.items.length - 1 &&
                                 'border-b pb-[12px] border-background-basic-3',
                             )}
                             fill
+                            priority
                           />
-                          <HistoryItemDropDownMemu />
+                          <HistoryItemDropDownMenu
+                            id={id}
+                            image={image}
+                            prompt={prompt || ''}
+                          />
                         </div>
                       ))}
                     </div>
