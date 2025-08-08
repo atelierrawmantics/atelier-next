@@ -403,6 +403,16 @@ export interface SchematicType {
    * * `FAILED` - 실패
    */
   readonly status: SchematicStatusEnumType
+  /**
+   * 생성일시
+   * @format date-time
+   */
+  readonly createdAt: string
+  /**
+   * 수정일시
+   * @format date-time
+   */
+  readonly updatedAt: string
 }
 
 export interface SchematicErrorMessageType {
