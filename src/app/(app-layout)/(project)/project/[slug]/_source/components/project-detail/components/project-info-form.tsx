@@ -112,6 +112,7 @@ interface AccordionFormItemProps {
   onImageUpload?: (event: React.ChangeEvent<HTMLInputElement>) => void
   imageUploadId?: string
   isLastItem?: boolean
+  isFirstItem?: boolean
   isDirty?: boolean
   maxImageCount?: number
   currentImageCount?: number
@@ -127,6 +128,7 @@ const AccordionFormItem = ({
   onImageUpload,
   imageUploadId,
   isLastItem = false,
+  isFirstItem = false,
   isDirty = false,
   maxImageCount,
   currentImageCount = 0,
@@ -150,11 +152,11 @@ const AccordionFormItem = ({
   )
 
   return (
-    <AccordionItem value={value} className="rounded-t-[6px]">
+    <AccordionItem value={value}>
       <AccordionTrigger
-        className={`h-[62px] typo-pre-body-5 text-grey-10 rounded-t-[6px] ${
-          isLastItem ? 'data-[state=closed]:rounded-b-[6px]' : ''
-        }`}
+        className={`h-[62px] typo-pre-body-5 text-grey-10 ${
+          isFirstItem ? 'rounded-t-[6px]' : ''
+        } ${isLastItem ? 'data-[state=closed]:rounded-b-[6px]' : ''}`}
       >
         <div className="w-full flex justify-between items-center">
           <p>{title}</p>
@@ -539,6 +541,18 @@ export const ProjectInfoForm = () => {
       }
     }
 
+    // schematic이 null이거나 undefined이거나 빈 객체이면 null 반환
+    if (
+      !uploadedSchematic ||
+      (typeof uploadedSchematic === 'object' &&
+        uploadedSchematic !== null &&
+        (!uploadedSchematic.image || uploadedSchematic.image === ''))
+    ) {
+      return {
+        schematic: null,
+      }
+    }
+
     // base64가 아닌 실제 URL만 보내기
     const schematicUrl =
       (
@@ -552,7 +566,7 @@ export const ProjectInfoForm = () => {
       : uploadedSchematic
 
     return {
-      schematic: schematicUrl ? { image: schematicUrl } : null,
+      schematic: schematicUrl ?? null,
     }
   }
 
@@ -643,7 +657,7 @@ export const ProjectInfoForm = () => {
           return true
         }
         if (data === null) {
-          return false
+          return true // null도 유효한 데이터로 처리 (삭제 의도)
         }
         if (typeof data === 'object' && data !== null) {
           return Object.values(data).some((value) => hasActualData(value))
@@ -758,6 +772,7 @@ export const ProjectInfoForm = () => {
             onReset={handleSeasonStyleReset}
             onSave={handleSeasonStyleSave}
             isDirty={isSeasonStyleDirty}
+            isFirstItem={true}
           >
             <div className="flex flex-col gap-[8px]">
               {SECTION_CONFIGS['season-style'].fields.map((field) => (
@@ -786,7 +801,10 @@ export const ProjectInfoForm = () => {
           >
             <ImageUploadArea
               imageUrl={schematic ? schematic.image : null}
-              onDelete={() => setValue('schematic', null)}
+              onDelete={() => {
+                setValue('schematic', null)
+                setSchematicFile(null)
+              }}
             />
           </AccordionFormItem>
 
