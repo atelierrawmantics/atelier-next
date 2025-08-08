@@ -202,13 +202,15 @@ export const ProjectCreateModal = ({
           </Button>
         </AlertDialogHeader>
 
-        <AlertDialogDescription className="py-[10px] px-[20px] bg-primary-1 flex gap-[6px] items-center sm:items-start border-t border-b border-border-basic-1">
-          <InfoFillIcon className="size-[20px]" />
-          <p className="typo-pre-body-6">
-            프로젝트를 생성 시 작업지시서가 자동으로 생성되며, 이후 바로 작성을
-            진행할 수 있습니다.
-          </p>
-        </AlertDialogDescription>
+        {status === 'create' && (
+          <AlertDialogDescription className="py-[10px] px-[20px] bg-primary-1 flex gap-[6px] items-center sm:items-start border-t border-b border-border-basic-1">
+            <InfoFillIcon className="size-[20px]" />
+            <p className="typo-pre-body-6">
+              프로젝트를 생성 시 작업지시서가 자동으로 생성되며, 이후 바로
+              작성을 진행할 수 있습니다.
+            </p>
+          </AlertDialogDescription>
+        )}
 
         <div className="px-[16px] py-[20px] overflow-y-auto">
           <Form {...form}>
