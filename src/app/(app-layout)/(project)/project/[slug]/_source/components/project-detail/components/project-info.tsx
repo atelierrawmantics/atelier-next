@@ -8,8 +8,10 @@ import { useOverlay } from '@toss/use-overlay'
 import dayjs from 'dayjs'
 import { ClassNameValue } from 'tailwind-merge'
 
-import { useProjectModal } from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
-import { ProjectCreateModal } from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
+import {
+  ProjectCreateModal,
+  useProjectModal,
+} from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
 import { CommonAlert } from '@/components/common-alert'
 import { Button } from '@/components/ui/button'
 import {

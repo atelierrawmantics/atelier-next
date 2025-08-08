@@ -13,10 +13,10 @@ import {
   useProjectSchematicCreateMutation,
   useProjectSchematicRetrieveQuery,
 } from '@/generated/apis/Schematic/Schematic.query'
-import { ImagesIcon, MagicWandIcon } from '@/generated/icons/MyIcons'
+import { MagicWandIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
-import { SchematicHistoryDrawer } from './components/schematic-history-drawer'
+import { SchematicHistoryDrawer } from './schematic-history-drawer'
 
 const EXAMPLE_TEXT = [
   '5:5 비율의 반팔 티셔츠 도식화',
