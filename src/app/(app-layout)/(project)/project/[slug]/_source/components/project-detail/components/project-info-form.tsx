@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
@@ -231,8 +231,6 @@ const ImageUploadArea = ({
   description = 'AI 도식화를 생성하려면 상단의 [AI 도식화 도우미] 탭을 이용해 주세요.',
   subDescription = '지원 형식: jpg, png',
 }: ImageUploadAreaProps) => {
-  console.log('ImageUploadArea imageUrl:', imageUrl)
-
   return (
     <div className="w-full">
       {imageUrl ?
@@ -364,8 +362,10 @@ export const ProjectInfoForm = () => {
   const { watch, setValue, reset } = form
 
   // 파일 상태를 별도로 관리
-  const [schematicFile, setSchematicFile] = React.useState<File | null>(null)
-  const [swatchFiles, setSwatchFiles] = React.useState<File[]>([])
+  const [schematicFile, setSchematicFile] = useState<File | null>(null)
+  const [swatchFiles, setSwatchFiles] = useState<File[]>([])
+  // 삭제된 스와치 ID들을 추적
+  const [deletedSwatchIds, setDeletedSwatchIds] = useState<number[]>([])
 
   const { slug } = useParams<{ slug: string }>()
   const { data: projectData } = useProjectRetrieveQuery({
@@ -602,11 +602,19 @@ export const ProjectInfoForm = () => {
       }
     }
 
-    // ID 기반 로직: 기존 항목들은 유지, 새 항목들은 생성
-    const swatchSetToSend = updatedSwatchSet.map((item) => ({
-      id: item.id, // 기존 ID 유지 또는 null (새 항목)
-      image: item.image,
-    }))
+    // ID 기반 로직: 기존 항목들은 유지, 새 항목들은 생성, 삭제된 항목들은 제외
+    const swatchSetToSend = updatedSwatchSet
+      .filter((item) => {
+        // 삭제된 ID가 있으면 제외
+        if (item.id && deletedSwatchIds.includes(item.id)) {
+          return false
+        }
+        return true
+      })
+      .map((item) => ({
+        id: item.id, // 기존 ID 유지 또는 null (새 항목)
+        image: item.image,
+      }))
 
     return {
       swatchSet: swatchSetToSend,
@@ -731,6 +739,7 @@ export const ProjectInfoForm = () => {
   const handleSwatchReset = () => {
     setValue('swatchSet', [])
     setSwatchFiles([])
+    setDeletedSwatchIds([])
   }
 
   return (
@@ -933,10 +942,10 @@ export const ProjectInfoForm = () => {
                 />
               }
             >
-              <div className="grid grid-cols-4 grid-rows-2 gap-[8px] py-[20px] px-[36px] w-full border-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 grid-rows-2 gap-[8px] py-[20px] px-[36px] w-full">
                 {(swatchSet || []).map((swatchItem, index: number) => (
                   <div key={index} className="flex gap-[8px] w-[132px]">
-                    <div className="relative aspect-square w-[100px] h-[100px] border-1">
+                    <div className="relative aspect-square w-[100px] h-[100px]">
                       <Image
                         unoptimized
                         src={swatchItem.image}
@@ -950,11 +959,22 @@ export const ProjectInfoForm = () => {
                       size="fit"
                       onClick={() => {
                         const currentSwatchSet = watch('swatchSet') || []
-                        const newSwatchSet = currentSwatchSet.filter(
-                          (_, i) => i !== index,
-                        )
+
+                        // 기존 ID가 있는 경우 삭제 목록에 추가
+                        if (swatchItem.id !== null) {
+                          setDeletedSwatchIds((prev: number[]) => [
+                            ...prev,
+                            swatchItem.id!,
+                          ])
+                        }
+
+                        // 새로 추가된 파일인 경우 파일 목록에서도 제거
                         const newSwatchFiles = swatchFiles.filter(
-                          (_, i) => i !== index,
+                          (_: File, i: number) => i !== index,
+                        )
+
+                        const newSwatchSet = currentSwatchSet.filter(
+                          (_: any, i: number) => i !== index,
                         )
 
                         setValue('swatchSet', newSwatchSet)
