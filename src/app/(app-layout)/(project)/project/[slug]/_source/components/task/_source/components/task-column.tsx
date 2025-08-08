@@ -4,6 +4,9 @@ import React from 'react'
 
 import { useDroppable } from '@dnd-kit/core'
 
+import { PlusIcon } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
 import {
   TaskStatusEnumType,
   TaskStatusEnumTypeMap,
@@ -11,20 +14,13 @@ import {
 } from '@/generated/apis/@types/data-contracts'
 import { theme } from '@/generated/theme-token'
 
+import { useTaskModal } from '../../../../hooks/use-task-modal'
 import { DragColumnData } from '../../../../utils/dnd'
 import { TaskCard } from './task-card'
-
-interface Task {
-  id: string
-  date: string
-  assignee: string
-  title: string
-}
 
 interface TaskColumnProps {
   status: TaskStatusEnumType
   tasks: TaskType[]
-  onAddTask?: () => void
 }
 
 type StatusConfig = {
@@ -35,20 +31,8 @@ type StatusConfig = {
   textColor: `text-${keyof typeof theme}`
 }
 
-export const TaskColumn: React.FC<TaskColumnProps> = ({
-  status,
-  tasks,
-  onAddTask,
-}) => {
-  const { setNodeRef, isOver } = useDroppable({
-    id: status,
-    data: { type: 'column', status } satisfies DragColumnData,
-  })
-
-  const statusConfigs: Record<
-    keyof typeof TaskStatusEnumTypeMap,
-    StatusConfig
-  > = {
+const statusConfigs: Record<keyof typeof TaskStatusEnumTypeMap, StatusConfig> =
+  {
     pending: {
       label: '진행전',
       labelBgColor: 'bg-background-basic-3',
@@ -79,12 +63,24 @@ export const TaskColumn: React.FC<TaskColumnProps> = ({
     },
   }
 
+export const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
+  const { setNodeRef } = useDroppable({
+    id: status,
+    data: { type: 'column', status } satisfies DragColumnData,
+  })
+
+  const sortedTasks = [...tasks].sort(
+    (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
+  )
+
+  const { openTaskCreateModal } = useTaskModal()
+
   const config = statusConfigs[status]
 
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col items-center border border-border-basic-1 rounded-[12px] ${config.bgColor} w-full gap-3 min-h-[400px] transition-all duration-200`}
+      className={`flex flex-col max-w-[308px] items-center border border-border-basic-1 rounded-[12px] ${config.bgColor} w-full gap-3 min-h-[400px] transition-all duration-200`}
     >
       {/* Header */}
       <div className="flex items-center gap-2 w-full p-4 pb-3">
@@ -103,9 +99,26 @@ export const TaskColumn: React.FC<TaskColumnProps> = ({
 
       {/* Task Cards */}
       <div className="flex flex-col gap-2 w-full px-4 pb-4 flex-1">
-        {tasks.map((task) => (
+        {sortedTasks.map((task) => (
           <TaskCard key={task.id} task={task} />
         ))}
+
+        {status === 'pending' && (
+          <Button
+            className="w-full justify-start"
+            variant={'ghost'}
+            size={'sm'}
+            onClick={() =>
+              openTaskCreateModal({
+                data: { projectName: '태스크 생성' },
+                onClose: () => {},
+              })
+            }
+          >
+            <PlusIcon className="w-4 h-4 size-4" />
+            태스크 생성
+          </Button>
+        )}
       </div>
     </div>
   )

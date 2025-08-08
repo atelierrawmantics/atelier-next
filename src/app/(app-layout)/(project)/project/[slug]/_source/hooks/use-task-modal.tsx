@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'next/navigation'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { useOverlay } from '@toss/use-overlay'
 
 import { useFormContext } from 'react-hook-form'
@@ -29,7 +30,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { TaskStatusEnumType } from '@/generated/apis/@types/data-contracts'
-import { useProjectTaskCreateMutation } from '@/generated/apis/Task/Task.query'
+import {
+  QUERY_KEY_TASK_API,
+  useProjectTaskCreateMutation,
+} from '@/generated/apis/Task/Task.query'
 import { InfoFillIcon, XIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
@@ -57,16 +61,28 @@ const target_description = {
     '담당자 할당 시 이름, 휴대폰 번호, 수신 동의가 필수이며, 알림톡은 동의한 경우에만 발송됩니다. 담당자 정보와 할당 대상은 이후 변경이 어렵습니다.',
 }
 
-// 프로젝트 생성 모달 컴포넌트
 const TaskCreateModal = ({
   isOpen,
   onClose,
   data,
   initStatus = 'pending',
 }: TaskCreateModalProps) => {
+  const qc = useQueryClient()
+
   const { slug } = useParams<{ slug: string }>()
 
-  const { mutate: createTask } = useProjectTaskCreateMutation({})
+  const { mutate: createTask } = useProjectTaskCreateMutation({
+    options: {
+      onSuccess: () => {
+        onClose()
+        qc.invalidateQueries({
+          queryKey: QUERY_KEY_TASK_API.PROJECT_TASK_LIST({
+            projectSlug: slug,
+          }),
+        })
+      },
+    },
+  })
 
   const [target, setTarget] = useState<'me' | 'manager'>('me')
 
@@ -189,6 +205,7 @@ const TaskCreateModal = ({
           <Button
             form={target === 'me' ? 'task-form-to-me' : 'task-form-to-manager'}
             disabled={target === 'me' ? !isValidToMe : !isValidToManager}
+            type="button"
             onClick={() => {
               if (target === 'me') {
                 handleSubmitToMe(handleSubmitToMeData)()
