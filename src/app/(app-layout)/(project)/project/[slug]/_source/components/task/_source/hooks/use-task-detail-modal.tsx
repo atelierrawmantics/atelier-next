@@ -238,7 +238,7 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
           }
         </div>
 
-        <AlertDialogFooter className="p-[12px_16px_16px_16px] border-t border-border-basic-1">
+        <AlertDialogFooter className="flex flex-row p-[12px_16px_16px_16px] border-t border-border-basic-1">
           {!isEditing && (
             <>
               <Button

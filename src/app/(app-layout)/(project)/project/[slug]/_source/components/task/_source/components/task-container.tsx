@@ -23,11 +23,12 @@ import {
   QUERY_KEY_TASK_API,
   useProjectTaskPartialUpdateMutation,
 } from '@/generated/apis/Task/Task.query'
+import { InfoFillIcon } from '@/generated/icons/MyIcons'
 
 import { isColumnData, isTaskData } from '../../../../utils/dnd'
 import { EmptyTask } from './empty-task'
 import { TaskCard } from './task-card'
-import { TaskColumn } from './task-column'
+import { TaskColumn } from './task-column/task-column'
 
 type TaskStatus = TaskStatusEnumType
 
@@ -132,12 +133,46 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
 
   return (
     <div className="w-full container mx-auto pt-[36px] pb-[80px] px-[20px] h-[100%] flex flex-col">
-      <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="flex w-full gap-4 h-full justify-center ">
+      <div className="hidden md:block">
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex flex-col md:flex-row w-full gap-4 h-full md:justify-center">
+            {tasks.length > 0 &&
+              COLUMN_LIST.map((status) => (
+                <TaskColumn
+                  key={status}
+                  status={status as TaskStatus}
+                  tasks={tasks?.filter((task) => task.status === status) || []}
+                />
+              ))}
+
+            {tasks?.length === 0 && <EmptyTask />}
+          </div>
+
+          <DragOverlay dropAnimation={null}>
+            {activeTask && (
+              <div className="shadow-xl">
+                <TaskCard task={activeTask} isSelected={true} />
+              </div>
+            )}
+          </DragOverlay>
+        </DndContext>
+      </div>
+
+      {/* tablet 이하 모바일 뷰 */}
+      <div className="flex flex-col md:hidden gap-5">
+        <div className="py-[10px] px-[20px] bg-primary-2 flex gap-[6px] items-center sm:items-start">
+          <InfoFillIcon className="min-w-[20px] size-[20px]" />
+          <p className="typo-pre-body-6">
+            모바일 환경에서는 드래그앤드랍을 통한 상태 변경 기능을 지원하지
+            않습니다. PC 환경에서 이용해 주세요.
+          </p>
+        </div>
+
+        <div className="flex flex-col w-full gap-4 h-full md:justify-center">
           {tasks.length > 0 &&
             COLUMN_LIST.map((status) => (
               <TaskColumn
@@ -149,15 +184,7 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
 
           {tasks?.length === 0 && <EmptyTask />}
         </div>
-
-        <DragOverlay dropAnimation={null}>
-          {activeTask ?
-            <div className="shadow-xl">
-              <TaskCard task={activeTask} isSelected={true} />
-            </div>
-          : null}
-        </DragOverlay>
-      </DndContext>
+      </div>
     </div>
   )
 }

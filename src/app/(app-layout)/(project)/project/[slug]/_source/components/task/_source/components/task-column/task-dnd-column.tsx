@@ -1,7 +1,5 @@
 'use client'
 
-import React from 'react'
-
 import { useDroppable } from '@dnd-kit/core'
 
 import { PlusIcon } from 'lucide-react'
@@ -14,10 +12,10 @@ import {
 } from '@/generated/apis/@types/data-contracts'
 import { theme } from '@/generated/theme-token'
 
-import { useTaskModal } from '../../../../hooks/use-task-modal'
-import { DragColumnData } from '../../../../utils/dnd'
-import { TaskCard } from './task-card'
-import { TaskStatusBadge } from './task-status-badge'
+import { useTaskModal } from '../../../../../hooks/use-task-modal'
+import { DragColumnData } from '../../../../../utils/dnd'
+import { TaskCard } from '../task-card'
+import { TaskStatusBadge } from '../task-status-badge'
 
 interface TaskColumnProps {
   status: TaskStatusEnumType
@@ -44,15 +42,11 @@ const STATUS_CONFIGS: Record<keyof typeof TaskStatusEnumTypeMap, StatusConfig> =
     },
   }
 
-export const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
+export const TaskDndColumn = ({ status, tasks }: TaskColumnProps) => {
   const { setNodeRef } = useDroppable({
     id: status,
     data: { type: 'column', status } satisfies DragColumnData,
   })
-
-  const sortedTasks = [...tasks].sort(
-    (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
-  )
 
   const { openTaskCreateModal } = useTaskModal()
 
@@ -61,7 +55,7 @@ export const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col max-w-[308px] items-center border border-border-basic-1 rounded-[12px] ${config.bgColor} w-full gap-3 min-h-[400px] transition-all duration-200`}
+      className={`hidden md:flex flex-col max-w-[308px] items-center border border-border-basic-1 rounded-[12px] ${config.bgColor} w-full gap-3 min-h-[400px] transition-all duration-200`}
     >
       {/* Header */}
       <div className="flex items-center gap-2 w-full p-4 pb-3">
@@ -71,7 +65,7 @@ export const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
 
       {/* Task Cards */}
       <div className="flex flex-col gap-2 w-full px-4 pb-4 flex-1">
-        {sortedTasks.map((task) => (
+        {tasks.map((task) => (
           <TaskCard key={task.id} task={task} />
         ))}
 
