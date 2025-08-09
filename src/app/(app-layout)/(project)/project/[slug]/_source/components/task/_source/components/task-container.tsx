@@ -133,7 +133,7 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
 
   return (
     <div className="w-full container mx-auto pt-[36px] pb-[80px] px-[20px] h-[100%] flex flex-col">
-      <div className="hidden md:block">
+      <div className="hidden md:block h-full">
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}
