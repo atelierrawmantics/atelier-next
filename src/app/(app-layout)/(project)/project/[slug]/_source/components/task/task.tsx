@@ -2,11 +2,10 @@
 
 import { useParams } from 'next/navigation'
 
-import { EmptyView, LoadingView } from '@toktokhan-dev/react-universal'
+import { LoadingView } from '@toktokhan-dev/react-universal'
 
 import { useProjectTaskListQuery } from '@/generated/apis/Task/Task.query'
 
-import { EmptyTask } from './_source/components/empty-task'
 import { LoadingTask } from './_source/components/loading-task'
 import { TaskContainer } from './_source/components/task-container'
 
@@ -24,9 +23,7 @@ export const Task = () => {
 
   return (
     <LoadingView isLoading={isLoading} fallback={<LoadingTask />}>
-      <EmptyView fallback={<EmptyTask />} data={data}>
-        <TaskContainer data={data!} />
-      </EmptyView>
+      <TaskContainer data={data!} />
     </LoadingView>
   )
 }

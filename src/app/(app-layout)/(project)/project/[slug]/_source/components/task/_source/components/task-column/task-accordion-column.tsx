@@ -1,3 +1,5 @@
+import { useParams } from 'next/navigation'
+
 import { PlusIcon } from 'lucide-react'
 
 import {
@@ -11,6 +13,7 @@ import {
   TaskStatusEnumTypeMap,
   TaskType,
 } from '@/generated/apis/@types/data-contracts'
+import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import { theme } from '@/generated/theme-token'
 
 import { useTaskModal } from '../../../../../hooks/use-task-modal'
@@ -46,7 +49,19 @@ export const TaskAccordionColumn = ({
   status,
   tasks,
 }: TaskAccordionColumnProps) => {
+  const { slug } = useParams<{ slug: string }>()
   const { openTaskCreateModal } = useTaskModal()
+  const { data: projectData } = useProjectRetrieveQuery({
+    variables: {
+      slug: slug,
+    },
+    options: {
+      enabled: !!slug,
+    },
+  })
+  const { isOwned, isShared } = projectData || {}
+
+  const isReadOnly = !isOwned && isShared
 
   return (
     <AccordionItem value={'hi'} className="w-full border-none rounded-t-[6px]">
@@ -60,7 +75,7 @@ export const TaskAccordionColumn = ({
           </div>
 
           <div className="flex gap-[6px]" onClick={(e) => e.stopPropagation()}>
-            {status === 'pending' && (
+            {status === 'pending' && !isReadOnly && (
               <Button
                 className="w-full justify-start"
                 variant={'ghost'}

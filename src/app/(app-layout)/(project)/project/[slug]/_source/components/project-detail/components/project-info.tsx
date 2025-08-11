@@ -151,22 +151,12 @@ const ProjectInfoHeader = ({
         <p className="typo-pre-body-3 text-grey-9">프로젝트 정보</p>
       </div>
       {!isReadOnly && (
-        <div className="flex gap-[8px]">
-          <Button
-            variant="ghost"
-            size="fit"
-            className="w-[32px] h-[32px] p-0"
-            onClick={onOpenUpdateModal}
-          >
-            <PencilSimpleIcon className="size-[16px]" />
+        <div className="flex gap-[12px]">
+          <Button variant="ghost" size="fit" onClick={onOpenUpdateModal}>
+            <PencilSimpleIcon className="size-[20px]" />
           </Button>
-          <Button
-            variant="ghost"
-            size="fit"
-            className="w-[32px] h-[32px] p-0"
-            onClick={handleDeleteProject}
-          >
-            <TrashIcon className="size-[16px]" />
+          <Button variant="ghost" size="fit" onClick={handleDeleteProject}>
+            <TrashIcon className="size-[20px]" />
           </Button>
         </div>
       )}
@@ -373,41 +363,39 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
           </Button>
           {!isReadOnly && (
             <>
-              <>
-                <Button
-                  variant="outline-grey"
-                  size="sm"
-                  className="w-fit hidden md:flex"
-                  onClick={handleCreateProjectShare}
-                  loading={isPendingCreateProjectShare}
-                >
-                  <LinkIcon />
-                  <p>{isShared ? '링크 공유 중단' : '공유 링크 생성'}</p>
-                </Button>
-                <Button
-                  variant="solid-primary"
-                  size="sm"
-                  className="w-fit hidden md:flex"
-                >
-                  작업지시서 미리보기
-                </Button>
-              </>
-              {isShared && (
-                <div className="flex justify-end">
-                  <Button
-                    variant={'ghost'}
-                    size="fit"
-                    className="px-[10px]"
-                    onClick={handleCopyLink}
-                  >
-                    <CopyIcon />
-                    <p className="typo-pre-caption-1 text-grey-8">링크 복사</p>
-                  </Button>
-                </div>
-              )}
+              <Button
+                variant="outline-grey"
+                size="sm"
+                className="w-fit hidden md:flex"
+                onClick={handleCreateProjectShare}
+                loading={isPendingCreateProjectShare}
+              >
+                <LinkIcon />
+                <p>{isShared ? '링크 공유 중단' : '공유 링크 생성'}</p>
+              </Button>
+              <Button
+                variant="solid-primary"
+                size="sm"
+                className="w-fit hidden md:flex"
+              >
+                작업지시서 미리보기
+              </Button>
             </>
           )}
         </div>
+        {!isReadOnly && isShared && (
+          <div className="flex justify-end">
+            <Button
+              variant={'ghost'}
+              size="fit"
+              className="px-[10px]"
+              onClick={handleCopyLink}
+            >
+              <CopyIcon />
+              <p className="typo-pre-caption-1 text-grey-8">링크 복사</p>
+            </Button>
+          </div>
+        )}
 
         <ProjectCreateModal
           isOpen={isOpen}

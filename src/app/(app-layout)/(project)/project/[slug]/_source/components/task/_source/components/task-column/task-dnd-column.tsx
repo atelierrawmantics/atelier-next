@@ -1,5 +1,7 @@
 'use client'
 
+import { useParams } from 'next/navigation'
+
 import { useDroppable } from '@dnd-kit/core'
 
 import { PlusIcon } from 'lucide-react'
@@ -10,6 +12,7 @@ import {
   TaskStatusEnumTypeMap,
   TaskType,
 } from '@/generated/apis/@types/data-contracts'
+import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import { theme } from '@/generated/theme-token'
 
 import { useTaskModal } from '../../../../../hooks/use-task-modal'
@@ -43,10 +46,24 @@ const STATUS_CONFIGS: Record<keyof typeof TaskStatusEnumTypeMap, StatusConfig> =
   }
 
 export const TaskDndColumn = ({ status, tasks }: TaskColumnProps) => {
+  const { slug } = useParams<{ slug: string }>()
+
   const { setNodeRef } = useDroppable({
     id: status,
     data: { type: 'column', status } satisfies DragColumnData,
   })
+
+  const { data: projectData } = useProjectRetrieveQuery({
+    variables: {
+      slug: slug,
+    },
+    options: {
+      enabled: !!slug,
+    },
+  })
+  const { isOwned, isShared } = projectData || {}
+
+  const isReadOnly = !isOwned && isShared
 
   const { openTaskCreateModal } = useTaskModal()
 
@@ -69,7 +86,7 @@ export const TaskDndColumn = ({ status, tasks }: TaskColumnProps) => {
           <TaskCard key={task.id} task={task} />
         ))}
 
-        {status === 'pending' && (
+        {status === 'pending' && !isReadOnly && (
           <Button
             className="w-full justify-start"
             variant={'ghost'}

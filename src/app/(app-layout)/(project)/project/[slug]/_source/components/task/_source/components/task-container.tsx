@@ -132,7 +132,7 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
   }, [data])
 
   return (
-    <div className="w-full container mx-auto pt-[36px] pb-[80px] px-[20px] h-[100%] flex flex-col">
+    <div className="w-full container mx-auto pt-[36px] pb-[80px] h-full flex flex-col">
       <div className="hidden md:block h-full">
         <DndContext
           sensors={sensors}
@@ -163,7 +163,7 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
       </div>
 
       {/* tablet 이하 모바일 뷰 */}
-      <div className="flex flex-col md:hidden gap-5">
+      <div className="flex h-full flex-col md:hidden gap-5">
         <div className="py-[10px] px-[20px] bg-primary-2 flex gap-[6px] items-center sm:items-start">
           <InfoFillIcon className="min-w-[20px] size-[20px]" />
           <p className="typo-pre-body-6">

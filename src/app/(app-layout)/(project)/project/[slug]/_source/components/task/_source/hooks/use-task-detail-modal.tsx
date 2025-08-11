@@ -37,6 +37,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { TaskStatusEnumType } from '@/generated/apis/@types/data-contracts'
+import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import {
   QUERY_KEY_TASK_API,
   useProjectTaskDestroyMutation,
@@ -80,6 +81,17 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
       slug: taskSlug,
     },
   })
+
+  const { data: projectData } = useProjectRetrieveQuery({
+    variables: {
+      slug: slug,
+    },
+    options: {
+      enabled: !!slug,
+    },
+  })
+  const { isOwned, isShared } = projectData || {}
+  const isReadOnly = !isOwned && isShared
 
   const { mutate: updateTask, isPending: isUpdating } =
     useProjectTaskPartialUpdateMutation({
@@ -244,7 +256,7 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
         </div>
 
         <AlertDialogFooter className="flex flex-row p-[12px_16px_16px_16px] border-t border-border-basic-1">
-          {!isEditing && (
+          {!isEditing && !isReadOnly && (
             <>
               <Button
                 variant="solid-grey"
@@ -263,6 +275,11 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
                 수정
               </Button>
             </>
+          )}
+          {isReadOnly && (
+            <Button type="button" onClick={onClose}>
+              확인
+            </Button>
           )}
 
           {isEditing && (
