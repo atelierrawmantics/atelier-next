@@ -11,6 +11,7 @@ export const ProjectDetail = () => {
         'flex justify-end md:justify-center items-start gap-[16px] flex-col-reverse md:flex-row',
         'container',
         'w-full pt-[16px] sm:pt-[20px] md:pt-[36px]',
+        'h-full sm:h-auto',
       )}
     >
       <ProjectInfoMo className="flex sm:hidden" />

@@ -14,7 +14,7 @@ export const EmptyTask = () => {
     <div className="w-full h-full flex flex-col items-center justify-center bg-grey-0 rounded-[12px] border border-border-basic-1 py-[96px]">
       <div className="w-full flex flex-col items-center justify-center gap-3">
         <div className="flex flex-col items-center justify-center size-[56px] rounded-full bg-secondary-2">
-          <ArticleIcon className="size-[28px] bg-secondary-3" />
+          <ArticleIcon className="size-[28px] text-secondary-3" />
         </div>
         <div className="flex flex-col items-center justify-center gap-0">
           <p className="typo-pre-body-5 text-grey-9">

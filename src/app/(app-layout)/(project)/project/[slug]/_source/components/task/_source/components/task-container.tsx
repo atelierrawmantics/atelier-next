@@ -26,7 +26,6 @@ import {
 import { InfoFillIcon } from '@/generated/icons/MyIcons'
 
 import { isColumnData, isTaskData } from '../../../../utils/dnd'
-import { EmptyTask } from './empty-task'
 import { TaskCard } from './task-card'
 import { TaskColumn } from './task-column/task-column'
 
@@ -132,7 +131,7 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
   }, [data])
 
   return (
-    <div className="w-full container mx-auto pt-[36px] flex flex-col">
+    <div className="w-full container mx-auto pt-[16px] sm:pt-[20px] md:pt-[36px] flex flex-col h-screen">
       <div className="hidden md:block h-full">
         <DndContext
           sensors={sensors}
@@ -148,8 +147,6 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
                   tasks={tasks?.filter((task) => task.status === status) || []}
                 />
               ))}
-
-            {tasks?.length === 0 && <EmptyTask />}
           </div>
 
           <DragOverlay dropAnimation={null}>
@@ -181,8 +178,6 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
                 tasks={tasks?.filter((task) => task.status === status) || []}
               />
             ))}
-
-          {tasks?.length === 0 && <EmptyTask />}
         </div>
       </div>
     </div>

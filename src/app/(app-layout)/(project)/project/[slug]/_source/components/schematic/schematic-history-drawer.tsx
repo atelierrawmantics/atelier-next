@@ -36,7 +36,6 @@ import {
 import {
   ArticleIcon,
   DotsThreeIcon,
-  ImagesIcon,
   MagicWandIcon,
   TrashIcon,
 } from '@/generated/icons/MyIcons'
