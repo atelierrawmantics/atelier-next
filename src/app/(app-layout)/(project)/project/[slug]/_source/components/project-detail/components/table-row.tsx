@@ -28,7 +28,9 @@ export const TableRow = ({
             size="md"
             readOnly={readOnly}
             placeholder={readOnly ? '' : undefined}
-            {...register(`${fieldName}.${rowIndex}.${colIndex}`)}
+            {...register(
+              `${fieldName}.${rowIndex}.${colIndex}` as keyof ProjectInfoFormDataType,
+            )}
           />
         </div>
       ))}

@@ -38,6 +38,7 @@ import { ProjectInfoFormSkeleton } from './project-info-form-skeleton'
 import { TableHeader } from './table-header'
 import { TableRow } from './table-row'
 
+// 섹션별 설정
 const SECTION_CONFIGS = {
   'season-style': {
     title: '시즌 및 스타일 정보',
@@ -97,7 +98,6 @@ const SECTION_CONFIGS = {
     maxImageCount: 6,
   },
 } as const
-
 const createEmptyArray = (rows: number, cols: number) => {
   return Array(rows)
     .fill(null)
@@ -214,18 +214,13 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   ) => {
     const file = event.target.files?.[0]
     if (file) {
-      console.log('도식화 이미지 파일 선택:', file.name, file.size, file.type)
-
       try {
         const base64String = await fileToBase64(file)
         setValue('schematic', { image: base64String as string })
         setSchematicFile(file)
-        console.log('도식화 이미지 base64 변환 완료')
       } catch (error) {
         console.error('도식화 이미지 base64 변환 실패:', error)
       }
-    } else {
-      console.log('파일이 선택되지 않음')
     }
     event.target.value = ''
   }
@@ -252,7 +247,6 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
 
         setValue('swatchSet', [...currentSwatchSet, ...newSwatchItems])
         setSwatchFiles([...swatchFiles, ...filesToUpload])
-        console.log('스와치 이미지 base64 변환 완료')
       } catch (error) {
         console.error('스와치 이미지 base64 변환 실패:', error)
       }
@@ -277,7 +271,6 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
       try {
         const uploadResult = await uploadFile(schematicFile)
         uploadedSchematic = { image: uploadResult }
-        console.log('도식화 이미지 S3 업로드 성공:', uploadResult)
       } catch (e) {
         console.error('도식화 이미지 업로드 중 오류 발생:', e)
         return { schematic: uploadedSchematic }
@@ -352,7 +345,6 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
         )
 
         updatedSwatchSet = [...existingItems, ...newSwatchItems]
-        console.log('스와치 이미지 S3 업로드 성공:', uploadedUrls)
       } catch (e) {
         console.error('스와치 이미지 업로드 중 오류 발생:', e)
         return { swatchSet: updatedSwatchSet }
@@ -416,6 +408,12 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
         return
       }
 
+      console.log('업데이트 요청 전송:', {
+        projectSlug: slug,
+        id: 'me',
+        data: sectionData,
+      })
+
       updateInstruction({
         projectSlug: slug,
         id: 'me',
@@ -423,6 +421,39 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
       })
     }
   }
+
+  // 각 섹션별 저장 핸들러
+  const handleSeasonStyleSave = createSaveHandler(
+    '시즌 및 스타일 정보',
+    extractSeasonStyleData,
+  )
+
+  const handleSchematicSave = createSaveHandler(
+    '도식화 이미지',
+    extractSchematicData,
+  )
+
+  const handleSizeSpecSave = createSaveHandler(
+    '사이즈 스펙',
+    extractSizeSpecData,
+  )
+
+  const handleStyleColorSave = createSaveHandler(
+    '스타일 컬러',
+    extractStyleColorData,
+  )
+
+  const handleFabricSave = createSaveHandler(
+    '원단 상세 정보',
+    extractFabricData,
+  )
+
+  const handleAccessorySave = createSaveHandler(
+    '부자재 정보',
+    extractAccessoryData,
+  )
+
+  const handleSwatchSave = createSaveHandler('SWATCH', extractSwatchData)
 
   // 각 섹션별 리셋 핸들러
   const handleSeasonStyleReset = () => {
@@ -480,9 +511,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="season-style"
               title={SECTION_CONFIGS['season-style'].title}
               onReset={handleSeasonStyleReset}
-              onSave={() =>
-                createSaveHandler('시즌 및 스타일 정보', extractSeasonStyleData)
-              }
+              onSave={handleSeasonStyleSave}
               isDirty={isSeasonStyleDirty}
               isFirstItem={true}
             >
@@ -504,9 +533,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="schematic"
               title={SECTION_CONFIGS.schematic.title}
               onReset={handleSchematicReset}
-              onSave={() =>
-                createSaveHandler('도식화 이미지', extractSchematicData)
-              }
+              onSave={handleSchematicSave}
               hasImageUpload={SECTION_CONFIGS.schematic.hasImageUpload}
               onImageUpload={handleSchematicUpload}
               imageUploadId="schematic-upload"
@@ -532,9 +559,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="size-spec"
               title={SECTION_CONFIGS['size-spec'].title}
               onReset={handleSizeSpecReset}
-              onSave={() =>
-                createSaveHandler('사이즈 스펙', extractSizeSpecData)
-              }
+              onSave={handleSizeSpecSave}
               isDirty={isSizeSpecDirty}
             >
               {/* 헤더 */}
@@ -582,9 +607,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="style-color"
               title={SECTION_CONFIGS['style-color'].title}
               onReset={handleStyleColorReset}
-              onSave={() =>
-                createSaveHandler('스타일 컬러', extractStyleColorData)
-              }
+              onSave={handleStyleColorSave}
               isDirty={isStyleColorDirty}
             >
               <TableHeader
@@ -612,9 +635,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="fabric-details"
               title={SECTION_CONFIGS['fabric-details'].title}
               onReset={handleFabricReset}
-              onSave={() =>
-                createSaveHandler('원단 상세 정보', extractFabricData)
-              }
+              onSave={handleFabricSave}
               isDirty={isFabricDirty}
             >
               <TableHeader
@@ -642,9 +663,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="accessory-info"
               title={SECTION_CONFIGS['accessory-info'].title}
               onReset={handleAccessoryReset}
-              onSave={() =>
-                createSaveHandler('부자재 정보', extractAccessoryData)
-              }
+              onSave={handleAccessorySave}
               isDirty={isAccessoryDirty}
             >
               <TableHeader
@@ -672,7 +691,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="swatch"
               title={SECTION_CONFIGS.swatch.title}
               onReset={handleSwatchReset}
-              onSave={() => createSaveHandler('SWATCH', extractSwatchData)}
+              onSave={handleSwatchSave}
               hasImageUpload={SECTION_CONFIGS.swatch.hasImageUpload}
               onImageUpload={handleSwatchUpload}
               imageUploadId="swatch-upload"
