@@ -25,6 +25,7 @@ import {
   HistoryItemDropDownMenu,
   SchematicHistoryDrawer,
 } from './schematic-history-drawer'
+import { SchematicMo } from './schematic-mo'
 
 const EXAMPLE_TEXT = [
   '5:5 비율의 반팔 티셔츠 도식화',
@@ -225,67 +226,71 @@ export const Schematic = () => {
   }
 
   return (
-    <div
-      className={cn(
-        'container',
-        'text-center w-full h-full',
-        'flex flex-1 flex-col justify-center items-center gap-[16px]',
-      )}
-    >
-      {/* 완성된 이미지 표시 */}
-      {schematic?.image && (
-        <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
-          <div className="relative aspect-[3/2] max-w-full w-full sm:w-auto h-auto sm:h-full">
-            <Image
-              src={schematic.image}
-              alt="생성된 도식화"
-              fill
-              objectFit="cover"
-              unoptimized
-            />
-            <HistoryItemDropDownMenu
-              id={schematic.id}
-              image={schematic.image}
-              isDelete={false}
-            />
-          </div>
-        </div>
-      )}
-      {(isPending || schematic?.status === 'PENDING') && (
-        <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
-          <div className="relative aspect-[3/2] h-full">
-            <div className="flex items-center justify-center w-full h-full bg-secondary-1">
-              <Loader2Icon className="animate-spin" />
+    <>
+      <div
+        className={cn(
+          'container',
+          'text-center w-full h-full',
+          'flex-1 flex-col justify-center items-center gap-[16px]',
+          'hidden sm:flex',
+        )}
+      >
+        {/* 완성된 이미지 표시 */}
+        {schematic?.image && (
+          <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
+            <div className="relative aspect-[3/2] max-w-full w-full sm:w-auto h-auto sm:h-full">
+              <Image
+                src={schematic.image}
+                alt="생성된 도식화"
+                fill
+                objectFit="cover"
+                unoptimized
+              />
+              <HistoryItemDropDownMenu
+                id={schematic.id}
+                image={schematic.image}
+                isDelete={false}
+              />
             </div>
           </div>
-        </div>
-      )}
-      {!isPending && !schematic?.status && (
-        <div className="flex flex-col items-center justify-center w-full h-full pt-[160px] gap-[16px]">
-          <div className="flex items-center justify-center size-[56px] rounded-full bg-primary-3">
-            <MagicWandFillIcon />
+        )}
+        {(isPending || schematic?.status === 'PENDING') && (
+          <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
+            <div className="relative aspect-[3/2] h-full">
+              <div className="flex items-center justify-center w-full h-full bg-secondary-1">
+                <Loader2Icon className="animate-spin" />
+              </div>
+            </div>
           </div>
-          <h1 className="typo-pre-heading-2 text-grey-10">
-            도식화 제작 도우미
-          </h1>
-          <h2 className="typo-pre-body-6 text-grey-7 whitespace-pre-line mt-[4px]">
-            {`패션 디자이너를 위한 키워드 기반 도식화 제작 도우미입니다.\n간단한 키워드 입력만으로도 빠르고 정확하게 도식화를 완성할 수 있도록 도와드립니다.`}
-          </h2>
+        )}
+        {!isPending && !schematic?.status && (
+          <div className="flex flex-col items-center justify-center w-full h-full pt-[160px] gap-[16px]">
+            <div className="flex items-center justify-center size-[56px] rounded-full bg-primary-3">
+              <MagicWandFillIcon />
+            </div>
+            <h1 className="typo-pre-heading-2 text-grey-10">
+              도식화 제작 도우미
+            </h1>
+            <h2 className="typo-pre-body-6 text-grey-7 whitespace-pre-line mt-[4px]">
+              {`패션 디자이너를 위한 키워드 기반 도식화 제작 도우미입니다.\n간단한 키워드 입력만으로도 빠르고 정확하게 도식화를 완성할 수 있도록 도와드립니다.`}
+            </h2>
 
-          <div className="grid grid-cols-4 gap-[8px] mt-[24px] w-full">
-            {Children.toArray(
-              EXAMPLE_TEXT.map((text, index) => (
-                <ExampleTextBox order={index + 1} text={text} />
-              )),
-            )}
+            <div className="grid grid-cols-4 gap-[8px] mt-[24px] w-full">
+              {Children.toArray(
+                EXAMPLE_TEXT.map((text, index) => (
+                  <ExampleTextBox order={index + 1} text={text} />
+                )),
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <PromptInput
-        onSubmit={handlePromptSubmit}
-        isPending={schematic?.status === 'PENDING' || isPending}
-      />
-    </div>
+        <PromptInput
+          onSubmit={handlePromptSubmit}
+          isPending={schematic?.status === 'PENDING' || isPending}
+        />
+      </div>
+      <SchematicMo className="flex sm:hidden" />
+    </>
   )
 }
