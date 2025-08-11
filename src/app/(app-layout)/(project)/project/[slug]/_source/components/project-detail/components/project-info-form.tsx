@@ -11,42 +11,33 @@ import {
   fileToBase64,
 } from '@toktokhan-dev/react-universal'
 
-import { useFormContext, useWatch } from 'react-hook-form'
+import { useWatch } from 'react-hook-form'
 import { ClassNameValue } from 'tailwind-merge'
 
 import {
   useUploadFileToS3Mutation,
   useUploadFilesToS3Mutation,
 } from '@/apis/s3-file-uploader/S3FileUploaderApi.query'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
+import { Accordion } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   useProjectInstructionPartialUpdateMutation,
   useProjectInstructionRetrieveQuery,
 } from '@/generated/apis/Instruction/Instruction.query'
 import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
-import { ShirtFoldedIcon, SwatchesIcon, XIcon } from '@/generated/icons/MyIcons'
+import { SwatchesIcon, XIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
-import {
-  ProjectInfoFormDataType,
-  useProjectInfoForm,
-} from '../hooks/use-project-info-form'
+import { useProjectInfoForm } from '../hooks/use-project-info-form'
+import { AccordionFormItem } from './accordion-form-item'
+import { ImageUploadArea } from './image-upload-area'
+import { InputField } from './input-field'
+import { ProjectInfoFormSkeleton } from './project-info-form-skeleton'
+import { TableHeader } from './table-header'
+import { TableRow } from './table-row'
 
-// 상수 정의
-const BUTTON_STYLES =
-  'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 cursor-pointer'
-
-// 섹션별 설정
 const SECTION_CONFIGS = {
   'season-style': {
     title: '시즌 및 스타일 정보',
@@ -107,301 +98,11 @@ const SECTION_CONFIGS = {
   },
 } as const
 
-// 재사용 가능한 아코디언 아이템 컴포넌트
-interface AccordionFormItemProps {
-  value: string
-  title: string
-  children: React.ReactNode
-  onReset: () => void
-  onSave: () => void
-  hasImageUpload?: boolean
-  onImageUpload?: (event: React.ChangeEvent<HTMLInputElement>) => void
-  imageUploadId?: string
-  isLastItem?: boolean
-  isFirstItem?: boolean
-  isDirty?: boolean
-  maxImageCount?: number
-  currentImageCount?: number
+const createEmptyArray = (rows: number, cols: number) => {
+  return Array(rows)
+    .fill(null)
+    .map(() => Array(cols).fill(''))
 }
-
-const AccordionFormItem = ({
-  value,
-  title,
-  children,
-  onReset,
-  onSave,
-  hasImageUpload = false,
-  onImageUpload,
-  imageUploadId,
-  isLastItem = false,
-  isFirstItem = false,
-  isDirty = false,
-  maxImageCount,
-  currentImageCount = 0,
-}: AccordionFormItemProps) => {
-  const { slug } = useParams<{ slug: string }>()
-  const { data: projectData } = useProjectRetrieveQuery({
-    variables: {
-      slug,
-    },
-    options: {
-      enabled: !!slug,
-    },
-  })
-
-  const { isShared, isOwned } = projectData || {}
-  const isReadOnly = isShared && !isOwned
-  const handleReset = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onReset()
-  }
-
-  const handleSave = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onSave()
-  }
-
-  const handleImageUpload = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
-
-  const isImageUploadDisabled = Boolean(
-    maxImageCount && currentImageCount >= maxImageCount,
-  )
-
-  return (
-    <AccordionItem
-      value={value}
-      className={cn(isFirstItem ? 'rounded-t-[6px]' : '', 'w-full')}
-    >
-      <AccordionTrigger
-        className={cn(
-          'h-[62px] typo-pre-body-5 text-grey-10',
-          isFirstItem ? 'rounded-t-[6px]' : '',
-          isLastItem ? 'data-[state=closed]:rounded-b-[6px]' : '',
-        )}
-      >
-        <div className="w-full flex justify-between items-center">
-          <p>{title}</p>
-          {!isReadOnly && (
-            <div
-              className="flex gap-[6px]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {hasImageUpload && (
-                <div
-                  className={cn(
-                    BUTTON_STYLES,
-                    isImageUploadDisabled && 'opacity-50 cursor-not-allowed',
-                  )}
-                >
-                  <label
-                    htmlFor={imageUploadId}
-                    onClick={handleImageUpload}
-                    className={cn(
-                      'cursor-pointer',
-                      isImageUploadDisabled && 'cursor-not-allowed',
-                    )}
-                  >
-                    이미지 첨부
-                    <input
-                      id={imageUploadId}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={onImageUpload}
-                      readOnly={isImageUploadDisabled}
-                    />
-                  </label>
-                </div>
-              )}
-              <div
-                className={cn(
-                  BUTTON_STYLES,
-                  !isDirty && 'opacity-50 cursor-not-allowed',
-                )}
-                onClick={isDirty ? handleReset : undefined}
-              >
-                초기화
-              </div>
-              <div className={BUTTON_STYLES} onClick={handleSave}>
-                저장
-              </div>
-            </div>
-          )}
-        </div>
-      </AccordionTrigger>
-      <AccordionContent
-        className={cn(
-          isLastItem ? 'data-[state=open]:rounded-b-[6px]' : '',
-          'p-[20px]',
-        )}
-      >
-        {children}
-      </AccordionContent>
-    </AccordionItem>
-  )
-}
-
-// 이미지 업로드 영역 컴포넌트
-interface ImageUploadAreaProps {
-  imageUrl?: string | null
-  onDelete?: () => void
-  icon?: React.ReactNode
-  title?: string
-  description?: string
-  subDescription?: string
-}
-
-const ImageUploadArea = ({
-  imageUrl,
-  onDelete,
-  icon = <ShirtFoldedIcon className="size-[28px]" />,
-  title = '도식화는 AI로 생성하거나 직접 이미지를 첨부할 수 있습니다. (최대 1개까지 등록 가능)',
-  description = 'AI 도식화를 생성하려면 상단의 [AI 도식화 도우미] 탭을 이용해 주세요.',
-  subDescription = '지원 형식: jpg, png',
-}: ImageUploadAreaProps) => {
-  return (
-    <div className="w-full">
-      {imageUrl ?
-        <div className="w-full flex justify-center">
-          <div className="flex gap-[8px] items-start justify-center">
-            <div className="relative w-[400px] h-[233px] flex items-center justify-center">
-              <Image
-                unoptimized
-                src={imageUrl}
-                alt="Uploaded image"
-                className="w-full h-full object-cover"
-                fill
-                sizes="400px"
-              />
-            </div>
-            {onDelete && (
-              <Button variant="ghost" size="fit" onClick={onDelete}>
-                <XIcon className="size-[32px]" />
-              </Button>
-            )}
-          </div>
-        </div>
-      : <div className="w-full flex flex-col items-center justify-center gap-[12px] py-[40px]">
-          <div className="size-[56px] rounded-full bg-secondary-2 flex items-center justify-center">
-            {icon}
-          </div>
-          <div className="flex flex-col items-center justify-center">
-            <p className="typo-pre-body-5 text-grey-9">{title}</p>
-            <p className="typo-body-6 text-grey-8">{description}</p>
-            <p className="typo-pre-caption-2 text-grey-7 mt-[8px]">
-              {subDescription}
-            </p>
-          </div>
-        </div>
-      }
-    </div>
-  )
-}
-
-// 입력 필드 컴포넌트
-interface InputFieldProps {
-  id: string
-  label: string
-  placeholder: string
-  readOnly?: boolean
-}
-
-const InputField = ({
-  id,
-  label,
-  placeholder,
-  readOnly = false,
-}: InputFieldProps) => {
-  const { register } = useFormContext<ProjectInfoFormDataType>()
-
-  return (
-    <div className="flex gap-[55px]">
-      <Label htmlFor={id} className="w-[60px] typo-pre-caption-1 text-grey-9">
-        {label}
-      </Label>
-      <Input
-        id={id}
-        placeholder={readOnly ? '' : placeholder}
-        size="md"
-        variant="outline-grey"
-        className="w-full"
-        readOnly={readOnly}
-        {...register(id as keyof ProjectInfoFormDataType)}
-      />
-    </div>
-  )
-}
-
-// 테이블 행 컴포넌트
-interface TableRowProps {
-  rowIndex: number
-  columns: number
-  fieldName: 'sizeValues' | 'colorValues' | 'fabricValues' | 'materialValues'
-  readOnly?: boolean
-}
-
-const TableRow = ({
-  rowIndex,
-  columns,
-  fieldName,
-  readOnly = false,
-}: TableRowProps) => {
-  const { register } = useFormContext<ProjectInfoFormDataType>()
-
-  return (
-    <div className={`grid grid-cols-${columns} gap-[4px] space-y-[4px]`}>
-      {Array.from({ length: columns }, (_, colIndex) => (
-        <div key={colIndex}>
-          <Input
-            size="md"
-            readOnly={readOnly}
-            placeholder={readOnly ? '' : undefined}
-            {...register(
-              `${fieldName}.${rowIndex}.${colIndex}` as keyof ProjectInfoFormDataType,
-            )}
-          />
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// 테이블 헤더 컴포넌트
-interface TableHeaderProps {
-  headers: string[]
-  columns: number
-  sizeNames?: string[]
-  sizeNamesIndex?: number
-}
-
-const TableHeader = ({
-  headers,
-  columns,
-  sizeNames,
-  sizeNamesIndex,
-}: TableHeaderProps) => {
-  return (
-    <div
-      className={`grid grid-cols-${columns} gap-[4px] items-center space-y-[4px]`}
-    >
-      {headers.map((header, index) => (
-        <div key={index} className="typo-pre-body-5 text-grey-9 text-center">
-          {(
-            sizeNames &&
-            sizeNamesIndex !== undefined &&
-            index > 0 &&
-            index < headers.length - 1
-          ) ?
-            sizeNames[index - 1] || header
-          : header}
-        </div>
-      ))}
-    </div>
-  )
-}
-
 interface ProjectInfoFormProps {
   className?: ClassNameValue
 }
@@ -467,13 +168,6 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
     name: 'materialValues',
   })
   const swatchSet = useWatch({ control: form.control, name: 'swatchSet' })
-
-  // 순수 함수: 배열 생성
-  const createEmptyArray = (rows: number, cols: number) => {
-    return Array(rows)
-      .fill(null)
-      .map(() => Array(cols).fill(''))
-  }
 
   // 각 섹션별 isDirty 상태 계산
   const isSeasonStyleDirty = useMemo(() => {
@@ -693,7 +387,6 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   ) => {
     return async () => {
       const sectionData = await dataExtractor()
-      console.log(`${sectionName} 저장:`, sectionData)
 
       const hasActualData = (data: unknown): boolean => {
         if (typeof data === 'string') {
@@ -723,12 +416,6 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
         return
       }
 
-      console.log('업데이트 요청 전송:', {
-        projectSlug: slug,
-        id: 'me',
-        data: sectionData,
-      })
-
       updateInstruction({
         projectSlug: slug,
         id: 'me',
@@ -736,39 +423,6 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
       })
     }
   }
-
-  // 각 섹션별 저장 핸들러
-  const handleSeasonStyleSave = createSaveHandler(
-    '시즌 및 스타일 정보',
-    extractSeasonStyleData,
-  )
-
-  const handleSchematicSave = createSaveHandler(
-    '도식화 이미지',
-    extractSchematicData,
-  )
-
-  const handleSizeSpecSave = createSaveHandler(
-    '사이즈 스펙',
-    extractSizeSpecData,
-  )
-
-  const handleStyleColorSave = createSaveHandler(
-    '스타일 컬러',
-    extractStyleColorData,
-  )
-
-  const handleFabricSave = createSaveHandler(
-    '원단 상세 정보',
-    extractFabricData,
-  )
-
-  const handleAccessorySave = createSaveHandler(
-    '부자재 정보',
-    extractAccessoryData,
-  )
-
-  const handleSwatchSave = createSaveHandler('SWATCH', extractSwatchData)
 
   // 각 섹션별 리셋 핸들러
   const handleSeasonStyleReset = () => {
@@ -831,7 +485,9 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="season-style"
               title={SECTION_CONFIGS['season-style'].title}
               onReset={handleSeasonStyleReset}
-              onSave={handleSeasonStyleSave}
+              onSave={() =>
+                createSaveHandler('시즌 및 스타일 정보', extractSeasonStyleData)
+              }
               isDirty={isSeasonStyleDirty}
               isFirstItem={true}
             >
@@ -853,7 +509,9 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="schematic"
               title={SECTION_CONFIGS.schematic.title}
               onReset={handleSchematicReset}
-              onSave={handleSchematicSave}
+              onSave={() =>
+                createSaveHandler('도식화 이미지', extractSchematicData)
+              }
               hasImageUpload={SECTION_CONFIGS.schematic.hasImageUpload}
               onImageUpload={handleSchematicUpload}
               imageUploadId="schematic-upload"
@@ -879,7 +537,9 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="size-spec"
               title={SECTION_CONFIGS['size-spec'].title}
               onReset={handleSizeSpecReset}
-              onSave={handleSizeSpecSave}
+              onSave={() =>
+                createSaveHandler('사이즈 스펙', extractSizeSpecData)
+              }
               isDirty={isSizeSpecDirty}
             >
               {/* 헤더 */}
@@ -927,7 +587,9 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="style-color"
               title={SECTION_CONFIGS['style-color'].title}
               onReset={handleStyleColorReset}
-              onSave={handleStyleColorSave}
+              onSave={() =>
+                createSaveHandler('스타일 컬러', extractStyleColorData)
+              }
               isDirty={isStyleColorDirty}
             >
               <TableHeader
@@ -955,7 +617,9 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="fabric-details"
               title={SECTION_CONFIGS['fabric-details'].title}
               onReset={handleFabricReset}
-              onSave={handleFabricSave}
+              onSave={() =>
+                createSaveHandler('원단 상세 정보', extractFabricData)
+              }
               isDirty={isFabricDirty}
             >
               <TableHeader
@@ -983,7 +647,9 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="accessory-info"
               title={SECTION_CONFIGS['accessory-info'].title}
               onReset={handleAccessoryReset}
-              onSave={handleAccessorySave}
+              onSave={() =>
+                createSaveHandler('부자재 정보', extractAccessoryData)
+              }
               isDirty={isAccessoryDirty}
             >
               <TableHeader
@@ -1011,7 +677,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               value="swatch"
               title={SECTION_CONFIGS.swatch.title}
               onReset={handleSwatchReset}
-              onSave={handleSwatchSave}
+              onSave={() => createSaveHandler('SWATCH', extractSwatchData)}
               hasImageUpload={SECTION_CONFIGS.swatch.hasImageUpload}
               onImageUpload={handleSwatchUpload}
               imageUploadId="swatch-upload"
@@ -1086,125 +752,3 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
     </LoadingView>
   )
 }
-
-// 스켈레톤 컴포넌트들
-const AccordionItemSkeleton = () => (
-  <div className="border-b border-t border-border-basic-1">
-    <div className="h-[62px] flex items-center justify-between px-[20px]">
-      <Skeleton className="w-32 h-5" />
-      <div className="flex gap-2">
-        <Skeleton className="w-20 h-8" />
-        <Skeleton className="w-16 h-8" />
-        <Skeleton className="w-16 h-8" />
-      </div>
-    </div>
-  </div>
-)
-
-const InputFieldSkeleton = () => (
-  <div className="flex gap-[55px]">
-    <Skeleton className="w-[60px] h-4" />
-    <Skeleton className="w-full h-10" />
-  </div>
-)
-
-const TableRowSkeleton = ({ columns }: { columns: number }) => (
-  <div className={`grid grid-cols-${columns} gap-[4px] space-y-[4px]`}>
-    {Array.from({ length: columns }, (_, index) => (
-      <Skeleton key={index} className="h-10" />
-    ))}
-  </div>
-)
-
-const ImageUploadAreaSkeleton = () => (
-  <div className="w-full flex flex-col items-center justify-center gap-[12px] py-[40px]">
-    <Skeleton className="size-[56px] rounded-full" />
-    <div className="flex flex-col items-center justify-center">
-      <Skeleton className="w-64 h-5 mb-2" />
-      <Skeleton className="w-80 h-4 mb-2" />
-      <Skeleton className="w-32 h-3" />
-    </div>
-  </div>
-)
-
-const ProjectInfoFormSkeleton = () => (
-  <div className="max-w-full md:max-w-[859px] w-full pb-[80px]">
-    <div className="w-full rounded-[6px] border-l border-r border-border-basic-1 border-b bg-background-basic-1">
-      {/* 시즌 및 스타일 정보 섹션 */}
-      <AccordionItemSkeleton />
-      <div className="p-[20px]">
-        <div className="flex flex-col gap-[8px]">
-          {Array.from({ length: 6 }, (_, index) => (
-            <InputFieldSkeleton key={index} />
-          ))}
-        </div>
-      </div>
-
-      {/* 도식화 이미지 섹션 */}
-      <AccordionItemSkeleton />
-      <div className="p-[20px]">
-        <ImageUploadAreaSkeleton />
-      </div>
-
-      {/* 사이즈 스펙 섹션 */}
-      <AccordionItemSkeleton />
-      <div className="p-[20px]">
-        <div className="grid grid-cols-7 gap-[4px] items-center space-y-[4px] mb-4">
-          <Skeleton className="h-4" />
-          {Array.from({ length: 5 }, (_, index) => (
-            <Skeleton key={index} className="h-10" />
-          ))}
-          <Skeleton className="h-4" />
-        </div>
-        {Array.from({ length: 15 }, (_, index) => (
-          <TableRowSkeleton key={index} columns={7} />
-        ))}
-      </div>
-
-      {/* 스타일 컬러 섹션 */}
-      <AccordionItemSkeleton />
-      <div className="p-[20px]">
-        <div className="grid grid-cols-7 gap-[4px] items-center space-y-[4px] mb-4">
-          {Array.from({ length: 7 }, (_, index) => (
-            <Skeleton key={index} className="h-4" />
-          ))}
-        </div>
-        {Array.from({ length: 5 }, (_, index) => (
-          <TableRowSkeleton key={index} columns={7} />
-        ))}
-      </div>
-
-      {/* 원단 상세 정보 섹션 */}
-      <AccordionItemSkeleton />
-      <div className="p-[20px]">
-        <div className="grid grid-cols-6 gap-[4px] items-center space-y-[4px] mb-4">
-          {Array.from({ length: 6 }, (_, index) => (
-            <Skeleton key={index} className="h-4" />
-          ))}
-        </div>
-        {Array.from({ length: 6 }, (_, index) => (
-          <TableRowSkeleton key={index} columns={6} />
-        ))}
-      </div>
-
-      {/* 부자재 정보 섹션 */}
-      <AccordionItemSkeleton />
-      <div className="p-[20px]">
-        <div className="grid grid-cols-5 gap-[4px] items-center space-y-[4px] mb-4">
-          {Array.from({ length: 5 }, (_, index) => (
-            <Skeleton key={index} className="h-4" />
-          ))}
-        </div>
-        {Array.from({ length: 5 }, (_, index) => (
-          <TableRowSkeleton key={index} columns={5} />
-        ))}
-      </div>
-
-      {/* SWATCH 섹션 */}
-      <AccordionItemSkeleton />
-      <div className="p-[20px]">
-        <ImageUploadAreaSkeleton />
-      </div>
-    </div>
-  </div>
-)
