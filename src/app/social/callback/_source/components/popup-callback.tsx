@@ -69,7 +69,7 @@ export const PopupCallback = () => {
     },
   })
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex h-[100dvh] justify-center items-center">
       <Loader2Icon className="animate-spin" size={36} />
     </div>
   )
