@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 
 import { ArrowUpIcon, Loader2Icon } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
 import { Textarea, textareaVariants } from '@/components/ui/textarea'
@@ -17,9 +18,13 @@ import {
   useProjectSchematicRetrieveQuery,
 } from '@/generated/apis/Schematic/Schematic.query'
 import { MagicWandFillIcon } from '@/generated/icons/MyIcons'
+import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
-import { SchematicHistoryDrawer } from './schematic-history-drawer'
+import {
+  HistoryItemDropDownMenu,
+  SchematicHistoryDrawer,
+} from './schematic-history-drawer'
 
 const EXAMPLE_TEXT = [
   '5:5 비율의 반팔 티셔츠 도식화',
@@ -49,66 +54,83 @@ const ExampleTextBox = ({ text, order }: ExampleTextBoxProps) => {
   )
 }
 
+interface PromptFormData {
+  prompt: string
+}
+
 interface PromptInputProps {
   onSubmit: (prompt: string) => void
   isPending: boolean
 }
 
 const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
-  const [prompt, setPrompt] = useState('')
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<PromptFormData>({
+    defaultValues: {
+      prompt: '',
+    },
+  })
 
-  const handleSubmit = () => {
-    if (prompt.trim()) {
-      onSubmit(prompt.trim())
-      setPrompt('')
+  const onSubmitForm = (data: PromptFormData) => {
+    if (data.prompt.trim()) {
+      onSubmit(data.prompt.trim())
+      reset()
     }
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSubmit()
+      handleSubmit(onSubmitForm)()
     }
   }
 
   return (
     <div className="w-full">
-      <div
-        className={cn(
-          textareaVariants(),
-          'flex items-end gap-[20px]',
-          'h-[140px] p-[16px]',
-          'border border-border-basic-2 rounded-[16px]',
-          'bg-background-basic-1',
-        )}
-      >
-        <Textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          onKeyDown={handleKeyPress}
-          placeholder="생성할 도식화를 입력해 주세요."
+      <form onSubmit={handleSubmit(onSubmitForm)}>
+        <div
           className={cn(
-            'flex-1 h-full resize-none',
-            'bg-transparent outline-none',
-            'typo-pre-body-6 text-grey-10',
-            'placeholder:text-grey-5',
-            'p-0',
-            'border-none',
+            textareaVariants(),
+            'flex items-end gap-[20px]',
+            'h-[140px] p-[16px]',
+            'border border-border-basic-2 rounded-[16px]',
+            'bg-background-basic-1',
           )}
-        />
-        <div className="flex flex-col gap-[8px]">
-          <SchematicHistoryDrawer />
-          <Button
-            onClick={handleSubmit}
-            disabled={!prompt.trim() || isPending}
-            variant="solid-primary"
-            size="icon-lg"
-            title="전송"
-          >
-            <ArrowUpIcon className="size-[24px]" />
-          </Button>
+        >
+          <Textarea
+            {...register('prompt')}
+            onKeyDown={handleKeyPress}
+            placeholder="생성할 도식화를 입력해 주세요."
+            className={cn(
+              'flex-1 h-full resize-none',
+              'bg-transparent outline-none',
+              'typo-pre-body-6 text-grey-10',
+              'placeholder:text-grey-5',
+              'p-0',
+              'border-none',
+            )}
+          />
+          <div className="flex flex-col gap-[8px]">
+            <SchematicHistoryDrawer />
+            <Button
+              type="submit"
+              disabled={isPending || isSubmitting}
+              variant="solid-primary"
+              size="icon-lg"
+              title="전송"
+            >
+              <ArrowUpIcon className="size-[24px]" />
+            </Button>
+          </div>
         </div>
-      </div>
+        {errors.prompt && (
+          <p className="mt-2 text-sm text-red-500">{errors.prompt.message}</p>
+        )}
+      </form>
     </div>
   )
 }
@@ -120,9 +142,11 @@ export const Schematic = () => {
 
   const queryClient = useQueryClient()
 
-  const { data, mutate: createSchematic } = useProjectSchematicCreateMutation(
-    {},
-  )
+  const {
+    data,
+    mutate: createSchematic,
+    isPending,
+  } = useProjectSchematicCreateMutation({})
 
   const { data: schematic, refetch } = useProjectSchematicRetrieveQuery({
     variables: {
@@ -171,12 +195,33 @@ export const Schematic = () => {
   }, [])
 
   const handlePromptSubmit = (prompt: string) => {
-    createSchematic({
-      projectSlug: slug,
-      data: {
-        prompt,
+    createSchematic(
+      {
+        projectSlug: slug,
+        data: {
+          prompt,
+        },
       },
-    })
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEY_SCHEMATIC_API.PROJECT_SCHEMATIC_LIST_INFINITE(),
+          })
+        },
+        onError: () => {
+          toast(
+            '유효한 도식화 생성 요청을 해주세요.',
+            {
+              action: {
+                label: '닫기',
+                onClick: () => {},
+              },
+            },
+            'error',
+          )
+        },
+      },
+    )
   }
 
   return (
@@ -188,7 +233,6 @@ export const Schematic = () => {
       )}
     >
       {/* 완성된 이미지 표시 */}
-
       {schematic?.image && (
         <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
           <div className="relative aspect-[3/2] max-w-full w-full sm:w-auto h-auto sm:h-full">
@@ -199,10 +243,15 @@ export const Schematic = () => {
               objectFit="cover"
               unoptimized
             />
+            <HistoryItemDropDownMenu
+              id={schematic.id}
+              image={schematic.image}
+              isDelete={false}
+            />
           </div>
         </div>
       )}
-      {schematic?.status === 'PENDING' && (
+      {(isPending || schematic?.status === 'PENDING') && (
         <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
           <div className="relative aspect-[3/2] h-full">
             <div className="flex items-center justify-center w-full h-full bg-secondary-1">
@@ -211,8 +260,8 @@ export const Schematic = () => {
           </div>
         </div>
       )}
-      {!schematic?.status && (
-        <div className="flex flex-col items-center justify-center w-full h-full pt-[160px]">
+      {!isPending && !schematic?.status && (
+        <div className="flex flex-col items-center justify-center w-full h-full pt-[160px] gap-[16px]">
           <div className="flex items-center justify-center size-[56px] rounded-full bg-primary-3">
             <MagicWandFillIcon />
           </div>
@@ -235,7 +284,7 @@ export const Schematic = () => {
 
       <PromptInput
         onSubmit={handlePromptSubmit}
-        isPending={schematic?.status === 'PENDING'}
+        isPending={schematic?.status === 'PENDING' || isPending}
       />
     </div>
   )

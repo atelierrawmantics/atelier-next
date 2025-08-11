@@ -82,13 +82,13 @@ const DROPDOWN_MENU_CLASSNAME = {
 interface HistoryItemDropDownMenuProps {
   id: number
   image: string
-  prompt: string
+  isDelete?: boolean
 }
 
 export const HistoryItemDropDownMenu = ({
   id,
   image,
-  prompt,
+  isDelete = true,
 }: HistoryItemDropDownMenuProps) => {
   const { slug } = useParams<{ slug: string }>()
   const queryClient = useQueryClient()
@@ -123,6 +123,12 @@ export const HistoryItemDropDownMenu = ({
                   queryClient.invalidateQueries({
                     queryKey: QUERY_KEY_PROJECT_API.RETRIEVE({ slug }),
                   })
+                  toast('도식화 이미지를 사용했어요.', {
+                    action: {
+                      label: '닫기',
+                      onClick: () => {},
+                    },
+                  })
                 },
               },
             )
@@ -134,7 +140,7 @@ export const HistoryItemDropDownMenu = ({
         <DropdownMenuItem className={cn(DROPDOWN_MENU_CLASSNAME.ITEM)}>
           <a
             href={image}
-            download={`${prompt}-${Date.now()}.png`}
+            download={image}
             className="flex gap-[10px] items-center w-full"
             target="_blank"
             rel="noreferrer"
@@ -143,34 +149,36 @@ export const HistoryItemDropDownMenu = ({
             <p className={cn(DROPDOWN_MENU_CLASSNAME.TEXT)}>다운로드</p>
           </a>
         </DropdownMenuItem>
-        <DropdownMenuItem
-          className={cn(DROPDOWN_MENU_CLASSNAME.ITEM)}
-          onClick={() =>
-            schematicDestroy(
-              {
-                projectSlug: slug,
-                id,
-              },
-              {
-                onSuccess: () => {
-                  queryClient.invalidateQueries({
-                    queryKey:
-                      QUERY_KEY_SCHEMATIC_API.PROJECT_SCHEMATIC_LIST_INFINITE(),
-                  })
-                  toast('도식화 이미지가 삭제되었어요.', {
-                    action: {
-                      label: '닫기',
-                      onClick: () => {},
-                    },
-                  })
+        {isDelete && (
+          <DropdownMenuItem
+            className={cn(DROPDOWN_MENU_CLASSNAME.ITEM)}
+            onClick={() =>
+              schematicDestroy(
+                {
+                  projectSlug: slug,
+                  id,
                 },
-              },
-            )
-          }
-        >
-          <TrashIcon className={cn(DROPDOWN_MENU_CLASSNAME.ICON)} />
-          <p className={cn(DROPDOWN_MENU_CLASSNAME.TEXT)}>삭제</p>
-        </DropdownMenuItem>
+                {
+                  onSuccess: () => {
+                    queryClient.invalidateQueries({
+                      queryKey:
+                        QUERY_KEY_SCHEMATIC_API.PROJECT_SCHEMATIC_LIST_INFINITE(),
+                    })
+                    toast('도식화 이미지가 삭제되었어요.', {
+                      action: {
+                        label: '닫기',
+                        onClick: () => {},
+                      },
+                    })
+                  },
+                },
+              )
+            }
+          >
+            <TrashIcon className={cn(DROPDOWN_MENU_CLASSNAME.ICON)} />
+            <p className={cn(DROPDOWN_MENU_CLASSNAME.TEXT)}>삭제</p>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -285,11 +293,7 @@ export const SchematicHistoryDrawer = () => {
                             fill
                             priority
                           />
-                          <HistoryItemDropDownMenu
-                            id={id}
-                            image={image}
-                            prompt={prompt || ''}
-                          />
+                          <HistoryItemDropDownMenu id={id} image={image} />
                         </div>
                       ))}
                     </div>

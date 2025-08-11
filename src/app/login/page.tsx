@@ -29,7 +29,7 @@ const InfoSection = () => {
       )}
     >
       <div className="flex flex-col items-center justify-center">
-        <div className="rounded-[8px] border-1 w-fit px-[8px] py-[2px] ">
+        <div className="rounded-[8px] border-1 w-fit px-[8px] py-[2px]">
           <p className="typo-pre-body-5 text-primary-3 text-center">
             복잡한 협업, 이제 간단하게
           </p>

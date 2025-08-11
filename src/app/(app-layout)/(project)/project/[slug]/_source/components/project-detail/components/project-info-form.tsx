@@ -28,6 +28,7 @@ import {
 } from '@/generated/apis/Instruction/Instruction.query'
 import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import { SwatchesIcon, XIcon } from '@/generated/icons/MyIcons'
+import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
 import { useProjectInfoForm } from '../hooks/use-project-info-form'
@@ -145,7 +146,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   const { mutateAsync: uploadFiles } = useUploadFilesToS3Mutation({})
   const { mutateAsync: uploadFile } = useUploadFileToS3Mutation({})
 
-  const { mutate: updateInstruction } =
+  const { mutateAsync: updateInstruction } =
     useProjectInstructionPartialUpdateMutation({})
 
   // 로딩 상태 계산
@@ -413,12 +414,30 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
         id: 'me',
         data: sectionData,
       })
-
-      updateInstruction({
-        projectSlug: slug,
-        id: 'me',
-        data: sectionData,
-      })
+      try {
+        await updateInstruction({
+          projectSlug: slug,
+          id: 'me',
+          data: sectionData,
+        })
+        toast(sectionName + '이(가) 저장되었어요.', {
+          action: {
+            label: '닫기',
+            onClick: () => {},
+          },
+        })
+      } catch {
+        toast(
+          sectionName + ' 저장에 실패했어요.',
+          {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          },
+          'error',
+        )
+      }
     }
   }
 
