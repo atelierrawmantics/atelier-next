@@ -5,6 +5,7 @@ import { CSS } from '@dnd-kit/utilities'
 
 import { formatDate } from '@/app/_source/utils/date'
 import { TaskType } from '@/generated/apis/@types/data-contracts'
+import { cn } from '@/lib/utils'
 
 import { DragTaskData } from '../../../../utils/dnd'
 import { useTaskDetailModal } from '../hooks/use-task-detail-modal'
@@ -42,9 +43,11 @@ export const TaskCard = ({ task, isSelected = false }: TaskCardProps) => {
       style={style}
       {...attributes}
       {...listeners}
-      className={`flex flex-col justify-center items-center p-[10px_12px_12px_16px] gap-5 bg-background-basic-1 rounded-[6px] shadow-[0_2px_6px_0_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing hover:shadow-lg transition-all duration-200 touch-none pointer ${
-        isSelected ? 'bg-secondary-2 border border-primary-3' : ''
-      }`}
+      className={cn(
+        'flex flex-col justify-center items-center p-[10px_12px_12px_16px] gap-5 bg-background-basic-1 rounded-[6px] shadow-[0_2px_6px_0_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing hover:shadow-lg transition-all duration-200 touch-none pointer',
+        isSelected ? 'bg-secondary-2' : '',
+        'focus-visible:outline-none',
+      )}
       onMouseUp={() => {
         if (!status) return
 

@@ -23,8 +23,7 @@ export const TaskColumn = ({ status, tasks }: TaskColumnProps) => {
       <Accordion
         type="single"
         collapsible
-        className="block md:hidden w-full rounded-[6px] border-l border-r border-border-basic-1 border-b"
-        defaultValue="season-style"
+        className="block md:hidden w-full rounded-[12px] border-1 border-border-basic-1"
       >
         <TaskAccordionColumn status={status} tasks={sortedTasks} />
       </Accordion>

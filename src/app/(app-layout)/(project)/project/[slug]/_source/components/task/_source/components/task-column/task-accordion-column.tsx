@@ -64,9 +64,12 @@ export const TaskAccordionColumn = ({
   const isReadOnly = !isOwned && isShared
 
   return (
-    <AccordionItem value={'hi'} className="w-full border-none rounded-t-[6px]">
+    <AccordionItem
+      value={status}
+      className="w-full border-none rounded-t-[6px]"
+    >
       <AccordionTrigger
-        className={`w-full h-[62px] typo-pre-body-5 text-grey-10 border-none rounded-[12px] ${STATUS_CONFIGS[status].bgColor}`}
+        className={`w-full h-[62px] typo-pre-body-5 text-grey-10 border-none data-[state=open]:rounded-b-none rounded-[12px] ${STATUS_CONFIGS[status].bgColor}`}
       >
         <div className="w-full flex justify-between items-center">
           <div className="flex items-center gap-2 ">
@@ -87,7 +90,7 @@ export const TaskAccordionColumn = ({
                   })
                 }
               >
-                <PlusIcon className="w-4 h-4 size-4" />
+                <PlusIcon className="size-4" />
                 태스크 생성
               </Button>
             )}
