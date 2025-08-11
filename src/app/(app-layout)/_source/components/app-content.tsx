@@ -43,7 +43,7 @@ const AppContentInner = ({ children }: { children: React.ReactNode }) => {
         <BgDot />
 
         {/* 콘텐츠 */}
-        <div className="w-full h-full">{children}</div>
+        <div className="w-full h-[100dvh]">{children}</div>
       </div>
     </div>
   )

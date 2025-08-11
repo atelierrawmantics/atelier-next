@@ -31,7 +31,7 @@ export const ProjectContent = ({
         </div>
       )}
 
-      <div className="w-full flex-1 overflow-auto">{children}</div>
+      <div className="w-full flex-1 flex-col overflow-auto">{children}</div>
     </div>
   )
 }

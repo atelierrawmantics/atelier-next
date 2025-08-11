@@ -17,7 +17,7 @@ export const ArticleIcon = forwardRef<SVGSVGElement, IconProps>(
         <g clipPath="url(#clip0_12174_93358)">
           <path
             d="M24.125 5.25H4.875C4.39175 5.25 4 5.64175 4 6.125V21.875C4 22.3582 4.39175 22.75 4.875 22.75H24.125C24.6082 22.75 25 22.3582 25 21.875V6.125C25 5.64175 24.6082 5.25 24.125 5.25Z"
-            fill="#D5E3FC"
+            fill="currentColor"
             stroke="#2F3A56"
             strokeWidth="1.5"
             strokeLinecap="round"

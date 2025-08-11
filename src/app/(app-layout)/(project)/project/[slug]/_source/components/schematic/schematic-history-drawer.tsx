@@ -34,6 +34,7 @@ import {
   useProjectSchematicUseCreateMutation,
 } from '@/generated/apis/Schematic/Schematic.query'
 import {
+  ArticleIcon,
   DotsThreeIcon,
   ImagesIcon,
   MagicWandIcon,
@@ -235,7 +236,7 @@ export const SchematicHistoryDrawer = () => {
           type="button"
           title="히스토리"
         >
-          <ImagesIcon />
+          <ArticleIcon className="size-[24px] text-grey-0" />
         </Button>
       </DrawerTrigger>
       <DrawerContent className="bg-grey-0 w-full min-w-[calc(100vw-268px)] sm:min-w-[644px] !border-0">

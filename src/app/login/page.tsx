@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-row flex-1 h-screen">
+    <div className="flex flex-row flex-1 h-[100dvh]">
       <InfoSection />
       <LoginSection />
     </div>

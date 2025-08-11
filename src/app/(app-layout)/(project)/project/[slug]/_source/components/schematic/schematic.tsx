@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation'
 
 import { useQueryClient } from '@tanstack/react-query'
 
-import { ArrowUpIcon } from 'lucide-react'
+import { ArrowUpIcon, Loader2Icon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Textarea, textareaVariants } from '@/components/ui/textarea'
@@ -183,24 +183,36 @@ export const Schematic = () => {
     <div
       className={cn(
         'container',
-        'text-center w-full',
-        'flex flex-1 flex-col justify-center items-center gap-[16px]',
-        schematic?.image ? 'pt-[80px]' : 'pt-[160px]',
+        'text-center w-full h-full',
+        'flex flex-1 flex-col justify-center items-center gap-[16px] pb-[80px]',
       )}
     >
       {/* 완성된 이미지 표시 */}
-      {schematic?.image ?
-        <div className="relative aspect-[1536/1024] w-full max-w-[600px] h-auto">
-          <Image
-            src={schematic.image}
-            alt="생성된 도식화"
-            className="w-full h-auto"
-            fill
-            objectFit="cover"
-            unoptimized
-          />
+
+      {schematic?.image && (
+        <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
+          <div className="relative aspect-[3/2] max-w-full w-full sm:w-auto h-auto sm:h-full">
+            <Image
+              src={schematic.image}
+              alt="생성된 도식화"
+              fill
+              objectFit="cover"
+              unoptimized
+            />
+          </div>
         </div>
-      : <>
+      )}
+      {schematic?.status === 'PENDING' && (
+        <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
+          <div className="relative aspect-[3/2] h-full">
+            <div className="flex items-center justify-center w-full h-full bg-secondary-1">
+              <Loader2Icon className="animate-spin" />
+            </div>
+          </div>
+        </div>
+      )}
+      {!schematic?.status && (
+        <div className="flex flex-col items-center justify-center w-full h-full pt-[160px]">
           <div className="flex items-center justify-center size-[56px] rounded-full bg-primary-3">
             <MagicWandFillIcon />
           </div>
@@ -218,8 +230,8 @@ export const Schematic = () => {
               )),
             )}
           </div>
-        </>
-      }
+        </div>
+      )}
 
       <PromptInput
         onSubmit={handlePromptSubmit}

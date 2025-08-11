@@ -249,7 +249,7 @@ export const JoinForm = () => {
     <Form {...form}>
       <div className="flex flex-col gap-[12px] max-w-[448px] w-full items-center">
         <div className="size-[56px] rounded-full bg-secondary-2 flex items-center justify-center">
-          <ArticleIcon className="size-[28px]" />
+          <ArticleIcon className="size-[28px] bg-secondary-3" />
         </div>
         <h1 className="typo-pre-heading-3 text-grey-9">추가 정보 입력</h1>
         <div className="flex flex-col gap-[24px] w-full items-center mt-[12px]">
