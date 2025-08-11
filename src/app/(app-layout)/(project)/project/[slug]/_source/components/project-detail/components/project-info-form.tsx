@@ -170,11 +170,16 @@ const AccordionFormItem = ({
   )
 
   return (
-    <AccordionItem value={value}>
+    <AccordionItem
+      value={value}
+      className={cn(isFirstItem ? 'rounded-t-[6px]' : '', 'w-full')}
+    >
       <AccordionTrigger
-        className={`h-[62px] typo-pre-body-5 text-grey-10 ${
-          isFirstItem ? 'rounded-t-[6px]' : ''
-        } ${isLastItem ? 'data-[state=closed]:rounded-b-[6px]' : ''}`}
+        className={cn(
+          'h-[62px] typo-pre-body-5 text-grey-10',
+          isFirstItem ? 'rounded-t-[6px]' : '',
+          isLastItem ? 'data-[state=closed]:rounded-b-[6px]' : '',
+        )}
       >
         <div className="w-full flex justify-between items-center">
           <p>{title}</p>
@@ -1084,7 +1089,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
 
 // 스켈레톤 컴포넌트들
 const AccordionItemSkeleton = () => (
-  <div className="border-b border-border-basic-1">
+  <div className="border-b border-t border-border-basic-1">
     <div className="h-[62px] flex items-center justify-between px-[20px]">
       <Skeleton className="w-32 h-5" />
       <div className="flex gap-2">
@@ -1124,7 +1129,7 @@ const ImageUploadAreaSkeleton = () => (
 
 const ProjectInfoFormSkeleton = () => (
   <div className="max-w-full md:max-w-[859px] w-full pb-[80px]">
-    <div className="w-full rounded-[6px] border-l border-r border-border-basic-1 border-b">
+    <div className="w-full rounded-[6px] border-l border-r border-border-basic-1 border-b bg-background-basic-1">
       {/* 시즌 및 스타일 정보 섹션 */}
       <AccordionItemSkeleton />
       <div className="p-[20px]">
