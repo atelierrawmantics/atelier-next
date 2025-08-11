@@ -680,6 +680,31 @@ export const PencilSimpleIcon = forwardRef<SVGSVGElement, IconProps>(
     )
   },
 )
+export const RadioIcon = forwardRef<SVGSVGElement, IconProps>(
+  function RadioIcon(props, ref) {
+    return (
+      <svg
+        ref={ref}
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <g clipPath="url(#clip0_12607_8185)">
+          <circle cx="10" cy="10" r="10" fill="#222C49" />
+          <circle cx="10" cy="10" r="4" fill="white" />
+        </g>
+        <defs>
+          <clipPath id="clip0_12607_8185">
+            <rect width="20" height="20" fill="white" />
+          </clipPath>
+        </defs>
+      </svg>
+    )
+  },
+)
 export const ShirtFoldedIcon = forwardRef<SVGSVGElement, IconProps>(
   function ShirtFoldedIcon(props, ref) {
     return (

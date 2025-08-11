@@ -5,7 +5,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 
-import { EmptyView, fileToBase64 } from '@toktokhan-dev/react-universal'
+import {
+  EmptyView,
+  LoadingView,
+  fileToBase64,
+} from '@toktokhan-dev/react-universal'
 
 import { useFormContext, useWatch } from 'react-hook-form'
 import { ClassNameValue } from 'tailwind-merge'
@@ -24,6 +28,7 @@ import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   useProjectInstructionPartialUpdateMutation,
   useProjectInstructionRetrieveQuery,
@@ -134,6 +139,18 @@ const AccordionFormItem = ({
   maxImageCount,
   currentImageCount = 0,
 }: AccordionFormItemProps) => {
+  const { slug } = useParams<{ slug: string }>()
+  const { data: projectData } = useProjectRetrieveQuery({
+    variables: {
+      slug,
+    },
+    options: {
+      enabled: !!slug,
+    },
+  })
+
+  const { isShared, isOwned } = projectData || {}
+  const isReadOnly = isShared && !isOwned
   const handleReset = (e: React.MouseEvent) => {
     e.stopPropagation()
     onReset()
@@ -161,47 +178,52 @@ const AccordionFormItem = ({
       >
         <div className="w-full flex justify-between items-center">
           <p>{title}</p>
-          <div className="flex gap-[6px]" onClick={(e) => e.stopPropagation()}>
-            {hasImageUpload && (
+          {!isReadOnly && (
+            <div
+              className="flex gap-[6px]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {hasImageUpload && (
+                <div
+                  className={cn(
+                    BUTTON_STYLES,
+                    isImageUploadDisabled && 'opacity-50 cursor-not-allowed',
+                  )}
+                >
+                  <label
+                    htmlFor={imageUploadId}
+                    onClick={handleImageUpload}
+                    className={cn(
+                      'cursor-pointer',
+                      isImageUploadDisabled && 'cursor-not-allowed',
+                    )}
+                  >
+                    이미지 첨부
+                    <input
+                      id={imageUploadId}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={onImageUpload}
+                      readOnly={isImageUploadDisabled}
+                    />
+                  </label>
+                </div>
+              )}
               <div
                 className={cn(
                   BUTTON_STYLES,
-                  isImageUploadDisabled && 'opacity-50 cursor-not-allowed',
+                  !isDirty && 'opacity-50 cursor-not-allowed',
                 )}
+                onClick={isDirty ? handleReset : undefined}
               >
-                <label
-                  htmlFor={imageUploadId}
-                  onClick={handleImageUpload}
-                  className={cn(
-                    'cursor-pointer',
-                    isImageUploadDisabled && 'cursor-not-allowed',
-                  )}
-                >
-                  이미지 첨부
-                  <input
-                    id={imageUploadId}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={onImageUpload}
-                    disabled={isImageUploadDisabled}
-                  />
-                </label>
+                초기화
               </div>
-            )}
-            <div
-              className={cn(
-                BUTTON_STYLES,
-                !isDirty && 'opacity-50 cursor-not-allowed',
-              )}
-              onClick={isDirty ? handleReset : undefined}
-            >
-              초기화
+              <div className={BUTTON_STYLES} onClick={handleSave}>
+                저장
+              </div>
             </div>
-            <div className={BUTTON_STYLES} onClick={handleSave}>
-              저장
-            </div>
-          </div>
+          )}
         </div>
       </AccordionTrigger>
       <AccordionContent
@@ -278,9 +300,15 @@ interface InputFieldProps {
   id: string
   label: string
   placeholder: string
+  readOnly?: boolean
 }
 
-const InputField = ({ id, label, placeholder }: InputFieldProps) => {
+const InputField = ({
+  id,
+  label,
+  placeholder,
+  readOnly = false,
+}: InputFieldProps) => {
   const { register } = useFormContext<ProjectInfoFormDataType>()
 
   return (
@@ -290,10 +318,11 @@ const InputField = ({ id, label, placeholder }: InputFieldProps) => {
       </Label>
       <Input
         id={id}
-        placeholder={placeholder}
+        placeholder={readOnly ? '' : placeholder}
         size="md"
         variant="outline-grey"
         className="w-full"
+        readOnly={readOnly}
         {...register(id as keyof ProjectInfoFormDataType)}
       />
     </div>
@@ -305,9 +334,15 @@ interface TableRowProps {
   rowIndex: number
   columns: number
   fieldName: 'sizeValues' | 'colorValues' | 'fabricValues' | 'materialValues'
+  readOnly?: boolean
 }
 
-const TableRow = ({ rowIndex, columns, fieldName }: TableRowProps) => {
+const TableRow = ({
+  rowIndex,
+  columns,
+  fieldName,
+  readOnly = false,
+}: TableRowProps) => {
   const { register } = useFormContext<ProjectInfoFormDataType>()
 
   return (
@@ -316,6 +351,8 @@ const TableRow = ({ rowIndex, columns, fieldName }: TableRowProps) => {
         <div key={colIndex}>
           <Input
             size="md"
+            readOnly={readOnly}
+            placeholder={readOnly ? '' : undefined}
             {...register(
               `${fieldName}.${rowIndex}.${colIndex}` as keyof ProjectInfoFormDataType,
             )}
@@ -375,30 +412,38 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   const [deletedSwatchIds, setDeletedSwatchIds] = useState<number[]>([])
 
   const { slug } = useParams<{ slug: string }>()
-  const { data: projectData } = useProjectRetrieveQuery({
-    variables: {
-      slug,
-    },
-    options: {
-      enabled: !!slug,
-    },
-  })
+  const { data: projectData, isLoading: isProjectLoading } =
+    useProjectRetrieveQuery({
+      variables: {
+        slug,
+      },
+      options: {
+        enabled: !!slug,
+      },
+    })
 
-  const { data: instructionData } = useProjectInstructionRetrieveQuery({
-    variables: {
-      projectSlug: slug,
-      id: 'me',
-    },
-    options: {
-      enabled: !!slug,
-    },
-  })
+  const { isShared, isOwned } = projectData || {}
+  const isReadOnly = isShared && !isOwned
+
+  const { data: instructionData, isLoading: isInstructionLoading } =
+    useProjectInstructionRetrieveQuery({
+      variables: {
+        projectSlug: slug,
+        id: 'me',
+      },
+      options: {
+        enabled: !!slug,
+      },
+    })
 
   const { mutateAsync: uploadFiles } = useUploadFilesToS3Mutation({})
   const { mutateAsync: uploadFile } = useUploadFileToS3Mutation({})
 
   const { mutate: updateInstruction } =
     useProjectInstructionPartialUpdateMutation({})
+
+  // 로딩 상태 계산
+  const isLoading = isProjectLoading || isInstructionLoading
 
   // useWatch로 필요한 값들만 구독
   const year = useWatch({ control: form.control, name: 'year' })
@@ -417,12 +462,6 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
     name: 'materialValues',
   })
   const swatchSet = useWatch({ control: form.control, name: 'swatchSet' })
-
-  useEffect(() => {
-    if (instructionData) {
-      reset(instructionData)
-    }
-  }, [instructionData, reset])
 
   // 순수 함수: 배열 생성
   const createEmptyArray = (rows: number, cols: number) => {
@@ -761,264 +800,406 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
     setDeletedSwatchIds([])
   }
 
+  useEffect(() => {
+    if (instructionData) {
+      reset(instructionData)
+    }
+  }, [instructionData, reset])
+
   return (
-    <Form {...form}>
-      <div
-        className={cn(
-          'max-w-full md:max-w-[859px] w-full pb-[80px]',
-          className,
-        )}
-      >
-        <Accordion
-          type="single"
-          collapsible
-          className="w-full rounded-[6px] border-l border-r border-border-basic-1 border-b"
-          defaultValue="season-style"
+    <LoadingView isLoading={isLoading} fallback={<ProjectInfoFormSkeleton />}>
+      <Form {...form}>
+        <div
+          className={cn(
+            'max-w-full md:max-w-[859px] w-full pb-[80px]',
+            className,
+          )}
         >
-          {/* 시즌 및 스타일 정보 섹션 */}
-          <AccordionFormItem
-            value="season-style"
-            title={SECTION_CONFIGS['season-style'].title}
-            onReset={handleSeasonStyleReset}
-            onSave={handleSeasonStyleSave}
-            isDirty={isSeasonStyleDirty}
-            isFirstItem={true}
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full rounded-[6px] border-l border-r border-border-basic-1 border-b"
+            defaultValue="season-style"
           >
-            <div className="flex flex-col gap-[8px]">
-              {SECTION_CONFIGS['season-style'].fields.map((field) => (
-                <InputField
-                  key={field.name}
-                  id={field.name}
-                  label={field.label}
-                  placeholder={field.placeholder}
-                />
-              ))}
-            </div>
-          </AccordionFormItem>
-
-          {/* 도식화 이미지 섹션 */}
-          <AccordionFormItem
-            value="schematic"
-            title={SECTION_CONFIGS.schematic.title}
-            onReset={handleSchematicReset}
-            onSave={handleSchematicSave}
-            hasImageUpload={SECTION_CONFIGS.schematic.hasImageUpload}
-            onImageUpload={handleSchematicUpload}
-            imageUploadId="schematic-upload"
-            isDirty={isSchematicDirty}
-            maxImageCount={SECTION_CONFIGS.schematic.maxImageCount}
-            currentImageCount={schematic ? 1 : 0}
-          >
-            <ImageUploadArea
-              imageUrl={schematic ? schematic.image : null}
-              onDelete={() => {
-                setValue('schematic', null)
-                setSchematicFile(null)
-              }}
-            />
-          </AccordionFormItem>
-
-          {/* 사이즈 스펙 섹션 */}
-          <AccordionFormItem
-            value="size-spec"
-            title={SECTION_CONFIGS['size-spec'].title}
-            onReset={handleSizeSpecReset}
-            onSave={handleSizeSpecSave}
-            isDirty={isSizeSpecDirty}
-          >
-            {/* 헤더 */}
-            <div className="grid grid-cols-7 gap-[4px] items-center space-y-[4px]">
-              <div className="typo-pre-body-5 text-grey-9 text-center">
-                Part
-              </div>
-              {Array.from({ length: 5 }, (_, index: number) => (
-                <div key={index}>
-                  <Input
-                    placeholder="사이즈 입력"
-                    size="md"
-                    variant="outline-grey"
-                    value={sizeNames?.[index] || ''}
-                    onChange={(e) => {
-                      const currentSizeNames = sizeNames || []
-                      const newSizeNames = [...currentSizeNames]
-                      newSizeNames[index] = e.target.value
-                      setValue('sizeNames', newSizeNames)
-                    }}
-                  />
-                </div>
-              ))}
-              <div className="typo-pre-body-5 text-grey-9 text-center">
-                편차
-              </div>
-            </div>
-            {Array.from(
-              { length: SECTION_CONFIGS['size-spec'].tableConfig.rows },
-              (_, index) => (
-                <TableRow
-                  key={index}
-                  rowIndex={index}
-                  columns={SECTION_CONFIGS['size-spec'].tableConfig.columns}
-                  fieldName="sizeValues"
-                />
-              ),
-            )}
-          </AccordionFormItem>
-
-          {/* 스타일 컬러 섹션 */}
-          <AccordionFormItem
-            value="style-color"
-            title={SECTION_CONFIGS['style-color'].title}
-            onReset={handleStyleColorReset}
-            onSave={handleStyleColorSave}
-            isDirty={isStyleColorDirty}
-          >
-            <TableHeader
-              headers={SECTION_CONFIGS['style-color'].tableConfig.headers}
-              columns={SECTION_CONFIGS['style-color'].tableConfig.columns}
-              sizeNames={sizeNames}
-              sizeNamesIndex={0}
-            />
-            {Array.from(
-              { length: SECTION_CONFIGS['style-color'].tableConfig.rows },
-              (_, index) => (
-                <TableRow
-                  key={index}
-                  rowIndex={index}
-                  columns={SECTION_CONFIGS['style-color'].tableConfig.columns}
-                  fieldName="colorValues"
-                />
-              ),
-            )}
-          </AccordionFormItem>
-
-          {/* 원단 상세 정보 섹션 */}
-          <AccordionFormItem
-            value="fabric-details"
-            title={SECTION_CONFIGS['fabric-details'].title}
-            onReset={handleFabricReset}
-            onSave={handleFabricSave}
-            isDirty={isFabricDirty}
-          >
-            <TableHeader
-              headers={SECTION_CONFIGS['fabric-details'].tableConfig.headers}
-              columns={SECTION_CONFIGS['fabric-details'].tableConfig.columns}
-            />
-            {Array.from(
-              { length: SECTION_CONFIGS['fabric-details'].tableConfig.rows },
-              (_, index) => (
-                <TableRow
-                  key={index}
-                  rowIndex={index}
-                  columns={
-                    SECTION_CONFIGS['fabric-details'].tableConfig.columns
-                  }
-                  fieldName="fabricValues"
-                />
-              ),
-            )}
-          </AccordionFormItem>
-
-          {/* 부자재 정보 섹션 */}
-          <AccordionFormItem
-            value="accessory-info"
-            title={SECTION_CONFIGS['accessory-info'].title}
-            onReset={handleAccessoryReset}
-            onSave={handleAccessorySave}
-            isDirty={isAccessoryDirty}
-          >
-            <TableHeader
-              headers={SECTION_CONFIGS['accessory-info'].tableConfig.headers}
-              columns={SECTION_CONFIGS['accessory-info'].tableConfig.columns}
-            />
-            {Array.from(
-              { length: SECTION_CONFIGS['accessory-info'].tableConfig.rows },
-              (_, index) => (
-                <TableRow
-                  key={index}
-                  rowIndex={index}
-                  columns={
-                    SECTION_CONFIGS['accessory-info'].tableConfig.columns
-                  }
-                  fieldName="materialValues"
-                />
-              ),
-            )}
-          </AccordionFormItem>
-
-          {/* SWATCH 섹션 */}
-          <AccordionFormItem
-            value="swatch"
-            title={SECTION_CONFIGS.swatch.title}
-            onReset={handleSwatchReset}
-            onSave={handleSwatchSave}
-            hasImageUpload={SECTION_CONFIGS.swatch.hasImageUpload}
-            onImageUpload={handleSwatchUpload}
-            imageUploadId="swatch-upload"
-            isLastItem={true}
-            isDirty={isSwatchDirty}
-            maxImageCount={SECTION_CONFIGS.swatch.maxImageCount}
-            currentImageCount={(swatchSet || []).length}
-          >
-            <EmptyView
-              data={swatchSet}
-              fallback={
-                <ImageUploadArea
-                  icon={<SwatchesIcon className="size-[28px]" />}
-                  title="스와치 이미지를 첨부해 주세요. (최대 6개까지 등록 가능)"
-                  description=""
-                  subDescription="지원 형식: jpg, png"
-                />
-              }
+            {/* 시즌 및 스타일 정보 섹션 */}
+            <AccordionFormItem
+              value="season-style"
+              title={SECTION_CONFIGS['season-style'].title}
+              onReset={handleSeasonStyleReset}
+              onSave={handleSeasonStyleSave}
+              isDirty={isSeasonStyleDirty}
+              isFirstItem={true}
             >
-              <div className="grid grid-cols-2 sm:grid-cols-4 grid-rows-2 gap-[8px] py-[20px] px-[36px] w-full">
-                {(swatchSet || []).map((swatchItem, index: number) => (
-                  <div key={index} className="flex gap-[8px] w-[132px]">
-                    <div className="relative aspect-square w-[100px] h-[100px]">
-                      <Image
-                        unoptimized
-                        src={swatchItem.image}
-                        alt={`Swatch ${index + 1}`}
-                        className="w-full h-full object-cover"
-                        fill
-                      />
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="fit"
-                      onClick={() => {
-                        const currentSwatchSet = watch('swatchSet') || []
-
-                        // 기존 ID가 있는 경우 삭제 목록에 추가
-                        if (swatchItem.id !== null) {
-                          setDeletedSwatchIds((prev: number[]) => [
-                            ...prev,
-                            swatchItem.id!,
-                          ])
-                        }
-
-                        // 새로 추가된 파일인 경우 파일 목록에서도 제거
-                        const newSwatchFiles = swatchFiles.filter(
-                          (_: File, i: number) => i !== index,
-                        )
-
-                        const newSwatchSet = currentSwatchSet.filter(
-                          (_: any, i: number) => i !== index,
-                        )
-
-                        setValue('swatchSet', newSwatchSet)
-                        setSwatchFiles(newSwatchFiles)
-                      }}
-                      className="size-[24px]"
-                    >
-                      <XIcon className="size-[16px]" />
-                    </Button>
-                  </div>
+              <div className="flex flex-col gap-[8px]">
+                {SECTION_CONFIGS['season-style'].fields.map((field) => (
+                  <InputField
+                    key={field.name}
+                    id={field.name}
+                    label={field.label}
+                    placeholder={field.placeholder}
+                    readOnly={isReadOnly}
+                  />
                 ))}
               </div>
-            </EmptyView>
-          </AccordionFormItem>
-        </Accordion>
-      </div>
-    </Form>
+            </AccordionFormItem>
+
+            {/* 도식화 이미지 섹션 */}
+            <AccordionFormItem
+              value="schematic"
+              title={SECTION_CONFIGS.schematic.title}
+              onReset={handleSchematicReset}
+              onSave={handleSchematicSave}
+              hasImageUpload={SECTION_CONFIGS.schematic.hasImageUpload}
+              onImageUpload={handleSchematicUpload}
+              imageUploadId="schematic-upload"
+              isDirty={isSchematicDirty}
+              maxImageCount={SECTION_CONFIGS.schematic.maxImageCount}
+              currentImageCount={schematic ? 1 : 0}
+            >
+              <ImageUploadArea
+                imageUrl={schematic ? schematic.image : null}
+                onDelete={
+                  isReadOnly ? undefined : (
+                    () => {
+                      setValue('schematic', null)
+                      setSchematicFile(null)
+                    }
+                  )
+                }
+              />
+            </AccordionFormItem>
+
+            {/* 사이즈 스펙 섹션 */}
+            <AccordionFormItem
+              value="size-spec"
+              title={SECTION_CONFIGS['size-spec'].title}
+              onReset={handleSizeSpecReset}
+              onSave={handleSizeSpecSave}
+              isDirty={isSizeSpecDirty}
+            >
+              {/* 헤더 */}
+              <div className="grid grid-cols-7 gap-[4px] items-center space-y-[4px]">
+                <div className="typo-pre-body-5 text-grey-9 text-center">
+                  Part
+                </div>
+                {Array.from({ length: 5 }, (_, index: number) => (
+                  <div key={index}>
+                    <Input
+                      placeholder={isReadOnly ? '' : '사이즈 입력'}
+                      size="md"
+                      variant="outline-grey"
+                      readOnly={isReadOnly}
+                      value={sizeNames?.[index] || ''}
+                      onChange={(e) => {
+                        const currentSizeNames = sizeNames || []
+                        const newSizeNames = [...currentSizeNames]
+                        newSizeNames[index] = e.target.value
+                        setValue('sizeNames', newSizeNames)
+                      }}
+                    />
+                  </div>
+                ))}
+                <div className="typo-pre-body-5 text-grey-9 text-center">
+                  편차
+                </div>
+              </div>
+              {Array.from(
+                { length: SECTION_CONFIGS['size-spec'].tableConfig.rows },
+                (_, index) => (
+                  <TableRow
+                    key={index}
+                    rowIndex={index}
+                    columns={SECTION_CONFIGS['size-spec'].tableConfig.columns}
+                    fieldName="sizeValues"
+                    readOnly={isReadOnly}
+                  />
+                ),
+              )}
+            </AccordionFormItem>
+
+            {/* 스타일 컬러 섹션 */}
+            <AccordionFormItem
+              value="style-color"
+              title={SECTION_CONFIGS['style-color'].title}
+              onReset={handleStyleColorReset}
+              onSave={handleStyleColorSave}
+              isDirty={isStyleColorDirty}
+            >
+              <TableHeader
+                headers={SECTION_CONFIGS['style-color'].tableConfig.headers}
+                columns={SECTION_CONFIGS['style-color'].tableConfig.columns}
+                sizeNames={sizeNames}
+                sizeNamesIndex={0}
+              />
+              {Array.from(
+                { length: SECTION_CONFIGS['style-color'].tableConfig.rows },
+                (_, index) => (
+                  <TableRow
+                    key={index}
+                    rowIndex={index}
+                    columns={SECTION_CONFIGS['style-color'].tableConfig.columns}
+                    fieldName="colorValues"
+                    readOnly={isReadOnly}
+                  />
+                ),
+              )}
+            </AccordionFormItem>
+
+            {/* 원단 상세 정보 섹션 */}
+            <AccordionFormItem
+              value="fabric-details"
+              title={SECTION_CONFIGS['fabric-details'].title}
+              onReset={handleFabricReset}
+              onSave={handleFabricSave}
+              isDirty={isFabricDirty}
+            >
+              <TableHeader
+                headers={SECTION_CONFIGS['fabric-details'].tableConfig.headers}
+                columns={SECTION_CONFIGS['fabric-details'].tableConfig.columns}
+              />
+              {Array.from(
+                { length: SECTION_CONFIGS['fabric-details'].tableConfig.rows },
+                (_, index) => (
+                  <TableRow
+                    key={index}
+                    rowIndex={index}
+                    columns={
+                      SECTION_CONFIGS['fabric-details'].tableConfig.columns
+                    }
+                    fieldName="fabricValues"
+                    readOnly={isReadOnly}
+                  />
+                ),
+              )}
+            </AccordionFormItem>
+
+            {/* 부자재 정보 섹션 */}
+            <AccordionFormItem
+              value="accessory-info"
+              title={SECTION_CONFIGS['accessory-info'].title}
+              onReset={handleAccessoryReset}
+              onSave={handleAccessorySave}
+              isDirty={isAccessoryDirty}
+            >
+              <TableHeader
+                headers={SECTION_CONFIGS['accessory-info'].tableConfig.headers}
+                columns={SECTION_CONFIGS['accessory-info'].tableConfig.columns}
+              />
+              {Array.from(
+                { length: SECTION_CONFIGS['accessory-info'].tableConfig.rows },
+                (_, index) => (
+                  <TableRow
+                    key={index}
+                    rowIndex={index}
+                    columns={
+                      SECTION_CONFIGS['accessory-info'].tableConfig.columns
+                    }
+                    fieldName="materialValues"
+                    readOnly={isReadOnly}
+                  />
+                ),
+              )}
+            </AccordionFormItem>
+
+            {/* SWATCH 섹션 */}
+            <AccordionFormItem
+              value="swatch"
+              title={SECTION_CONFIGS.swatch.title}
+              onReset={handleSwatchReset}
+              onSave={handleSwatchSave}
+              hasImageUpload={SECTION_CONFIGS.swatch.hasImageUpload}
+              onImageUpload={handleSwatchUpload}
+              imageUploadId="swatch-upload"
+              isLastItem={true}
+              isDirty={isSwatchDirty}
+              maxImageCount={SECTION_CONFIGS.swatch.maxImageCount}
+              currentImageCount={(swatchSet || []).length}
+            >
+              <EmptyView
+                data={swatchSet}
+                fallback={
+                  <ImageUploadArea
+                    icon={<SwatchesIcon className="size-[28px]" />}
+                    title="스와치 이미지를 첨부해 주세요. (최대 6개까지 등록 가능)"
+                    description=""
+                    subDescription="지원 형식: jpg, png"
+                  />
+                }
+              >
+                <div className="grid grid-cols-2 sm:grid-cols-4 grid-rows-2 gap-[8px] py-[20px] px-[36px] w-full">
+                  {(swatchSet || []).map((swatchItem, index: number) => (
+                    <div key={index} className="flex gap-[8px] w-[132px]">
+                      <div className="relative aspect-square w-[100px] h-[100px]">
+                        <Image
+                          unoptimized
+                          src={swatchItem.image}
+                          alt={`Swatch ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          fill
+                        />
+                      </div>
+                      {!isReadOnly && (
+                        <Button
+                          variant="ghost"
+                          size="fit"
+                          onClick={() => {
+                            const currentSwatchSet = watch('swatchSet') || []
+
+                            // 기존 ID가 있는 경우 삭제 목록에 추가
+                            if (swatchItem.id !== null) {
+                              setDeletedSwatchIds((prev: number[]) => [
+                                ...prev,
+                                swatchItem.id!,
+                              ])
+                            }
+
+                            // 새로 추가된 파일인 경우 파일 목록에서도 제거
+                            const newSwatchFiles = swatchFiles.filter(
+                              (_: File, i: number) => i !== index,
+                            )
+
+                            const newSwatchSet = currentSwatchSet.filter(
+                              (_: any, i: number) => i !== index,
+                            )
+
+                            setValue('swatchSet', newSwatchSet)
+                            setSwatchFiles(newSwatchFiles)
+                          }}
+                          className="size-[24px]"
+                        >
+                          <XIcon className="size-[16px]" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </EmptyView>
+            </AccordionFormItem>
+          </Accordion>
+        </div>
+      </Form>
+    </LoadingView>
   )
 }
+
+// 스켈레톤 컴포넌트들
+const AccordionItemSkeleton = () => (
+  <div className="border-b border-border-basic-1">
+    <div className="h-[62px] flex items-center justify-between px-[20px]">
+      <Skeleton className="w-32 h-5" />
+      <div className="flex gap-2">
+        <Skeleton className="w-20 h-8" />
+        <Skeleton className="w-16 h-8" />
+        <Skeleton className="w-16 h-8" />
+      </div>
+    </div>
+  </div>
+)
+
+const InputFieldSkeleton = () => (
+  <div className="flex gap-[55px]">
+    <Skeleton className="w-[60px] h-4" />
+    <Skeleton className="w-full h-10" />
+  </div>
+)
+
+const TableRowSkeleton = ({ columns }: { columns: number }) => (
+  <div className={`grid grid-cols-${columns} gap-[4px] space-y-[4px]`}>
+    {Array.from({ length: columns }, (_, index) => (
+      <Skeleton key={index} className="h-10" />
+    ))}
+  </div>
+)
+
+const ImageUploadAreaSkeleton = () => (
+  <div className="w-full flex flex-col items-center justify-center gap-[12px] py-[40px]">
+    <Skeleton className="size-[56px] rounded-full" />
+    <div className="flex flex-col items-center justify-center">
+      <Skeleton className="w-64 h-5 mb-2" />
+      <Skeleton className="w-80 h-4 mb-2" />
+      <Skeleton className="w-32 h-3" />
+    </div>
+  </div>
+)
+
+const ProjectInfoFormSkeleton = () => (
+  <div className="max-w-full md:max-w-[859px] w-full pb-[80px]">
+    <div className="w-full rounded-[6px] border-l border-r border-border-basic-1 border-b">
+      {/* 시즌 및 스타일 정보 섹션 */}
+      <AccordionItemSkeleton />
+      <div className="p-[20px]">
+        <div className="flex flex-col gap-[8px]">
+          {Array.from({ length: 6 }, (_, index) => (
+            <InputFieldSkeleton key={index} />
+          ))}
+        </div>
+      </div>
+
+      {/* 도식화 이미지 섹션 */}
+      <AccordionItemSkeleton />
+      <div className="p-[20px]">
+        <ImageUploadAreaSkeleton />
+      </div>
+
+      {/* 사이즈 스펙 섹션 */}
+      <AccordionItemSkeleton />
+      <div className="p-[20px]">
+        <div className="grid grid-cols-7 gap-[4px] items-center space-y-[4px] mb-4">
+          <Skeleton className="h-4" />
+          {Array.from({ length: 5 }, (_, index) => (
+            <Skeleton key={index} className="h-10" />
+          ))}
+          <Skeleton className="h-4" />
+        </div>
+        {Array.from({ length: 15 }, (_, index) => (
+          <TableRowSkeleton key={index} columns={7} />
+        ))}
+      </div>
+
+      {/* 스타일 컬러 섹션 */}
+      <AccordionItemSkeleton />
+      <div className="p-[20px]">
+        <div className="grid grid-cols-7 gap-[4px] items-center space-y-[4px] mb-4">
+          {Array.from({ length: 7 }, (_, index) => (
+            <Skeleton key={index} className="h-4" />
+          ))}
+        </div>
+        {Array.from({ length: 5 }, (_, index) => (
+          <TableRowSkeleton key={index} columns={7} />
+        ))}
+      </div>
+
+      {/* 원단 상세 정보 섹션 */}
+      <AccordionItemSkeleton />
+      <div className="p-[20px]">
+        <div className="grid grid-cols-6 gap-[4px] items-center space-y-[4px] mb-4">
+          {Array.from({ length: 6 }, (_, index) => (
+            <Skeleton key={index} className="h-4" />
+          ))}
+        </div>
+        {Array.from({ length: 6 }, (_, index) => (
+          <TableRowSkeleton key={index} columns={6} />
+        ))}
+      </div>
+
+      {/* 부자재 정보 섹션 */}
+      <AccordionItemSkeleton />
+      <div className="p-[20px]">
+        <div className="grid grid-cols-5 gap-[4px] items-center space-y-[4px] mb-4">
+          {Array.from({ length: 5 }, (_, index) => (
+            <Skeleton key={index} className="h-4" />
+          ))}
+        </div>
+        {Array.from({ length: 5 }, (_, index) => (
+          <TableRowSkeleton key={index} columns={5} />
+        ))}
+      </div>
+
+      {/* SWATCH 섹션 */}
+      <AccordionItemSkeleton />
+      <div className="p-[20px]">
+        <ImageUploadAreaSkeleton />
+      </div>
+    </div>
+  </div>
+)

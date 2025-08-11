@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
 import { TaskStatusEnumType } from '@/generated/apis/@types/data-contracts'
 import {
@@ -147,7 +148,7 @@ const TaskCreateModal = ({
 
         <div className="flex flex-col flex-1 px-[16px] py-[20px] overflow-y-auto">
           <div className="flex flex-col gap-2 mb-6">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-[6px]">
               <Label
                 className={cn(
                   'after:content-["*"] after:text-accent-red2 after:-ml-0.5',
@@ -155,30 +156,30 @@ const TaskCreateModal = ({
               >
                 할당 대상 선택
               </Label>
-              <div className="flex gap-8 items-center h-12">
-                <div className="flex gap-3">
-                  <input
-                    type="radio"
-                    name="target"
+              <RadioGroup
+                defaultValue="me"
+                className="flex gap-[32px] py-[13px]"
+                onValueChange={(value) => setTarget(value as 'me' | 'manager')}
+              >
+                <div className="flex items-center gap-[12px]">
+                  <RadioGroupItem
                     value="me"
                     id="me"
                     checked={target === 'me'}
                     onChange={() => setTarget('me')}
                   />
-                  <label htmlFor="me">나에게 할당</label>
+                  <Label htmlFor="me">나에게 할당</Label>
                 </div>
-                <div className="flex gap-3">
-                  <input
-                    type="radio"
-                    name="target"
+                <div className="flex items-center gap-[12px]">
+                  <RadioGroupItem
                     value="manager"
                     id="manager"
                     checked={target === 'manager'}
                     onChange={() => setTarget('manager')}
                   />
-                  <label htmlFor="manager">담당자에게 할당</label>
+                  <Label htmlFor="manager">담당자에게 할당</Label>
                 </div>
-              </div>
+              </RadioGroup>
             </div>
 
             <AlertDialogDescription className="py-[10px] px-[20px] bg-primary-1 flex gap-[6px] items-center sm:items-start">

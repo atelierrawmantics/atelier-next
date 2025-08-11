@@ -29,7 +29,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { TaskStatusEnumType } from '@/generated/apis/@types/data-contracts'
 import {
   QUERY_KEY_TASK_API,
@@ -188,30 +194,29 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
               >
                 할당 대상 선택
               </Label>
-              <div className="flex gap-8 items-center h-12">
-                <div className="flex gap-3">
-                  <input
-                    type="radio"
-                    name="target"
+              <RadioGroup
+                defaultValue="me"
+                className="flex gap-[32px] py-[13px]"
+              >
+                <div className="flex items-center gap-[12px]">
+                  <RadioGroupItem
                     value="me"
                     id="me"
-                    disabled
                     checked={target === 'me'}
+                    disabled
                   />
-                  <label htmlFor="me">나에게 할당</label>
+                  <Label htmlFor="me">나에게 할당</Label>
                 </div>
-                <div className="flex gap-3">
-                  <input
-                    type="radio"
-                    name="target"
+                <div className="flex items-center gap-[12px]">
+                  <RadioGroupItem
                     value="manager"
                     id="manager"
-                    disabled
                     checked={target === 'manager'}
+                    disabled
                   />
-                  <label htmlFor="manager">담당자에게 할당</label>
+                  <Label htmlFor="manager">담당자에게 할당</Label>
                 </div>
-              </div>
+              </RadioGroup>
             </div>
 
             {isEditing && (
@@ -440,32 +445,45 @@ const TaskFormToManager = ({ isEditing }: { isEditing: boolean }) => {
         name="isAlarm"
         render={({ field }) => (
           <FormItem>
-            <FormLabel aria-required={true}>제3자 알림톡 수신 동의</FormLabel>
+            <FormLabel aria-required={true}>
+              제3자 알림톡 수신 동의
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoFillIcon className="min-w-[20px] size-[20px]" />
+                </TooltipTrigger>
+                <TooltipContent className="w-[268px] py-[4px] px-[8px]">
+                  <p>
+                    담당자에게 업무 관련 알림톡이 발송되며, 수신에 동의하지 않을
+                    경우 알림톡 전송이 제한됩니다. 정확한 업무 전달을 위해
+                    반드시 담당자의 사전 동의를 받고 선택해주세요.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </FormLabel>
             <FormControl>
-              <div className="flex gap-2 items-center  h-12">
-                <div className="flex gap-3">
-                  <input
-                    type="radio"
-                    name="isAlarm"
+              <RadioGroup
+                defaultValue="me"
+                className="flex gap-[32px] py-[13px]"
+              >
+                <div className="flex items-center gap-[12px]">
+                  <RadioGroupItem
                     value="true"
                     id="agree"
                     checked={field.value === true}
                     disabled
                   />
-                  <label htmlFor="agree">동의</label>
+                  <Label htmlFor="agree">동의</Label>
                 </div>
-                <div className="flex gap-3">
-                  <input
-                    type="radio"
-                    name="isAlarm"
+                <div className="flex items-center gap-[12px]">
+                  <RadioGroupItem
                     value="false"
                     id="disagree"
                     checked={field.value === false}
                     disabled
                   />
-                  <label htmlFor="disagree">동의하지 않음</label>
+                  <Label htmlFor="disagree">동의하지 않음</Label>
                 </div>
-              </div>
+              </RadioGroup>
             </FormControl>
             <FormMessage />
           </FormItem>

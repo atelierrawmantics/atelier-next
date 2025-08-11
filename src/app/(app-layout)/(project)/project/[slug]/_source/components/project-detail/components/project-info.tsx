@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation'
 
 import { useQueryClient } from '@tanstack/react-query'
+import { LoadingView } from '@toktokhan-dev/react-universal'
 import { useOverlay } from '@toss/use-overlay'
 
 import dayjs from 'dayjs'
@@ -14,6 +15,7 @@ import {
 } from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
 import { CommonAlert } from '@/components/common-alert'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   QUERY_KEY_PROJECT_API,
   useProjectDestroyMutation,
@@ -31,10 +33,65 @@ import {
 import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
+const ProjectInfoHeaderSkeleton = () => (
+  <div className="flex items-center justify-between p-[20px] border-b border-border-basic-1">
+    <div className="flex items-center gap-2">
+      <Skeleton className="w-32 h-5" />
+    </div>
+  </div>
+)
+
+const ProjectInfoContentSkeleton = () => (
+  <div className="flex flex-col p-[20px] gap-[20px]">
+    <div className="flex w-full gap-4">
+      <div className="w-full">
+        <Skeleton className="w-16 h-4 mb-2" />
+        <Skeleton className="w-20 h-5" />
+      </div>
+      <div className="w-full">
+        <Skeleton className="w-20 h-4 mb-2" />
+        <Skeleton className="w-20 h-5" />
+      </div>
+    </div>
+    <div>
+      <Skeleton className="w-20 h-4 mb-2" />
+      <Skeleton className="w-40 h-5" />
+    </div>
+    <div>
+      <Skeleton className="w-24 h-4 mb-2" />
+      <Skeleton className="w-full h-16" />
+    </div>
+    <div>
+      <Skeleton className="w-16 h-4 mb-2" />
+      <Skeleton className="w-32 h-5" />
+    </div>
+    <div>
+      <Skeleton className="w-20 h-4 mb-2" />
+      <Skeleton className="w-full h-12" />
+    </div>
+  </div>
+)
+
+const ProjectInfoSkeleton = () => (
+  <div className="md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px] pb-[80px]">
+    <div className="flex flex-col bg-background-basic-1 rounded-[6px] border-1 border-border-basic-1">
+      <ProjectInfoHeaderSkeleton />
+      <ProjectInfoContentSkeleton />
+    </div>
+    <div className="flex gap-[6px] justify-end">
+      <Skeleton className="w-28 h-8" />
+      <Skeleton className="w-32 h-8" />
+      <Skeleton className="w-36 h-8" />
+    </div>
+  </div>
+)
+
 const ProjectInfoHeader = ({
   onOpenUpdateModal,
+  isReadOnly,
 }: {
   onOpenUpdateModal: () => void
+  isReadOnly?: boolean
 }) => {
   const router = useRouter()
   const { slug } = useParams<{ slug: string }>()
@@ -87,19 +144,32 @@ const ProjectInfoHeader = ({
     <div
       className={cn(
         'flex items-center justify-between',
-        'px-[20px] h-[60px]',
-        'border-b border-border-basic-1',
+        'p-[20px] border-b border-border-basic-1',
       )}
     >
-      <p className="typo-pre-body-5 text-grey-9">프로젝트 정보</p>
-      <div className="flex gap-[12px]">
-        <Button size="fit" variant="ghost" onClick={onOpenUpdateModal}>
-          <PencilSimpleIcon />
-        </Button>
-        <Button size="fit" variant="ghost" onClick={handleDeleteProject}>
-          <TrashIcon />
-        </Button>
+      <div className="flex items-center gap-[8px]">
+        <p className="typo-pre-body-3 text-grey-9">프로젝트 정보</p>
       </div>
+      {!isReadOnly && (
+        <div className="flex gap-[8px]">
+          <Button
+            variant="ghost"
+            size="fit"
+            className="w-[32px] h-[32px] p-0"
+            onClick={onOpenUpdateModal}
+          >
+            <PencilSimpleIcon className="size-[16px]" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="fit"
+            className="w-[32px] h-[32px] p-0"
+            onClick={handleDeleteProject}
+          >
+            <TrashIcon className="size-[16px]" />
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
@@ -166,7 +236,7 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
   const queryClient = useQueryClient()
 
   const { slug } = useParams<{ slug: string }>()
-  const { data: project } = useProjectRetrieveQuery({
+  const { data: project, isLoading } = useProjectRetrieveQuery({
     variables: {
       slug,
     },
@@ -174,7 +244,8 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
   const { mutate: createProjectShare, isPending: isPendingCreateProjectShare } =
     useProjectShareCreateMutation({})
 
-  const { isShared, sharedUrl } = project || {}
+  const { isOwned, isShared, sharedUrl } = project || {}
+  const isReadOnly = isShared && !isOwned
 
   const { isOpen, openProjectUpdateModal, closeModal } = useProjectModal()
   const { mutate: updateProject, isPending: isPendingUpdate } =
@@ -276,66 +347,80 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
   }
 
   return (
-    <div
-      className={cn(
-        'md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px] pb-[80px]',
-        className,
-      )}
-    >
+    <LoadingView isLoading={isLoading} fallback={<ProjectInfoSkeleton />}>
       <div
-        className={cn('flex flex-col', 'bg-background-basic-1 rounded-[6px]')}
+        className={cn(
+          'md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px] pb-[80px]',
+          className,
+        )}
       >
-        <ProjectInfoHeader onOpenUpdateModal={openProjectUpdateModal} />
-        <ProjectInfoContent />
-      </div>
-      <div className="flex gap-[6px] justify-end">
-        <Button variant="outline-grey" size="sm" className="w-fit">
-          <DownloadSimpleIcon className="size-[16px]" />
-          <p>PDF 다운로드</p>
-        </Button>
-        <Button
-          variant="outline-grey"
-          size="sm"
-          className="w-fit hidden md:flex"
-          onClick={handleCreateProjectShare}
-          loading={isPendingCreateProjectShare}
+        <div
+          className={cn(
+            'flex flex-col',
+            'bg-background-basic-1 rounded-[6px] border-1 border-border-basic-1',
+          )}
         >
-          <LinkIcon />
-          <p>{isShared ? '링크 공유 중단' : '공유 링크 생성'}</p>
-        </Button>
-        <Button
-          variant="solid-primary"
-          size="sm"
-          className="w-fit hidden md:flex"
-        >
-          작업지시서 미리보기
-        </Button>
-      </div>
-      {isShared && (
-        <div className="flex justify-end">
-          <Button
-            variant={'ghost'}
-            size="fit"
-            className="px-[10px]"
-            onClick={handleCopyLink}
-          >
-            <CopyIcon />
-            <p className="typo-pre-caption-1 text-grey-8">링크 복사</p>
-          </Button>
+          <ProjectInfoHeader
+            onOpenUpdateModal={openProjectUpdateModal}
+            isReadOnly={isReadOnly}
+          />
+          <ProjectInfoContent />
         </div>
-      )}
+        <div className="flex gap-[6px] justify-end">
+          <Button variant="outline-grey" size="sm" className="w-fit">
+            <DownloadSimpleIcon className="size-[16px]" />
+            <p>PDF 다운로드</p>
+          </Button>
+          {!isReadOnly && (
+            <>
+              <>
+                <Button
+                  variant="outline-grey"
+                  size="sm"
+                  className="w-fit hidden md:flex"
+                  onClick={handleCreateProjectShare}
+                  loading={isPendingCreateProjectShare}
+                >
+                  <LinkIcon />
+                  <p>{isShared ? '링크 공유 중단' : '공유 링크 생성'}</p>
+                </Button>
+                <Button
+                  variant="solid-primary"
+                  size="sm"
+                  className="w-fit hidden md:flex"
+                >
+                  작업지시서 미리보기
+                </Button>
+              </>
+              {isShared && (
+                <div className="flex justify-end">
+                  <Button
+                    variant={'ghost'}
+                    size="fit"
+                    className="px-[10px]"
+                    onClick={handleCopyLink}
+                  >
+                    <CopyIcon />
+                    <p className="typo-pre-caption-1 text-grey-8">링크 복사</p>
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
 
-      <ProjectCreateModal
-        isOpen={isOpen}
-        onClose={closeModal}
-        data={{
-          headerTitle: '프로젝트 수정',
-          footerText: '프로젝트 수정',
-        }}
-        status="update"
-        onSubmit={handleUpdateProject}
-        loading={isPendingUpdate}
-      />
-    </div>
+        <ProjectCreateModal
+          isOpen={isOpen}
+          onClose={closeModal}
+          data={{
+            headerTitle: '프로젝트 수정',
+            footerText: '프로젝트 수정',
+          }}
+          status="update"
+          onSubmit={handleUpdateProject}
+          loading={isPendingUpdate}
+        />
+      </div>
+    </LoadingView>
   )
 }
