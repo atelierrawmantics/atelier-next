@@ -10,7 +10,7 @@ import { AppLayoutDrawer } from './components/app-layout-drawer'
 
 export const AppLayoutHeader = () => {
   return (
-    <header className="fixed h-[60px] w-screen bg-white border-b border-gray-200 px-[20px] py-[12px]">
+    <header className="h-[60px] w-screen bg-white px-[20px] py-[12px]">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="fit" asChild>
           <Link href="/">

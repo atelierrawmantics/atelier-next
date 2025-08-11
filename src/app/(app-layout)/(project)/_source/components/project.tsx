@@ -185,14 +185,14 @@ export const Project = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center w-full flex-1 overflow-y-auto">
+      <div className="flex flex-col items-center w-full flex-1 overflow-y-auto pb-[80px]">
         <div
           className={cn(
             'w-full container',
             projectListData.length === 0 ? 'h-full' : 'h-auto',
           )}
         >
-          <div className="flex flex-col justify-center items-center w-full h-full gap-[12px] pb-[80px]">
+          <div className="flex flex-col justify-center items-center w-full h-full gap-[12px]">
             <div
               className={cn(
                 'relative flex flex-col items-center justify-start w-full h-full',
@@ -200,7 +200,7 @@ export const Project = () => {
             >
               <LoadingView
                 fallback={
-                  <div className="flex flex-col gap-[8px] w-full pb-[80px]">
+                  <div className="flex flex-col gap-[8px] w-full">
                     {Array.from({ length: 5 }).map((_, index) => (
                       <Skeleton
                         key={index}
@@ -217,7 +217,7 @@ export const Project = () => {
                     isFetching={isFetchingNextPage}
                     onFetchMore={fetchNextPage}
                   >
-                    <div className="flex flex-col gap-[8px] w-full pb-[80px]">
+                    <div className="flex flex-col gap-[8px] w-full">
                       {projectListData.map((project) => (
                         <ProjectCard key={project.id} project={project} />
                       ))}

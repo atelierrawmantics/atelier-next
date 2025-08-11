@@ -184,7 +184,7 @@ export const Schematic = () => {
       className={cn(
         'container',
         'text-center w-full h-full',
-        'flex flex-1 flex-col justify-center items-center gap-[16px] pb-[80px]',
+        'flex flex-1 flex-col justify-center items-center gap-[16px]',
       )}
     >
       {/* 완성된 이미지 표시 */}

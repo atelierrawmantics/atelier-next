@@ -468,12 +468,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   return (
     <LoadingView isLoading={isLoading} fallback={<ProjectInfoFormSkeleton />}>
       <Form {...form}>
-        <div
-          className={cn(
-            'max-w-full md:max-w-[859px] w-full pb-[80px]',
-            className,
-          )}
-        >
+        <div className={cn('max-w-full md:max-w-[859px] w-full', className)}>
           <Accordion
             type="single"
             collapsible

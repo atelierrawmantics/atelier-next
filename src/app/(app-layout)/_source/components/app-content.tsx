@@ -1,7 +1,7 @@
 'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'
-import { SidebarProvider, useSidebar } from '@/components/ui/sidebar'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import { MY_IMAGES } from '@/generated/path/images'
 import { cn } from '@/lib/utils'
 
@@ -20,30 +20,25 @@ const BgDot = () => {
 }
 
 const AppContentInner = ({ children }: { children: React.ReactNode }) => {
-  const { open } = useSidebar()
-
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="h-[100dvh] overflow-hidden flex flex-col">
       {/* 헤더 - 최상단 고정 */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-border-basic-1">
         <AppLayoutHeader />
       </div>
 
-      {/* 사이드바 - 헤더 아래 고정 */}
-      <AppSidebar />
+      <div className="flex w-full flex-1 overflow-hidden">
+        {/* 사이드바 - 헤더 아래 고정 */}
+        <AppSidebar />
 
-      {/* 콘텐츠 영역 - 헤더와 사이드바를 제외한 영역 */}
-      <div
-        className={cn(
-          'fixed top-[60px] left-0 right-0 bottom-0 bg-gray-50 transition-all duration-200 ease-in-out',
-          open ? 'ml-0 md:ml-[240px]' : 'ml-0 md:ml-[60px]',
-        )}
-      >
-        {/* 배경 이미지 */}
-        <BgDot />
+        {/* 콘텐츠 영역 - 헤더와 사이드바를 제외한 영역 */}
+        <div className={cn('flex flex-col', 'flex-1 h-full')}>
+          {/* 배경 이미지 */}
+          <BgDot />
 
-        {/* 콘텐츠 */}
-        <div className="w-full h-[100dvh]">{children}</div>
+          {/* 콘텐츠 */}
+          <div className="w-full flex-1 overflow-hidden">{children}</div>
+        </div>
       </div>
     </div>
   )

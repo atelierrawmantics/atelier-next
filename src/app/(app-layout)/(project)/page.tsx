@@ -22,6 +22,7 @@ export default function HomePage() {
             <p className="typo-pre-heading-5 text-grey-9">프로젝트 관리</p>
           </div>,
         ])}
+        contentClassName="pb-0"
       >
         <Project />
       </ProjectContent>

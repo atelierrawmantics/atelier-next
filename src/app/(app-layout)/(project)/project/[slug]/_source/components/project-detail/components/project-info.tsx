@@ -73,7 +73,7 @@ const ProjectInfoContentSkeleton = () => (
 )
 
 const ProjectInfoSkeleton = () => (
-  <div className="md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px] pb-[80px]">
+  <div className="md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px]">
     <div className="flex flex-col bg-background-basic-1 rounded-[6px] border-1 border-border-basic-1">
       <ProjectInfoHeaderSkeleton />
       <ProjectInfoContentSkeleton />
@@ -340,7 +340,7 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
     <LoadingView isLoading={isLoading} fallback={<ProjectInfoSkeleton />}>
       <div
         className={cn(
-          'md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px] pb-[80px]',
+          'md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px]',
           className,
         )}
       >
