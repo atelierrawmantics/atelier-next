@@ -183,7 +183,7 @@ const TaskCreateModal = ({
             </div>
 
             <AlertDialogDescription className="py-[10px] px-[20px] bg-primary-1 flex gap-[6px] items-center sm:items-start">
-              <InfoFillIcon className="min-w-[20px] size-[20px]" />
+              <InfoFillIcon className="min-w-[20px] size-[20px] text-primary-3" />
               <p className="typo-pre-body-6">{target_description[target]}</p>
             </AlertDialogDescription>
           </div>

@@ -165,7 +165,7 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
       {/* tablet 이하 모바일 뷰 */}
       <div className="flex h-full flex-col md:hidden gap-5">
         <div className="py-[10px] px-[20px] bg-primary-2 flex gap-[6px] items-center sm:items-start">
-          <InfoFillIcon className="min-w-[20px] size-[20px]" />
+          <InfoFillIcon className="min-w-[20px] size-[20px] text-primary-3" />
           <p className="typo-pre-body-6">
             모바일 환경에서는 드래그앤드랍을 통한 상태 변경 기능을 지원하지
             않습니다. PC 환경에서 이용해 주세요.

@@ -233,7 +233,7 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
 
             {isEditing && (
               <AlertDialogDescription className="py-[10px] px-[20px] bg-primary-1 flex gap-[6px] items-center sm:items-start">
-                <InfoFillIcon className="min-w-[20px] size-[20px]" />
+                <InfoFillIcon className="min-w-[20px] size-[20px] text-primary-3" />
                 <p className="typo-pre-body-6">
                   이미 지정된 할당 대상은 변경할 수 없습니다.
                 </p>
@@ -462,21 +462,21 @@ const TaskFormToManager = ({ isEditing }: { isEditing: boolean }) => {
         name="isAlarm"
         render={({ field }) => (
           <FormItem>
-            <FormLabel aria-required={true}>
-              제3자 알림톡 수신 동의
+            <div className="flex gap-[4px] items-center">
+              <FormLabel aria-required={true}>제3자 알림톡 수신 동의</FormLabel>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <InfoFillIcon className="min-w-[20px] size-[20px]" />
+                  <InfoFillIcon className="min-w-[20px] size-[20px] text-grey-5" />
                 </TooltipTrigger>
                 <TooltipContent className="w-[268px] py-[4px] px-[8px]">
-                  <p>
-                    담당자에게 업무 관련 알림톡이 발송되며, 수신에 동의하지 않을
-                    경우 알림톡 전송이 제한됩니다. 정확한 업무 전달을 위해
-                    반드시 담당자의 사전 동의를 받고 선택해주세요.
+                  <p className="typo-pre-body-6 text-grey-0 whitespace-pre-line">
+                    {
+                      '담당자에게 업무 관련 알림톡이 발송되며,\n수신에 동의하지 않을 경우 알림톡 전송이\n제한됩니다. 정확한 업무 전달을 위해 반드시\n담당자의 사전 동의를 받고 선택해주세요.'
+                    }
                   </p>
                 </TooltipContent>
               </Tooltip>
-            </FormLabel>
+            </div>
             <FormControl>
               <RadioGroup
                 defaultValue="me"
