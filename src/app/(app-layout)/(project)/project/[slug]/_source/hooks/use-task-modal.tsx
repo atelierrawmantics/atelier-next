@@ -136,7 +136,7 @@ const TaskCreateModal = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="flex flex-col rounded-none min-w-screen sm:rounded-[12px] sm:min-w-[600px] w-screen sm:max-h-[800px] h-screen">
+      <AlertDialogContent className="flex flex-col rounded-none min-w-screen sm:rounded-[12px] sm:min-w-[600px] w-screen sm:max-h-[800px] h-full">
         <AlertDialogHeader className="flex flex-row items-center justify-between">
           <AlertDialogTitle className="typo-pre-heading-2 text-grey-10">
             {data?.projectName}
