@@ -40,6 +40,7 @@ const FeatureProjectProgress = () => {
     <section ref={containerRef}>
       <div ref={contentRef} className={cn(COMMON_FADE_STYLE)}>
         <FeatureLayout
+          type={'project-progress'}
           badgeText={'두 번째'}
           title={`실시간으로 확인하는\n작업 진행 현황`}
           description={`실시간으로 프로젝트 진행 상황을 확인할 수 있어요.\n누구나 최신 상태를 바로 파악하고 협업할 수 있습니다.`}

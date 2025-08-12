@@ -1,7 +1,10 @@
 import Badge from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
+import CursorBox from './cursor-box'
+
 interface FeatureLayoutProps {
+  type: 'work-order' | 'project-progress' | 'ar-diagram'
   badgeText: string
   title: string
   description: string
@@ -10,6 +13,7 @@ interface FeatureLayoutProps {
 }
 
 const FeatureLayout = ({
+  type,
   badgeText,
   title,
   description,
@@ -73,33 +77,35 @@ const FeatureLayout = ({
 
         {/* image section */}
         <section className="w-full pb-[48px] sm:pb-0">
-          <div
-            className={cn(
-              'relative',
-              'w-full',
-              'aspect-[335/260]',
-              'pl-[30px] pt-[43px]',
-              'flex flex-col items-end justify-end',
-              'rounded-[24px] sm:rounded-[40px]',
-              'overflow-hidden',
-              bgColor,
-            )}
-          >
+          <div className={cn('relative')}>
             <div
               className={cn(
-                'relative right-[-5px]',
+                'relative',
                 'w-full',
-                'aspect-[620/440]',
-                // repeat
-                'bg-no-repeat',
-                // size
-                '[background-size:cover]',
-                'md:[background-size:contain]',
-                // position
-                '[background-position:bottom_center]',
-                bgUrl,
+                'aspect-[335/260]',
+                'pl-[30px] sm:pl-[80px] pt-[43px] sm:pt-[80px]',
+                'flex flex-col items-end justify-end',
+                'rounded-[24px] sm:rounded-[40px]',
+                'overflow-hidden',
+                bgColor,
               )}
-            />
+            >
+              <div
+                className={cn(
+                  'relative right-[-5px]',
+                  'w-full',
+                  'aspect-[620/440]',
+                  // repeat
+                  'bg-no-repeat',
+                  // size
+                  '[background-size:contain]',
+                  // position
+                  '[background-position:bottom_center]',
+                  bgUrl,
+                )}
+              />
+            </div>
+            <CursorBox theme={type} />
           </div>
         </section>
       </div>

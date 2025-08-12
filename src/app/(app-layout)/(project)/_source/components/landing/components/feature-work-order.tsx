@@ -40,6 +40,7 @@ const FeatureWorkOrder = () => {
     <section ref={containerRef}>
       <div ref={contentRef} className={cn(COMMON_FADE_STYLE)}>
         <FeatureLayout
+          type={'work-order'}
           badgeText={'첫 번째'}
           title={`쉽고 정확한 작업지시서\n작성과 공유`}
           description={`누구나 이해할 수 있게 작업지시서를 구조화해보세요.\n오류와 누락 없이 정확하게 전달됩니다.`}

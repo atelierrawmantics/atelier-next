@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
-import { LogoIcon } from '@/generated/icons/MyIcons'
+import { LOGOIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
 const Footer = () => {
@@ -33,7 +33,7 @@ const Footer = () => {
               'flex flex-col gap-[6px]',
             )}
           >
-            <LogoIcon className="w-[80px] sm:w-[100px] h-[20px] sm:h-[24px] my-[4px]" />
+            <LOGOIcon className="w-[80px] sm:w-[100px] h-[20px] sm:h-[24px] my-[4px]" />
             <p className={cn('typo-pre-body-6 text-grey-9')}>
               {`패션 협업, 아뜰리에 하나로 통합합니다.`}
             </p>

@@ -1,6 +1,8 @@
 import Badge from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
+import CursorBox from './components/cursor-box'
+
 const HeroBanner = () => {
   return (
     <section
@@ -72,7 +74,9 @@ const HeroBanner = () => {
               '[background-position:bottom_center]',
               "bg-[url('/images/landing/section1_content.png')]",
             )}
-          />
+          >
+            <CursorBox theme={'hero'} />
+          </div>
         </div>
       </div>
     </section>

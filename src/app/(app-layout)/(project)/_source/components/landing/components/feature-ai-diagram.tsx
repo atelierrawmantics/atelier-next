@@ -40,6 +40,7 @@ const FeatureAiDiagram = () => {
     <section ref={containerRef}>
       <div ref={contentRef} className={cn(COMMON_FADE_STYLE)}>
         <FeatureLayout
+          type={'ar-diagram'}
           badgeText={'세 번째'}
           title={`AI로 자동 생성되는\n직관적인 작업 도식`}
           description={`작성한 작업지시가 AI로 자동 도식화됩니다.\n복잡한 설명 없이도 한눈에 이해할 수 있어요.`}
