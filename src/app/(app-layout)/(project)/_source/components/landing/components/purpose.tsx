@@ -1,9 +1,43 @@
+import { useRef } from 'react'
+
 import Badge from '@/components/ui/badge'
+import { useClientGSAP } from '@/hooks/useClientGSAP'
+import {
+  COMMON_FADE_STYLE,
+  useCommonAnimation,
+} from '@/hooks/useCommonAnimation'
 import { cn } from '@/lib/utils'
 
 const Purpose = () => {
+  const { contentTl } = useCommonAnimation()
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  useClientGSAP(function fadeTextAnimation({
+    gsap,
+    ScrollTrigger,
+    validateTargets,
+  }) {
+    if (!validateTargets(containerRef.current, contentRef.current)) return
+    if (!(ScrollTrigger && gsap)) return
+
+    const tl = gsap.timeline({ autoRemoveChildren: true, paused: true })
+    tl.add(contentTl(gsap, [contentRef.current]), '<+0.2')
+
+    ScrollTrigger.create({
+      trigger: containerRef.current,
+      start: `top 85%`,
+      end: 'bottom top',
+      onEnter() {
+        tl.play()
+      },
+    })
+  }, [])
+
   return (
     <section
+      ref={containerRef}
       className={cn(
         'w-full',
         'max-w-[1280px]',
@@ -12,7 +46,13 @@ const Purpose = () => {
         'bg-grey-0',
       )}
     >
-      <div className="flex flex-col items-center justify-center gap-[28px] sm:gap-[16px]">
+      <div
+        ref={contentRef}
+        className={cn(
+          'flex flex-col items-center justify-center gap-[28px] sm:gap-[16px]',
+          COMMON_FADE_STYLE,
+        )}
+      >
         {/* slogan */}
         <div className="flex flex-col items-center justify-center gap-[8px]">
           <Badge
