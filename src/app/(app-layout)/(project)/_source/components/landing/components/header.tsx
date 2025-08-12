@@ -2,11 +2,18 @@ import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import { LogoIcon } from '@/generated/icons/MyIcons'
+import { cn } from '@/lib/utils'
 
-export const LandingHeader = () => {
+const Header = () => {
   return (
-    <header className="fixed h-[80px] w-screen bg-white border-b border-gray-200 py-[12px]">
-      <div className="flex items-center justify-between container h-full">
+    <div className="absolute top-0 right-0 h-[80px] w-screen bg-white border-b border-gray-200">
+      <div
+        className={cn(
+          'flex items-center justify-between',
+          'w-full h-full max-w-[1280px]',
+          'mx-auto py-[12px] px-[16px] sm:px-[40px] md:px-0',
+        )}
+      >
         <Button variant="ghost" size="fit" asChild>
           <Link href="/">
             <LogoIcon className="w-[100px] h-[24px] my-[4px]" />
@@ -30,6 +37,8 @@ export const LandingHeader = () => {
           </Button>
         </div>
       </div>
-    </header>
+    </div>
   )
 }
+
+export default Header

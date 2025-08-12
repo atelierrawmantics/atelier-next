@@ -6,13 +6,17 @@ export const MY_IMAGES = {
   192: { src: '/images/192.png', alt: '192' },
   384: { src: '/images/384.png', alt: '384' },
   512: { src: '/images/512.png', alt: '512' },
-  LOGO: { src: '/images/LOGO.png', alt: 'logo' },
   DOT: { src: '/images/dot.png', alt: 'dot' },
+  LANDING_SECTION_1_CONTENT: {
+    src: '/images/landing/section1_content.png',
+    alt: 'section-1-content',
+  },
+  LANDING_SECTION_3_1_CONTENT: {
+    src: '/images/landing/section3_1_content.png',
+    alt: 'section-3-1-content',
+  },
   LOGIN_BG: { src: '/images/login-bg.png', alt: 'login-bg' },
   NEW_OG: { src: '/images/new_og.png', alt: 'new-og' },
-  SOCIAL_APPLE: { src: '/images/social/apple.png', alt: 'apple' },
-  SOCIAL_FACEBOOK: { src: '/images/social/facebook.png', alt: 'facebook' },
-  SOCIAL_GOOGLE: { src: '/images/social/google.png', alt: 'google' },
   SOCIAL_KAKAO: { src: '/images/social/kakao.png', alt: 'kakao' },
   SOCIAL_NAVER: { src: '/images/social/naver.png', alt: 'naver' },
 }
