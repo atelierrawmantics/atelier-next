@@ -20,7 +20,11 @@ export const Landing = () => {
       </header>
 
       {/* content */}
-      <main className={cn('w-full max-w-[1920px] mx-auto pt-[80px]')}>
+      <main
+        className={cn(
+          'w-full max-w-[1920px] mx-auto pt-[80px] translate-z-0 overflow-hidden',
+        )}
+      >
         <HeroBanner />
         <Purpose />
         <FeatureWorkOrder />
