@@ -73,7 +73,7 @@ const SECTION_CONFIGS = {
     title: '스타일 컬러 (STYLE COLOR)',
     tableConfig: {
       columns: 7,
-      rows: 5,
+      rows: 7,
       headers: ['Color', '', '', '', '', '', '수량'] as string[],
     },
   },
@@ -89,7 +89,7 @@ const SECTION_CONFIGS = {
     title: '부자재 정보',
     tableConfig: {
       columns: 5,
-      rows: 5,
+      rows: 6,
       headers: ['자재명', '규격', '컬러', '사용부위', '요척'] as string[],
     },
   },

@@ -13,8 +13,8 @@ export const SchematicMo = ({ className }: SchematicMoProps) => {
       className={cn(
         'container',
         'pt-[16px] sm:pt-[20px] md:pt-[36px]',
-        className,
         'h-full',
+        className,
       )}
     >
       <div

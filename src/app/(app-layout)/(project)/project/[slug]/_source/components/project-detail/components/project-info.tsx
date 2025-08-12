@@ -33,6 +33,8 @@ import {
 import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
+import { InstructionOrderModal } from './instruction-order-modal'
+
 const ProjectInfoHeaderSkeleton = () => (
   <div className="flex items-center justify-between p-[20px] border-b border-border-basic-1">
     <div className="flex items-center gap-2">
@@ -237,6 +239,8 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
   const { isOwned, isShared, sharedUrl } = project || {}
   const isReadOnly = isShared && !isOwned
 
+  const { open: openInstructionOrderModal } = useOverlay()
+
   const { isOpen, openProjectUpdateModal, closeModal } = useProjectModal()
   const { mutate: updateProject, isPending: isPendingUpdate } =
     useProjectUpdateMutation({})
@@ -377,6 +381,11 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
                 variant="solid-primary"
                 size="sm"
                 className="w-fit hidden md:flex"
+                onClick={() =>
+                  openInstructionOrderModal(({ isOpen, close }) => (
+                    <InstructionOrderModal isOpen={isOpen} onClose={close} />
+                  ))
+                }
               >
                 작업지시서 미리보기
               </Button>
