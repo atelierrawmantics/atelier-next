@@ -1,3 +1,5 @@
+'use client'
+
 import { cn } from '@/lib/utils'
 
 import FeatureAiDiagram from './components/feature-ai-diagram'

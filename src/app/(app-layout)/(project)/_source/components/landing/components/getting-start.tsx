@@ -1,21 +1,59 @@
+import { useRef } from 'react'
+
 import Link from 'next/link'
 
 import { ArrowRight } from 'lucide-react'
 
 import Badge from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useClientGSAP } from '@/hooks/useClientGSAP'
+import {
+  COMMON_FADE_STYLE,
+  useCommonAnimation,
+} from '@/hooks/useCommonAnimation'
 import { cn } from '@/lib/utils'
 
 const GettingStart = () => {
+  const { contentTl } = useCommonAnimation()
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  useClientGSAP(function fadeTextAnimation({
+    gsap,
+    ScrollTrigger,
+    validateTargets,
+  }) {
+    if (!validateTargets(containerRef.current, contentRef.current)) return
+    if (!(ScrollTrigger && gsap)) return
+
+    const tl = gsap.timeline({ autoRemoveChildren: true, paused: true })
+    tl.add(contentTl(gsap, [contentRef.current]), '<+0.2')
+
+    ScrollTrigger.create({
+      trigger: containerRef.current,
+      start: `top 85%`,
+      end: 'bottom top',
+      onEnter() {
+        tl.play()
+      },
+    })
+  }, [])
+
   return (
-    <section className={cn('w-full', 'px-[20px] sm:px-[40px] pb-[40px]')}>
+    <section
+      ref={containerRef}
+      className={cn('w-full', 'px-[20px] sm:px-[40px] pb-[40px]')}
+    >
       <div
+        ref={contentRef}
         className={cn(
           'w-full',
           'px-[20px] sm:px-[40px] py-[80px] md:py-[120px]',
           'bg-[linear-gradient(215deg,#D5E3FC_0.31%,#F6FAF6_104.05%)]',
           'rounded-[40px]',
           'overflow-hidden',
+          COMMON_FADE_STYLE,
         )}
       >
         <div className="relative w-full h-full">
