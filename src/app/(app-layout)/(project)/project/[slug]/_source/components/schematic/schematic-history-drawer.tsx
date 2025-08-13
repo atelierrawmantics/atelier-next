@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { EmptyView, LoadingView } from '@toktokhan-dev/react-universal'
 
 import dayjs from 'dayjs'
-import { CheckIcon, DownloadIcon, XIcon } from 'lucide-react'
+import { CheckIcon, DownloadIcon } from 'lucide-react'
 
 import { InfinityContent } from '@/components/infinite-content'
 import { Button } from '@/components/ui/button'
@@ -38,6 +38,7 @@ import {
   DotsThreeIcon,
   MagicWandIcon,
   TrashIcon,
+  XIcon,
 } from '@/generated/icons/MyIcons'
 import { useDrawerAutoClose } from '@/hooks/use-drawer-auto-close'
 import { toast } from '@/hooks/useToast'
@@ -101,9 +102,9 @@ export const HistoryItemDropDownMenu = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="z-1 absolute top-0 right-0">
         <Button variant="ghost" size="fit" type="button">
-          <DotsThreeIcon className="bg-white size-[32px] z-1 absolute top-0 right-0" />
+          <DotsThreeIcon className="bg-white size-[32px]" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

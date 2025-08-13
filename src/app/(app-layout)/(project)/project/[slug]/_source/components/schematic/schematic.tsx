@@ -91,7 +91,7 @@ const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full mt-[16px]">
       <form onSubmit={handleSubmit(onSubmitForm)}>
         <div
           className={cn(
@@ -114,6 +114,7 @@ const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
               'p-0',
               'border-none',
             )}
+            disabled={isPending || isSubmitting}
           />
           <div className="flex flex-col gap-[8px]">
             <SchematicHistoryDrawer />
@@ -225,19 +226,35 @@ export const Schematic = () => {
     )
   }
 
+  // UI 상태 결정을 위한 변수들
+  const isLoading = isPending || schematic?.status === 'PENDING'
+  const hasSuccessImage = schematic?.status === 'SUCCESS' && schematic?.image
+  const showDefaultUI = !isLoading && !hasSuccessImage
+
   return (
     <>
       <div
         className={cn(
           'container',
           'text-center w-full h-full',
-          'flex-1 flex-col justify-center items-center',
+          'flex-1 flex-col items-center justify-center',
           'hidden sm:flex',
         )}
       >
-        {/* 완성된 이미지 표시 */}
-        {schematic?.image && (
-          <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
+        {/* 1. 로딩 UI: mutate 요청 중이고 폴링이 pending 상태일 때 */}
+        {isLoading && (
+          <div className="flex flex-col items-center justify-end w-full h-full pb-[20px] pt-[80px]">
+            <div className="relative aspect-[3/2] max-w-full w-full sm:w-auto h-auto sm:h-full">
+              <div className="flex items-center justify-center w-full h-full bg-secondary-1">
+                <Loader2Icon className="animate-spin" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 2. 이미지 UI: 상태가 success이고 이미지가 있을 때 */}
+        {hasSuccessImage && (
+          <div className="flex flex-col items-center justify-end w-full h-full pb-[20px] pt-[80px]">
             <div className="relative aspect-[3/2] max-w-full w-full sm:w-auto h-auto sm:h-full">
               <Image
                 src={schematic.image}
@@ -254,17 +271,10 @@ export const Schematic = () => {
             </div>
           </div>
         )}
-        {(isPending || schematic?.status === 'PENDING') && (
-          <div className="flex flex-col items-center justify-center w-full h-full pt-[80px] pb-[20px]">
-            <div className="relative aspect-[3/2] h-full">
-              <div className="flex items-center justify-center w-full h-full bg-secondary-1">
-                <Loader2Icon className="animate-spin" />
-              </div>
-            </div>
-          </div>
-        )}
-        {!isPending && !schematic?.status && (
-          <div className="flex flex-col items-center justify-center w-full h-full pt-[160px] gap-[16px]">
+
+        {/* 3. 기본 UI: 최초에 어떤 요청도 발생하지 않았을 때 */}
+        {showDefaultUI && (
+          <div className="flex flex-col justify-end items-center w-full h-full gap-[16px]">
             <div className="flex items-center justify-center size-[56px] rounded-full bg-primary-3">
               <MagicWandFillIcon />
             </div>
@@ -285,10 +295,7 @@ export const Schematic = () => {
           </div>
         )}
 
-        <PromptInput
-          onSubmit={handlePromptSubmit}
-          isPending={schematic?.status === 'PENDING' || isPending}
-        />
+        <PromptInput onSubmit={handlePromptSubmit} isPending={isLoading} />
       </div>
       <SchematicMo className="flex sm:hidden" />
     </>
