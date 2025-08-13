@@ -8,6 +8,7 @@ import { AlertDialogDescription } from '@radix-ui/react-alert-dialog'
 import { useQueryClient } from '@tanstack/react-query'
 import { useOverlay } from '@toss/use-overlay'
 
+import { omit } from 'lodash-es'
 import { useFormContext } from 'react-hook-form'
 
 import { CommonAlert } from '@/components/common-alert'
@@ -46,7 +47,8 @@ import {
 } from '@/generated/apis/Task/Task.query'
 import { InfoFillIcon, XIcon } from '@/generated/icons/MyIcons'
 import { toast } from '@/hooks/useToast'
-import { cn } from '@/lib/utils'
+import { cn, formatPhoneNumber } from '@/lib/utils'
+import { phoneFormatter } from '@/utils/middleware/phone-formatter'
 
 import {
   TaskFormToManagerDataType,
@@ -202,7 +204,12 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
 
   useEffect(() => {
     if (task) {
-      target === 'me' ? resetToMe(task) : resetToManager(task)
+      target === 'me' ?
+        resetToMe(task)
+      : resetToManager({
+          ...task,
+          managerPhone: formatPhoneNumber(task.managerPhone),
+        })
     }
   }, [task, resetToMe, resetToManager, target])
 
@@ -468,13 +475,18 @@ const TaskFormToManager = ({ isEditing }: { isEditing: boolean }) => {
                 <Input
                   placeholder="휴대폰 번호를 입력하세요"
                   readOnly={!isEditing}
-                  value={field.value}
+                  maxLength={13}
                   onChange={(e) => {
-                    setValue('managerPhone', e.target.value, {
-                      shouldValidate: true,
-                    })
-                    field.onChange(e)
+                    setValue(
+                      'managerPhone',
+                      formatPhoneNumber(e.target.value),
+                      {
+                        shouldValidate: true,
+                      },
+                    )
+                    phoneFormatter(e, field.onChange)
                   }}
+                  {...omit(field, 'onChange')}
                 />
               </FormControl>
               <FormMessage />

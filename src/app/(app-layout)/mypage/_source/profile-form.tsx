@@ -61,10 +61,11 @@ export const ProfileForm = () => {
     useUserDestroyMutation({
       options: {
         onSuccess: () => {
-          //FIXME: 회원탈퇴 후 로그아웃 처리
           queryClient.invalidateQueries({
             queryKey: QUERY_KEY_USER_API.RETRIEVE({ id: 'me' }),
           })
+          queryClient.clear()
+          logout()
         },
       },
     })

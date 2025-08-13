@@ -41,7 +41,8 @@ export const taskFormToManagerSchema: yup.ObjectSchema<TaskFormToManagerDataType
     managerName: yup.string().required('태스크 담당자를 입력해 주세요'),
     managerPhone: yup
       .string()
-      .required('태스크 담당자 휴대폰 번호를 입력해 주세요'),
+      .required('태스크 담당자 휴대폰 번호를 입력해 주세요')
+      .matches(/^\d{3}-\d{3,4}-\d{4}$/, '올바른 휴대폰번호를 입력해 주세요'),
     description: yup.string().required('태스크 설명을 입력해 주세요'),
     isAlarm: yup.boolean().required('태스크 알림 수신 여부를 선택해 주세요'),
     status: yup

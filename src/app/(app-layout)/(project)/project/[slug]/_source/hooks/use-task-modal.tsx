@@ -374,6 +374,7 @@ const TaskFormToManager = () => {
                 <Input
                   placeholder="휴대폰 번호를 입력하세요"
                   value={field.value}
+                  maxLength={13}
                   onChange={(e) => {
                     setValue('managerPhone', e.target.value, {
                       shouldValidate: true,
