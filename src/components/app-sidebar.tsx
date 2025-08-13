@@ -66,7 +66,7 @@ export function AppSidebar() {
     <Sidebar
       variant="sidebar"
       collapsible="icon"
-      className="h-full min-w-[60px] max-w-[240px] w-full border-r border-border-basic-1"
+      className="min-w-[60px] max-w-[240px] w-full border-r border-border-basic-1"
       style={{
         boxShadow:
           '15px 0 80px 0 rgba(27, 28, 29, 0.02), 4px 0 10px 0 rgba(27, 28, 29, 0.02)',
