@@ -110,7 +110,7 @@ const GettingStart = () => {
                 asChild
               >
                 <div className={cn('w-fit', 'flex gap-[8px]')}>
-                  <Link href="/project/new">지금 아뜰리에 시작하기</Link>
+                  <Link href="/login">지금 아뜰리에 시작하기</Link>
                   <ArrowRight className="size-[24px]" />
                 </div>
               </Button>
