@@ -40,7 +40,7 @@ const ImageUploadAreaSkeleton = () => (
 )
 
 export const ProjectInfoFormSkeleton = () => (
-  <div className="max-w-full md:max-w-[859px] w-full">
+  <div className="max-w-full md:max-w-[859px] w-full hidden sm:block">
     <div className="w-full rounded-[6px] border-l border-r border-border-basic-1 border-b bg-background-basic-1">
       {/* 시즌 및 스타일 정보 섹션 */}
       <AccordionItemSkeleton className="rounded-t-[6px]" />

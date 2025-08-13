@@ -231,7 +231,7 @@ export const Schematic = () => {
         className={cn(
           'container',
           'text-center w-full h-full',
-          'flex-1 flex-col justify-center items-center gap-[16px]',
+          'flex-1 flex-col justify-center items-center',
           'hidden sm:flex',
         )}
       >

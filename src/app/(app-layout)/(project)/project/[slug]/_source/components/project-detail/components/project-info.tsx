@@ -75,7 +75,7 @@ const ProjectInfoContentSkeleton = () => (
 )
 
 const ProjectInfoSkeleton = () => (
-  <div className="md:max-w-[405px] max-w-full w-full flex flex-col gap-[12px]">
+  <div className="md:max-w-[405px] max-w-full w-full flex-col gap-[12px] hidden sm:flex">
     <div className="flex flex-col bg-background-basic-1 rounded-[6px] border-1 border-border-basic-1">
       <ProjectInfoHeaderSkeleton />
       <ProjectInfoContentSkeleton />

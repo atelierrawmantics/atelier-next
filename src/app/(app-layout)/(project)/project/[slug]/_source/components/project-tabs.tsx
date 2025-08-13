@@ -54,6 +54,7 @@ export const ProjectTabs = ({ tab }: ProjectTabsProps) => {
 
   const { isShared, isOwned } = project || {}
   const isReadOnly = Boolean(isShared && !isOwned)
+  const isAuthorized = isOwned === false && isShared === false
   const tabs = isReadOnly ? READONLY_TABS : ALL_TABS
 
   useEffect(() => {
@@ -61,6 +62,12 @@ export const ProjectTabs = ({ tab }: ProjectTabsProps) => {
       router.replace(`/project/${slug}?tab=project`)
     }
   }, [isReadOnly, router, slug, tab])
+
+  useEffect(() => {
+    if (isAuthorized) {
+      router.replace('/')
+    }
+  }, [isAuthorized, router])
 
   return (
     <div className="flex gap-4 h-full justify-end sm:justify-start">
