@@ -133,6 +133,11 @@ const responseInterceptor: (
     const { status } = response
     const isUnAuthorized = status === 401
     const isExpiredToken = status === 444
+    const isPermissionDenied = status === 403
+
+    if (isPermissionDenied) {
+      window.location.replace('/')
+    }
 
     if (isUnAuthorized) {
       handleUnAuthorized()

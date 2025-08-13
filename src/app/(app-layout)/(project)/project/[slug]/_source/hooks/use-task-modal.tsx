@@ -36,7 +36,9 @@ import {
   useProjectTaskCreateMutation,
 } from '@/generated/apis/Task/Task.query'
 import { InfoFillIcon, XIcon } from '@/generated/icons/MyIcons'
+import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
+import { phoneFormatter } from '@/utils/middleware/phone-formatter'
 
 import {
   TaskFormToManagerDataType,
@@ -82,6 +84,18 @@ const TaskCreateModal = ({
           }),
         })
       },
+      onError: () => {
+        toast(
+          '태스크 생성에 실패했어요.',
+          {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          },
+          'error',
+        )
+      },
     },
   })
 
@@ -117,11 +131,12 @@ const TaskCreateModal = ({
   }
 
   const handleSubmitToManagerData = (data: TaskFormToManagerDataType) => {
-    console.log('TaskFormToManager data:', data)
+    const { managerPhone } = data
     createTask({
       projectSlug: slug,
       data: {
         ...data,
+        managerPhone: managerPhone.replace(/-/g, ''),
         memo: '',
       },
     })
@@ -336,6 +351,7 @@ const TaskFormToManager = () => {
                 <Input
                   placeholder="담당자 이름을 입력하세요"
                   value={field.value}
+                  maxLength={30}
                   onChange={(e) => {
                     setValue('managerName', e.target.value, {
                       shouldValidate: true,
@@ -362,7 +378,7 @@ const TaskFormToManager = () => {
                     setValue('managerPhone', e.target.value, {
                       shouldValidate: true,
                     })
-                    field.onChange(e)
+                    phoneFormatter(e, field.onChange)
                   }}
                 />
               </FormControl>
@@ -433,6 +449,7 @@ const TaskFormToManager = () => {
                   })
                   field.onChange(e)
                 }}
+                maxLength={30}
               />
             </FormControl>
             <FormMessage />

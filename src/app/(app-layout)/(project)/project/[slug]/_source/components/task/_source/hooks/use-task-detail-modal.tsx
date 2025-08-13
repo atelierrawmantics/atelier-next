@@ -45,6 +45,7 @@ import {
   useProjectTaskRetrieveQuery,
 } from '@/generated/apis/Task/Task.query'
 import { InfoFillIcon, XIcon } from '@/generated/icons/MyIcons'
+import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
 import {
@@ -104,6 +105,18 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
             }),
           })
         },
+        onError: () => {
+          toast(
+            '태스크 수정에 실패했어요.',
+            {
+              action: {
+                label: '닫기',
+                onClick: () => {},
+              },
+            },
+            'error',
+          )
+        },
       },
     })
 
@@ -117,6 +130,18 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
               projectSlug: slug,
             }),
           })
+        },
+        onError: () => {
+          toast(
+            '태스크 삭제에 실패했어요.',
+            {
+              action: {
+                label: '닫기',
+                onClick: () => {},
+              },
+            },
+            'error',
+          )
         },
       },
     })

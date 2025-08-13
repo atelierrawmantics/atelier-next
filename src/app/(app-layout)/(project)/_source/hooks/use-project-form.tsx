@@ -12,13 +12,10 @@ export type ProjectFormDataType = {
 
 export const projectFormSchema: yup.ObjectSchema<ProjectFormDataType> =
   yup.object({
-    projectName: yup.string().required('프로젝트 이름을 입력해 주세요').max(30),
-    projectDescription: yup
-      .string()
-      .required('프로젝트 설명을 입력해 주세요')
-      .max(500),
-    clientName: yup.string().optional().max(30),
-    clientDescription: yup.string().optional().max(500),
+    projectName: yup.string().required('프로젝트 이름을 입력해 주세요'),
+    projectDescription: yup.string().required('프로젝트 설명을 입력해 주세요'),
+    clientName: yup.string().optional(),
+    clientDescription: yup.string().optional(),
   })
 
 export const useProjectForm = (options?: UseFormProps<ProjectFormDataType>) => {

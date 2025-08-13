@@ -30,6 +30,7 @@ import { useUserRegisterCreateMutation } from '@/generated/apis/User/User.query'
 import { ArticleIcon } from '@/generated/icons/MyIcons'
 import { toast } from '@/hooks/useToast'
 import { clientCookie } from '@/stores/cookie/store'
+import { phoneFormatter } from '@/utils/middleware/phone-formatter'
 
 import { useJoinForm } from '../hooks/use-join-form'
 
@@ -135,36 +136,6 @@ export const JoinForm = () => {
         } else if (numbers.length >= 4) {
           formattedValue = `${year}-${month}`
         }
-      }
-
-      onChange(formattedValue)
-    }
-  }
-
-  // 휴대폰번호 입력 핸들러 - 숫자만 허용, 자동 하이픈 삽입
-  const handlePhoneChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    onChange: (value: string) => void,
-  ) => {
-    const inputValue = e.target.value
-    const numbers = inputValue.replace(/\D/g, '')
-
-    if (numbers.length > 11) return
-
-    // 사용자가 입력한 값의 길이가 현재 저장된 값보다 짧으면 삭제 중
-    const currentValue = e.target.defaultValue || ''
-    const isDeleting = inputValue.length < currentValue.length
-
-    if (isDeleting) {
-      // 삭제 중일 때는 사용자가 입력한 값을 그대로 저장
-      onChange(inputValue)
-    } else {
-      // 입력 중일 때는 포맷팅 적용
-      let formattedValue = numbers
-      if (numbers.length >= 7) {
-        formattedValue = `${numbers.substring(0, 3)}-${numbers.substring(3, 7)}-${numbers.substring(7)}`
-      } else if (numbers.length >= 3) {
-        formattedValue = `${numbers.substring(0, 3)}-${numbers.substring(3)}`
       }
 
       onChange(formattedValue)
@@ -304,7 +275,7 @@ export const JoinForm = () => {
                         className="w-full"
                         placeholder="(-)없이 입력해주세요"
                         maxLength={13}
-                        onChange={(e) => handlePhoneChange(e, field.onChange)}
+                        onChange={(e) => phoneFormatter(e, field.onChange)}
                         {...omit(field, 'onChange')}
                       />
                     </FormControl>

@@ -31,6 +31,7 @@ import {
 import { UserIcon } from '@/generated/icons/MyIcons'
 import { toast } from '@/hooks/useToast'
 import { formatPhoneNumber } from '@/lib/utils'
+import { phoneFormatter } from '@/utils/middleware/phone-formatter'
 
 import { useProfileForm } from './hooks/use-profile-form'
 
@@ -100,30 +101,6 @@ export const ProfileForm = () => {
         }
       }
 
-      onChange(formattedValue)
-    }
-  }
-
-  // 휴대폰번호 입력 핸들러 - 숫자만 허용, 자동 하이픈 삽입
-  const handlePhoneChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    onChange: (value: string) => void,
-  ) => {
-    const inputValue = e.target.value
-    const numbers = inputValue.replace(/\D/g, '')
-
-    if (numbers.length > 11) return
-
-    // 사용자가 입력한 값의 길이가 현재 저장된 값보다 짧으면 삭제 중
-    const currentValue = e.target.defaultValue || ''
-    const isDeleting = inputValue.length < currentValue.length
-
-    if (isDeleting) {
-      // 삭제 중일 때는 사용자가 입력한 값을 그대로 저장
-      onChange(inputValue)
-    } else {
-      // 입력 중일 때는 포맷팅 적용
-      const formattedValue = formatPhoneNumber(numbers)
       onChange(formattedValue)
     }
   }
@@ -259,7 +236,7 @@ export const ProfileForm = () => {
                           readOnly
                           className="w-full"
                           maxLength={13}
-                          onChange={(e) => handlePhoneChange(e, field.onChange)}
+                          onChange={(e) => phoneFormatter(e, field.onChange)}
                           {...omit(field, 'onChange')}
                         />
                       </FormControl>

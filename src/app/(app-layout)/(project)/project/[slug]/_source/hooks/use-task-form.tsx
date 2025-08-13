@@ -26,9 +26,9 @@ export type TaskFormToManagerDataType = {
 
 export const taskFormToMeSchema: yup.ObjectSchema<TaskFormToMeDataType> =
   yup.object({
-    name: yup.string().required('태스크 이름을 입력해 주세요').max(30),
-    description: yup.string().required('태스크 설명을 입력해 주세요').max(500),
-    memo: yup.string().max(500),
+    name: yup.string().required('태스크 이름을 입력해 주세요'),
+    description: yup.string().required('태스크 설명을 입력해 주세요'),
+    memo: yup.string(),
     status: yup
       .string()
       .oneOf(Object.keys(TaskStatusEnumTypeMap) as [TaskStatusEnumType])
@@ -37,12 +37,12 @@ export const taskFormToMeSchema: yup.ObjectSchema<TaskFormToMeDataType> =
 
 export const taskFormToManagerSchema: yup.ObjectSchema<TaskFormToManagerDataType> =
   yup.object({
-    name: yup.string().required('태스크 이름을 입력해 주세요').max(30),
+    name: yup.string().required('태스크 이름을 입력해 주세요'),
     managerName: yup.string().required('태스크 담당자를 입력해 주세요'),
     managerPhone: yup
       .string()
       .required('태스크 담당자 휴대폰 번호를 입력해 주세요'),
-    description: yup.string().required('태스크 설명을 입력해 주세요').max(500),
+    description: yup.string().required('태스크 설명을 입력해 주세요'),
     isAlarm: yup.boolean().required('태스크 알림 수신 여부를 선택해 주세요'),
     status: yup
       .string()
