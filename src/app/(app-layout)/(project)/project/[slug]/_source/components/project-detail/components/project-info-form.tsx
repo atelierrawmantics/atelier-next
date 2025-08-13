@@ -631,7 +631,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
             >
               <TableHeader
                 headers={SECTION_CONFIGS['style-color'].tableConfig.headers}
-                columns={SECTION_CONFIGS['style-color'].tableConfig.columns}
+                className="grid-cols-7"
                 sizeNames={sizeNames}
                 sizeNamesIndex={0}
               />
@@ -659,7 +659,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
             >
               <TableHeader
                 headers={SECTION_CONFIGS['fabric-details'].tableConfig.headers}
-                columns={SECTION_CONFIGS['fabric-details'].tableConfig.columns}
+                className="grid-cols-6"
               />
               {Array.from(
                 { length: SECTION_CONFIGS['fabric-details'].tableConfig.rows },
@@ -687,7 +687,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
             >
               <TableHeader
                 headers={SECTION_CONFIGS['accessory-info'].tableConfig.headers}
-                columns={SECTION_CONFIGS['accessory-info'].tableConfig.columns}
+                className="grid-cols-5"
               />
               {Array.from(
                 { length: SECTION_CONFIGS['accessory-info'].tableConfig.rows },

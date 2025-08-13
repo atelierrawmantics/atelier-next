@@ -1,21 +1,23 @@
+import { ClassNameValue } from 'tailwind-merge'
+
+import { cn } from '@/lib/utils'
+
 // 테이블 헤더 컴포넌트
 interface TableHeaderProps {
+  className?: ClassNameValue
   headers: string[]
-  columns: number
   sizeNames?: string[]
   sizeNamesIndex?: number
 }
 
 export const TableHeader = ({
+  className,
   headers,
-  columns,
   sizeNames,
   sizeNamesIndex,
 }: TableHeaderProps) => {
   return (
-    <div
-      className={`grid grid-cols-${columns} gap-[4px] items-center space-y-[4px]`}
-    >
+    <div className={cn(`grid gap-[4px] items-center space-y-[4px]`, className)}>
       {headers.map((header, index) => (
         <div key={index} className="typo-pre-body-5 text-grey-9 text-center">
           {(
