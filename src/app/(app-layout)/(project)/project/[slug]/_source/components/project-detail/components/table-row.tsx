@@ -10,6 +10,7 @@ interface TableRowProps {
   columns: number
   fieldName: 'sizeValues' | 'colorValues' | 'fabricValues' | 'materialValues'
   readOnly?: boolean
+  maxLength?: number
 }
 
 export const TableRow = ({
@@ -17,6 +18,7 @@ export const TableRow = ({
   columns,
   fieldName,
   readOnly = false,
+  maxLength,
 }: TableRowProps) => {
   const { register } = useFormContext<ProjectInfoFormDataType>()
 
@@ -28,6 +30,7 @@ export const TableRow = ({
             size="md"
             readOnly={readOnly}
             placeholder={readOnly ? '' : undefined}
+            maxLength={maxLength}
             {...register(
               `${fieldName}.${rowIndex}.${colIndex}` as keyof ProjectInfoFormDataType,
             )}

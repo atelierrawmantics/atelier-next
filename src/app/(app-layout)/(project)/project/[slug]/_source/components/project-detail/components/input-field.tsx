@@ -11,6 +11,7 @@ interface InputFieldProps {
   label: string
   placeholder: string
   readOnly?: boolean
+  maxLength?: number
 }
 
 export const InputField = ({
@@ -18,6 +19,7 @@ export const InputField = ({
   label,
   placeholder,
   readOnly = false,
+  maxLength,
 }: InputFieldProps) => {
   const { register } = useFormContext<ProjectInfoFormDataType>()
 
@@ -33,6 +35,7 @@ export const InputField = ({
         variant="outline-grey"
         className="w-full"
         readOnly={readOnly}
+        maxLength={maxLength}
         {...register(id as keyof ProjectInfoFormDataType)}
       />
     </div>

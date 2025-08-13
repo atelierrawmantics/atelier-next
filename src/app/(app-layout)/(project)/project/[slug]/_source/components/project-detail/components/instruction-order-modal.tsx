@@ -100,24 +100,11 @@ export const InstructionOrderModal = ({
       const contentWidth = element.scrollWidth
       const contentHeight = element.scrollHeight
 
-      // A4 용지에 꽉 차도록 강제 스케일 계산
-      // A4 landscape: 297mm x 210mm
-      const a4WidthPx = 297 * 3.779527559 // mm to px (96 DPI 기준)
-      const a4HeightPx = 210 * 3.779527559
-
-      const scaleX = a4WidthPx / contentWidth
-      const scaleY = a4HeightPx / contentHeight
-
-      // A4에 꽉 차도록 더 큰 스케일 사용
-      let scale = Math.max(scaleX, scaleY)
-
-      // 최소 스케일 보장
-      scale = Math.max(scale, 1.0)
-      // 최대 스케일 제한
-      scale = Math.min(scale, 3.0)
+      // A4 용지에 정확히 맞도록 스케일 계산
+      // 컨텐츠가 이미 A4 크기로 설정되어 있으므로 스케일 1 사용
+      const scale = 1.0
 
       console.log('Content size:', { contentWidth, contentHeight })
-      console.log('Scale X:', scaleX, 'Scale Y:', scaleY)
       console.log('Final scale:', scale)
       console.log('A4 size (mm):', { a4Width, a4Height })
       console.log('Scaled content size:', {
@@ -131,8 +118,8 @@ export const InstructionOrderModal = ({
           margin: 0,
           format: 'a4',
           orientation: 'landscape' as const,
-          width: '297mm',
-          height: '210mm',
+          // width: '297mm',
+          // height: '210mm',
         },
         canvas: {
           scale: scale,
@@ -337,21 +324,6 @@ export const PageFrame: React.FC<{ children: React.ReactNode }> = ({
         {/* 실제 콘텐츠 높이 측정용 래퍼 */}
         <div ref={contentRef}>{children}</div>
       </div>
-
-      {/* 인쇄/PDF 저장 시 1:1 고정 */}
-      <style jsx>{`
-        @page {
-          size: ${W_MM}mm ${H_MM}mm;
-          margin: 0;
-        }
-        @media print {
-          .absolute[style*='transform: scale'] {
-            transform: none !important;
-            width: ${W_MM}mm !important;
-            height: ${H_MM}mm !important;
-          }
-        }
-      `}</style>
     </div>
   )
 }
@@ -370,25 +342,27 @@ const InstructionTemplateShell = React.forwardRef<
       <div
         className="bg-white"
         style={{
-          width: '100%',
-          height: '876.9px', // 1240 / √2
+          width: '100%', // A4 가로 크기
+          height: '842px', // A4 세로 크기
           boxSizing: 'border-box',
-          ['--rowH' as any]: '8mm',
-          ['--headH' as any]: '8mm',
-          ['--titleH' as any]: '9mm',
-          ['--rightHeight' as any]: 'calc(23 * var(--rowH))',
+          ['--rowH' as any]: '5.76mm', // 138mm ÷ 27행 = 5.11mm
+          ['--headH' as any]: '4.79mm', // 헤더도 같은 높이
+          ['--titleH' as any]: '7mm', // 타이틀 높이
+          ['--rightHeight' as any]: '145mm', // 우측 패널 높이 138mm로 고정
           ['--bottomBodyH' as any]: 'calc(var(--headH) + (7 * var(--rowH)))',
+          ['--schematicHeight' as any]: '145mm', // 스키마틱도 138mm로 맞춤
 
           /* ▼ 헤더 통통 옵션 */
-          ['--headFat' as any]: '12mm', // 년도/시즌 한 줄 높이
-          ['--signLabelH' as any]: '7mm', // 결재 라벨 바 높이
-          ['--signBoxH' as any]: '20mm', // 결재 빈칸 높이
-          ['--titlePadV' as any]: '3mm', // 문서 타이틀 상/하 패딩
+          ['--headFat' as any]: '10mm', // 년도/시즌 한 줄 높이 줄임
+          ['--signLabelH' as any]: '5mm', // 결재 라벨 바 높이 줄임
+          ['--signBoxH' as any]: '15mm', // 결재 빈칸 높이 줄임
+          ['--titlePadV' as any]: '2mm', // 문서 타이틀 상/하 패딩 줄임
+          ['--infoHeaderH' as any]: '6mm', // Style#, 품명, ITEM, 차수 헤더 높이
         }}
       >
         <div className="grid grid-rows-[auto_auto_1fr_auto] gap-0 h-full text-[10px]">
           {/* 1) 상단 헤더 (통통 ver.) */}
-          <div className="grid grid-cols-[40mm_1fr_40mm] items-end">
+          <div className="grid grid-cols-[40mm_1fr_40mm] items-center">
             {/* 좌: 년도/시즌 */}
             <div className="border border-b-0 border-black">
               <div
@@ -399,26 +373,26 @@ const InstructionTemplateShell = React.forwardRef<
                 }}
               >
                 <div
-                  className="border-b border-black px-2 bg-[#E2E1E0] flex items-center"
+                  className="border-b border-black px-[2px] bg-[#E2E1E0] flex items-center justify-center"
                   style={{ height: 'var(--headFat)' }}
                 >
                   년도
                 </div>
                 <div
-                  className="border-b border-l border-black flex items-center px-2"
+                  className="border-b border-l border-black flex items-center px-[2px]"
                   style={{ height: 'var(--headFat)' }}
                 >
                   {instruction?.year || ''}
                 </div>
 
                 <div
-                  className="px-2 bg-[#E2E1E0] flex items-center"
+                  className="px-[2px] bg-[#E2E1E0] flex items-center justify-center"
                   style={{ height: 'var(--headFat)' }}
                 >
                   시즌
                 </div>
                 <div
-                  className="border-l border-black flex items-center px-2"
+                  className="border-l border-black flex items-center px-[2px]"
                   style={{ height: 'var(--headFat)' }}
                 >
                   {instruction?.season || ''}
@@ -443,7 +417,10 @@ const InstructionTemplateShell = React.forwardRef<
 
             {/* 우: 결재칸 */}
             <div className="justify-self-end border border-b-0 border-black">
-              <div className="grid grid-cols-4">
+              <div
+                className="grid grid-cols-4"
+                style={{ gridTemplateColumns: 'repeat(4, 14mm)' }}
+              >
                 {['담당', '팀장', '실장', '대표'].map((h) => (
                   <div
                     key={h}
@@ -474,36 +451,63 @@ const InstructionTemplateShell = React.forwardRef<
             <div
               className="grid"
               style={{
-                gridTemplateColumns: '22mm 1fr 22mm 1fr 18mm 1fr 18mm 22mm',
+                gridTemplateColumns: '16.3mm 1fr 9.5mm 1fr 10mm 1fr 9.5mm 22mm',
               }}
             >
-              <div className="bg-[#E2E1E0] px-2 border-t border-b-0 border-l border-black">
+              <div
+                className="bg-[#E2E1E0] px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
+                style={{ height: 'var(--infoHeaderH)' }}
+              >
                 Style #
               </div>
-              <div className="border-t border-b-0 border-l border-black">
+              <div
+                className="border-t border-b-0 border-l border-black flex items-center px-[2px]"
+                style={{ height: 'var(--infoHeaderH)' }}
+              >
                 {instruction?.style || ''}
               </div>
-              <div className="bg-[#E2E1E0] px-2 border-t border-b-0 border-l border-black">
+              <div
+                className="bg-[#E2E1E0] px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
+                style={{ height: 'var(--infoHeaderH)' }}
+              >
                 품명
               </div>
-              <div className="border-t border-b-0 border-l border-black">
+              <div
+                className="border-t border-b-0 border-l border-black flex items-center px-[2px]"
+                style={{ height: 'var(--infoHeaderH)' }}
+              >
                 {instruction?.variant || ''}
               </div>
-              <div className="bg-[#E2E1E0] px-2 border-t border-b-0 border-l border-black">
+              <div
+                className="bg-[#E2E1E0] px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
+                style={{ height: 'var(--infoHeaderH)' }}
+              >
                 ITEM
               </div>
-              <div className="border-t border-b-0 border-l border-black">
+              <div
+                className="border-t border-b-0 border-l border-black flex items-center px-[2px]"
+                style={{ height: 'var(--infoHeaderH)' }}
+              >
                 {instruction?.item || ''}
               </div>
-              <div className="bg-[#E2E1E0] px-2 border-t border-b-0 border-l border-black">
+              <div
+                className="bg-[#E2E1E0] px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
+                style={{ height: 'var(--infoHeaderH)' }}
+              >
                 차수
               </div>
-              <div className="border-t border-b-0 border-l border-r border-black">
+              <div
+                className="border-t border-b-0 border-l border-r border-black flex items-center px-[2px]"
+                style={{ height: 'var(--infoHeaderH)' }}
+              >
                 {instruction?.generation || ''}
               </div>
             </div>
 
-            <div className="border-t border-r border-b-0 border-black px-2 bg-[#E2E1E0] text-center font-medium">
+            <div
+              className="border-t border-r border-b-0 border-black px-[2px] bg-[#E2E1E0] text-center font-medium flex items-center justify-center"
+              style={{ height: 'var(--infoHeaderH)' }}
+            >
               SIZE SPEC (CM)
             </div>
           </div>
@@ -516,34 +520,44 @@ const InstructionTemplateShell = React.forwardRef<
             }}
           >
             {/* 좌 도식 */}
-            <div className="border border-black relative">
-              <Image
-                src={instruction?.schematic?.image || ''}
-                alt="schematic"
-                fill
-              />
+            <div
+              className="border border-black relative"
+              style={{ height: 'var(--schematicHeight)' }}
+            >
+              {instruction?.schematic?.image && (
+                <Image
+                  src={instruction.schematic.image}
+                  alt="schematic"
+                  fill
+                  className="object-contain"
+                  style={{ objectPosition: 'center' }}
+                />
+              )}
             </div>
             {/* 우 패널 */}
-            <div className="border-t border-r border-b border-black">
+            <div
+              className="border-t border-r border-b border-black"
+              style={{ height: 'var(--rightHeight)' }}
+            >
               {/* SIZE 헤더 */}
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `18mm repeat(${SIZE_COLS}, 1fr) 12mm`,
+                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
                 }}
               >
-                <div className="bg-[#E2E1E0] border-b border-r border-black px-2 text-center font-medium">
+                <div className="bg-[#E2E1E0] border-b border-r border-black px-[2px] text-center font-medium">
                   PART
                 </div>
                 {Array.from({ length: SIZE_COLS }).map((_, i) => (
                   <div
                     key={i}
-                    className="bg-[#E2E1E0] border-b border-r border-black px-2"
+                    className="bg-[#E2E1E0] border-b border-r border-black text-center"
                   >
                     {instruction?.sizeNames?.[i] || ''}
                   </div>
                 ))}
-                <div className="bg-[#E2E1E0] border-b border-black px-2 text-center font-medium">
+                <div className="bg-[#E2E1E0] border-b border-black px-[2px] text-center font-medium">
                   편차
                 </div>
               </div>
@@ -551,13 +565,13 @@ const InstructionTemplateShell = React.forwardRef<
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `18mm repeat(${SIZE_COLS}, 1fr) 12mm`,
+                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
                 }}
               >
                 {Array.from({ length: 15 }).map((_, r) => (
                   <React.Fragment key={r}>
                     <div
-                      className="border-b border-r border-black bg-[#E2E1E0]"
+                      className="border-b border-r border-black bg-[#E2E1E0] text-center px-[2px]"
                       style={{ height: 'var(--rowH)' }}
                     >
                       {instruction?.sizeValues?.[r]?.[0] || ''}
@@ -565,14 +579,14 @@ const InstructionTemplateShell = React.forwardRef<
                     {Array.from({ length: 5 }).map((__, c) => (
                       <div
                         key={c}
-                        className="border-b border-r border-black"
+                        className="border-b border-r border-black text-center px-[2px]"
                         style={{ height: 'var(--rowH)' }}
                       >
                         {instruction?.sizeValues?.[r]?.[c + 1] || ''}
                       </div>
                     ))}
                     <div
-                      className="border-b border-black"
+                      className="border-b border-black text-center px-[2px]"
                       style={{ height: 'var(--rowH)' }}
                     >
                       {instruction?.sizeValues?.[r]?.[6] || ''}
@@ -585,13 +599,13 @@ const InstructionTemplateShell = React.forwardRef<
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `18mm repeat(${SIZE_COLS}, 1fr) 12mm`,
+                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
                   gridTemplateRows: `var(--headH) var(--headH)`,
                 }}
               >
                 {/* COLOR: 좌측, 세로 2칸 병합 */}
                 <div
-                  className="bg-[#E2E1E0] border-b border-r border-black px-2 font-medium row-span-2 flex items-center"
+                  className="bg-[#E2E1E0] border-b border-r border-black px-[2px] font-medium flex items-center justify-center"
                   style={{ gridRow: '1 / span 2' }}
                 >
                   COLOR
@@ -599,7 +613,7 @@ const InstructionTemplateShell = React.forwardRef<
 
                 {/* SIZE: 상단, 사이즈 칼럼 전체 병합 */}
                 <div
-                  className="bg-[#E2E1E0] border-b border-r border-black px-2 text-center font-medium"
+                  className="bg-[#E2E1E0] border-b border-r border-black px-[2px] text-center font-medium"
                   style={{ gridColumn: `2 / span ${SIZE_COLS}` }}
                 >
                   SIZE
@@ -607,7 +621,7 @@ const InstructionTemplateShell = React.forwardRef<
 
                 {/* 수량: 우측, 세로 2칸 병합 */}
                 <div
-                  className="bg-[#E2E1E0] border-b border-black px-2 text-center font-medium row-span-2 flex items-center justify-center"
+                  className="bg-[#E2E1E0] border-b border-black px-[2px] text-center font-medium row-span-2 flex items-center justify-center"
                   style={{ gridRow: '1 / span 0' }}
                 >
                   수량
@@ -617,7 +631,7 @@ const InstructionTemplateShell = React.forwardRef<
                 {Array.from({ length: SIZE_COLS }).map((_, i) => (
                   <div
                     key={i}
-                    className="border-b border-r border-black text-center flex items-center justify-center"
+                    className="border-b border-r border-black text-center flex items-center justify-center px-[2px]"
                   >
                     {instruction?.sizeNames?.[i] || ''}
                   </div>
@@ -627,13 +641,13 @@ const InstructionTemplateShell = React.forwardRef<
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `18mm repeat(${SIZE_COLS}, 1fr) 12mm`,
+                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
                 }}
               >
                 {Array.from({ length: 7 }).map((_, r) => (
                   <React.Fragment key={r}>
                     <div
-                      className="border-b border-r border-black bg-[#E2E1E0]"
+                      className="border-b border-r border-black bg-[#E2E1E0] text-center px-[2px]"
                       style={{ height: 'var(--rowH)' }}
                     >
                       {instruction?.colorValues?.[r]?.[0] || ''}
@@ -641,14 +655,14 @@ const InstructionTemplateShell = React.forwardRef<
                     {Array.from({ length: SIZE_COLS }).map((__, c) => (
                       <div
                         key={c}
-                        className="border-b border-r border-black"
+                        className="border-b border-r border-black text-center px-[2px]"
                         style={{ height: 'var(--rowH)' }}
                       >
                         {instruction?.colorValues?.[r]?.[c + 1] || ''}
                       </div>
                     ))}
                     <div
-                      className="border-b border-black"
+                      className="border-b border-black text-center px-[2px]"
                       style={{ height: 'var(--rowH)' }}
                     >
                       {instruction?.colorValues?.[r]?.[6] || ''}
@@ -660,10 +674,10 @@ const InstructionTemplateShell = React.forwardRef<
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `18mm repeat(${SIZE_COLS}, 1fr) 12mm`,
+                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
                 }}
               >
-                <div className="bg-[#E2E1E0] border-t-0 border-r border-black px-2 font-medium">
+                <div className="bg-[#E2E1E0] border-t-0 border-r border-black px-[2px] text-center font-medium">
                   TOTAL
                 </div>
                 {Array.from({ length: SIZE_COLS }).map((_, i) => (
@@ -682,13 +696,13 @@ const InstructionTemplateShell = React.forwardRef<
             }}
           >
             {/* 타이틀행 */}
-            <div className="border-t-0 py-[4px] border-l  border-b border-black bg-[#E2E1E0] flex items-center justify-center">
+            <div className="border-t-0 py-[4px] border-l  border-b border-black bg-[#E2E1E0] flex items-center justify-center text-center">
               SWATCH
             </div>
-            <div className="border-t-0 py-[4px] border-l border-b border-r border-black bg-[#E2E1E0] flex items-center justify-center">
+            <div className="border-t-0 py-[4px] border-l border-b border-r border-black bg-[#E2E1E0] flex items-center justify-center text-center">
               원단상세정보
             </div>
-            <div className="border-t-0 py-[4px] border-r border-b border-black bg-[#E2E1E0] flex items-center justify-center">
+            <div className="border-t-0 py-[4px] border-r border-b border-black bg-[#E2E1E0] flex items-center justify-center text-center">
               부자재
             </div>
 
@@ -716,11 +730,11 @@ const InstructionTemplateShell = React.forwardRef<
 
             {/* 원단상세정보 표 (중앙) — 좌/우 외곽 보더는 래퍼가 담당 */}
             <div
-              className="border-l border-r border-b border-black box-border"
+              className="border-l border-black box-border"
               style={{ height: 'var(--bottomBodyH)' }}
             >
               <table
-                className="w-full h-full table-fixed text-[10px] table-tight tight-no-last-bottom tight-no-outer-left tight-no-outer-right"
+                className="w-full h-full table-fixed text-[10px]"
                 style={{ borderCollapse: 'collapse', borderSpacing: 0 }}
               >
                 <colgroup>
@@ -737,10 +751,10 @@ const InstructionTemplateShell = React.forwardRef<
                       (h) => (
                         <th
                           key={h}
-                          className="p-0 text-center border-black"
+                          className="p-0 text-center border-black border-r border-b"
                           style={{
                             height: 'var(--headH)',
-                            lineHeight: 'var(--headH)',
+                            lineHeight: '1',
                           }}
                         >
                           {h}
@@ -755,7 +769,7 @@ const InstructionTemplateShell = React.forwardRef<
                       {Array.from({ length: 6 }).map((__, c) => (
                         <td
                           key={c}
-                          className="p-0 border-black"
+                          className="p-0 border-black border-r border-b"
                           style={{
                             height: 'var(--rowH)',
                             lineHeight: 'var(--rowH)',
@@ -772,26 +786,26 @@ const InstructionTemplateShell = React.forwardRef<
 
             {/* 부자재 표 (우측) — 우측 외곽 보더는 래퍼가 담당 */}
             <div
-              className="border-b border-black box-border"
+              className="border-black box-border"
               style={{ height: 'var(--bottomBodyH)' }}
             >
               <table
-                className="w-full h-full table-fixed text-[10px] table-tight tight-no-last-bottom tight-no-outer-left tight-no-outer-right"
+                className="w-full h-full table-fixed text-[10px] border-r"
                 style={{ borderCollapse: 'collapse', borderSpacing: 0 }}
               >
                 <colgroup>
-                  <col style={{ width: '36%' }} />
-                  <col style={{ width: '20%' }} />
-                  <col style={{ width: '12%' }} />
-                  <col style={{ width: '20%' }} />
-                  <col style={{ width: '12%' }} />
+                  <col style={{ width: '26%' }} />
+                  <col style={{ width: '18%' }} />
+                  <col style={{ width: '14%' }} />
+                  <col style={{ width: '27%' }} />
+                  <col style={{ width: '15%' }} />
                 </colgroup>
                 <thead>
-                  <tr className="border-r border-black">
+                  <tr>
                     {['자재명', '규격', '칼라', '사용부위', '요척'].map((h) => (
                       <th
                         key={h}
-                        className="p-0 text-center border-black"
+                        className="p-0 text-center border-black border-r border-b last:border-r-0"
                         style={{
                           height: 'var(--headH)',
                           lineHeight: 'var(--headH)',
@@ -808,7 +822,7 @@ const InstructionTemplateShell = React.forwardRef<
                       {Array.from({ length: 6 }).map((__, c) => (
                         <td
                           key={c}
-                          className="p-0 border-black"
+                          className="p-0 border-black border-r border-b last:border-r-0"
                           style={{
                             height: 'var(--rowH)',
                             lineHeight: 'var(--rowH)',
@@ -824,49 +838,6 @@ const InstructionTemplateShell = React.forwardRef<
             </div>
           </div>
         </div>
-
-        {/* Tight table & seam fixes */}
-        <style jsx>{`
-          @page {
-            size: 297.1mm 210.1mm;
-            margin: 0;
-          }
-
-          /* 표를 완전 타이트하게 */
-          .table-tight {
-            border-collapse: collapse;
-            border-spacing: 0;
-          }
-          .table-tight th,
-          .table-tight td {
-            padding: 0;
-            border: 1px solid #000;
-            vertical-align: middle;
-          }
-
-          /* thead–tbody는 한 줄 보더만 보이게 */
-          .table-tight thead th {
-            border-top-width: 0;
-          }
-          .table-tight tbody tr:first-child td {
-            border-top-width: 0;
-          }
-
-          /* 마지막 행 하단 보더 제거 → 래퍼의 border-b만 남김(하단 이중선 제거) */
-          .tight-no-last-bottom tbody tr:last-child td {
-            border-bottom-width: 0;
-          }
-
-          /* 중앙표는 좌/우 외곽 보더 제거(외곽은 래퍼가 그림) */
-          .tight-no-outer-left th:first-child,
-          .tight-no-outer-left td:first-child {
-            border-left-width: 0;
-          }
-          .tight-no-outer-right th:last-child,
-          .tight-no-outer-right td:last-child {
-            border-right-width: 0;
-          }
-        `}</style>
       </div>
     </div>
   )

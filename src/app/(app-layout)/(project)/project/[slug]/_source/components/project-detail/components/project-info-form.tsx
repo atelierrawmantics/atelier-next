@@ -44,15 +44,41 @@ const SECTION_CONFIGS = {
   'season-style': {
     title: '시즌 및 스타일 정보',
     fields: [
-      { name: 'year', label: '년도', placeholder: '년도를 입력해 주세요' },
-      { name: 'season', label: '시즌', placeholder: '시즌명을 입력해 주세요' },
-      { name: 'style', label: '스타일', placeholder: '스타일을 입력해 주세요' },
-      { name: 'variant', label: '품명', placeholder: '품명을 입력해 주세요' },
-      { name: 'item', label: '아이템', placeholder: '아이템을 입력해 주세요' },
+      {
+        name: 'year',
+        label: '년도',
+        placeholder: '년도를 입력해 주세요',
+        maxLength: 4,
+      },
+      {
+        name: 'season',
+        label: '시즌',
+        placeholder: '시즌명을 입력해 주세요',
+        maxLength: 14,
+      },
+      {
+        name: 'style',
+        label: '스타일',
+        placeholder: '스타일을 입력해 주세요',
+        maxLength: 43,
+      },
+      {
+        name: 'variant',
+        label: '품명',
+        placeholder: '품명을 입력해 주세요',
+        maxLength: 43,
+      },
+      {
+        name: 'item',
+        label: '아이템',
+        placeholder: '아이템을 입력해 주세요',
+        maxLength: 43,
+      },
       {
         name: 'generation',
         label: '차수',
         placeholder: '차수를 입력해 주세요',
+        maxLength: 14,
       },
     ],
   },
@@ -542,6 +568,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
                     label={field.label}
                     placeholder={field.placeholder}
                     readOnly={isReadOnly}
+                    maxLength={field.maxLength}
                   />
                 ))}
               </div>
@@ -593,6 +620,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
                       size="md"
                       variant="outline-grey"
                       readOnly={isReadOnly}
+                      maxLength={4}
                       value={sizeNames?.[index] || ''}
                       onChange={(e) => {
                         const currentSizeNames = sizeNames || []
@@ -616,6 +644,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
                     columns={SECTION_CONFIGS['size-spec'].tableConfig.columns}
                     fieldName="sizeValues"
                     readOnly={isReadOnly}
+                    maxLength={4}
                   />
                 ),
               )}
