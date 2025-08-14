@@ -30,7 +30,7 @@ export const useCommonAnimation = () => {
             opacity: 1,
             yPercent: -100,
             ease: 'power2.out',
-            duration: 0.6,
+            duration: 1.2,
             overwrite: true,
             ...vars,
           }),
@@ -50,10 +50,7 @@ export const useCommonAnimation = () => {
     [fadeContent],
   )
   const descriptionTl = useCallback(
-    (gsap: typeof _gsap, ref: HTMLElement | null) =>
-      fadeContent(gsap, [ref], {
-        duration: 0.7,
-      }),
+    (gsap: typeof _gsap, ref: HTMLElement | null) => fadeContent(gsap, [ref]),
     [fadeContent],
   )
   const contentTl = useCallback(
