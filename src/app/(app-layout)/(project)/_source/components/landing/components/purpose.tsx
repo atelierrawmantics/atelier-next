@@ -44,6 +44,7 @@ const Purpose = () => {
         'px-[20px] sm:px-[40px] pt-[80px] sm:pt-[120px] pb-[120px]',
         'mx-auto',
         'bg-grey-0',
+        'overflow-hidden',
       )}
     >
       <div

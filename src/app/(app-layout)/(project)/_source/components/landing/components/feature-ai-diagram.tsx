@@ -37,7 +37,7 @@ const FeatureAiDiagram = () => {
   }, [])
 
   return (
-    <section ref={containerRef}>
+    <section ref={containerRef} className={cn('w-full', 'overflow-hidden')}>
       <div ref={contentRef} className={cn(COMMON_FADE_STYLE)}>
         <FeatureLayout
           type={'ar-diagram'}

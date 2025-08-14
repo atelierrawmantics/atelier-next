@@ -43,7 +43,11 @@ const GettingStart = () => {
   return (
     <section
       ref={containerRef}
-      className={cn('w-full', 'px-[20px] sm:px-[40px] pb-[40px]')}
+      className={cn(
+        'w-full',
+        'px-[20px] sm:px-[40px] pb-[40px]',
+        'overflow-hidden',
+      )}
     >
       <div
         ref={contentRef}
