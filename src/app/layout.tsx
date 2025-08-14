@@ -26,12 +26,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   ...(ENV.DOMAIN && { metadataBase: new URL(ENV.DOMAIN) }),
   title: {
-    default: 'Atelier',
+    default: 'Atelier – 패션 협업의 새로운 표준.',
     template: `%s | Atelier`,
   },
-  description: '디지털프로덕트의 TOKTOK한 경험',
+  description:
+    'AI로 똑똑하게 작업지시서를 만들고, 생산 과정을 한눈에 관리하세요. 아이디어에서 완성까지, 당신의 디자인 여정을 매끄럽게 연결합니다.',
   applicationName: 'Atelier',
-  keywords: ['Atelier', '디지털프로덕트의 TOKTOK한 경험', '...'],
   icons: [
     { rel: 'apple-touch-icon', url: '/icons/120.png', sizes: '120x120' },
     { rel: 'apple-touch-icon', url: '/icons/152.png', sizes: '152x152' },
@@ -58,7 +58,8 @@ export const metadata: Metadata = {
       default: 'Atelier',
       template: `Atelier | %s`,
     },
-    description: '디지털프로덕트의 TOKTOK한 경험',
+    description:
+      'AI로 똑똑하게 작업지시서를 만들고, 생산 과정을 한눈에 관리하세요. 아이디어에서 완성까지, 당신의 디자인 여정을 매끄럽게 연결합니다.',
     images: [
       {
         url: '/images/new_og.png',
@@ -74,7 +75,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     images: `/images/new_og.png`,
     title: 'Atelier',
-    description: '디지털프로덕트의 TOKTOK한 경험',
+    description:
+      'AI로 똑똑하게 작업지시서를 만들고, 생산 과정을 한눈에 관리하세요. 아이디어에서 완성까지, 당신의 디자인 여정을 매끄럽게 연결합니다.',
     site: '@site',
   },
   formatDetection: {

@@ -644,7 +644,25 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
                     columns={SECTION_CONFIGS['size-spec'].tableConfig.columns}
                     fieldName="sizeValues"
                     readOnly={isReadOnly}
-                    maxLength={4}
+                    getInputType={(_, colIndex) => {
+                      const totalColumns =
+                        SECTION_CONFIGS['size-spec'].tableConfig.columns
+                      // 첫 번째 컬럼(colIndex === 0)과 마지막 컬럼(colIndex === totalColumns - 1)은 텍스트 타입
+                      if (colIndex === 0 || colIndex === totalColumns - 1) {
+                        return 'text'
+                      }
+                      // 나머지는 넘버 타입
+                      return 'number'
+                    }}
+                    getMaxLength={(_, colIndex) => {
+                      const totalColumns =
+                        SECTION_CONFIGS['size-spec'].tableConfig.columns
+                      if (colIndex === 0 || colIndex === totalColumns - 1) {
+                        return 6
+                      } else {
+                        return 7
+                      }
+                    }}
                   />
                 ),
               )}
@@ -673,6 +691,23 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
                     columns={SECTION_CONFIGS['style-color'].tableConfig.columns}
                     fieldName="colorValues"
                     readOnly={isReadOnly}
+                    getInputType={(_, colIndex) => {
+                      if (colIndex === 0) {
+                        return 'text'
+                      }
+                      return 'number'
+                    }}
+                    getMaxLength={(_, colIndex) => {
+                      const totalColumns =
+                        SECTION_CONFIGS['style-color'].tableConfig.columns
+                      if (colIndex === 0) {
+                        return 6
+                      } else if (colIndex === totalColumns - 1) {
+                        return 11
+                      } else {
+                        return 7
+                      }
+                    }}
                   />
                 ),
               )}
@@ -701,6 +736,13 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
                     }
                     fieldName="fabricValues"
                     readOnly={isReadOnly}
+                    getMaxLength={(_, colIndex) => {
+                      if (colIndex === 0 || colIndex === 2) {
+                        return 7
+                      } else {
+                        return 11
+                      }
+                    }}
                   />
                 ),
               )}
@@ -729,6 +771,15 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
                     }
                     fieldName="materialValues"
                     readOnly={isReadOnly}
+                    getMaxLength={(_, colIndex) => {
+                      if (colIndex === 0 || colIndex === 3) {
+                        return 9
+                      } else if (colIndex === 1) {
+                        return 6
+                      } else {
+                        return 5
+                      }
+                    }}
                   />
                 ),
               )}

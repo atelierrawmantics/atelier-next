@@ -115,7 +115,7 @@ export const InstructionOrderModal = ({
       const options = {
         filename: `작업지시서_${instruction?.style || 'unknown'}.pdf`,
         page: {
-          margin: 0,
+          margin: 10,
           format: 'a4',
           orientation: 'landscape' as const,
           // width: '297mm',
@@ -333,8 +333,8 @@ const InstructionTemplateShell = React.forwardRef<
   HTMLDivElement,
   { instruction?: InstructionType }
 >(({ instruction }, ref) => {
-  const RIGHT_W = '68mm'
-  const SWATCH_W = '108mm'
+  const RIGHT_W = '80mm'
+  const SWATCH_W = '130mm'
   const SIZE_COLS = 5
 
   return (
@@ -524,15 +524,18 @@ const InstructionTemplateShell = React.forwardRef<
               className="border border-black relative"
               style={{ height: 'var(--schematicHeight)' }}
             >
-              {instruction?.schematic?.image && (
-                <Image
-                  src={instruction.schematic.image}
-                  alt="schematic"
-                  fill
-                  className="object-contain"
-                  style={{ objectPosition: 'center' }}
-                />
-              )}
+              <div className="relative aspect-[3/2] max-w-full w-full h-full">
+                {instruction?.schematic?.image && (
+                  <Image
+                    src={instruction.schematic.image}
+                    alt="schematic"
+                    fill
+                    style={{ objectPosition: 'center' }}
+                    sizes="20vw"
+                    priority
+                  />
+                )}
+              </div>
             </div>
             {/* 우 패널 */}
             <div
@@ -543,7 +546,7 @@ const InstructionTemplateShell = React.forwardRef<
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
+                  gridTemplateColumns: `14mm repeat(${SIZE_COLS}, 1fr) 14mm`,
                 }}
               >
                 <div className="bg-[#E2E1E0] border-b border-r border-black px-[2px] text-center font-medium">
@@ -565,29 +568,38 @@ const InstructionTemplateShell = React.forwardRef<
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
+                  gridTemplateColumns: `14mm repeat(${SIZE_COLS}, 1fr) 14mm`,
                 }}
               >
                 {Array.from({ length: 15 }).map((_, r) => (
                   <React.Fragment key={r}>
                     <div
-                      className="border-b border-r border-black bg-[#E2E1E0] text-center px-[2px]"
-                      style={{ height: 'var(--rowH)' }}
+                      className="border-b border-r border-black bg-[#E2E1E0] text-center"
+                      style={{
+                        height: 'var(--rowH)',
+                        letterSpacing: '-0.5px',
+                      }}
                     >
                       {instruction?.sizeValues?.[r]?.[0] || ''}
                     </div>
                     {Array.from({ length: 5 }).map((__, c) => (
                       <div
                         key={c}
-                        className="border-b border-r border-black text-center px-[2px]"
-                        style={{ height: 'var(--rowH)' }}
+                        className="border-b border-r border-black text-center"
+                        style={{
+                          height: 'var(--rowH)',
+                          letterSpacing: '-0.5px',
+                        }}
                       >
                         {instruction?.sizeValues?.[r]?.[c + 1] || ''}
                       </div>
                     ))}
                     <div
-                      className="border-b border-black text-center px-[2px]"
-                      style={{ height: 'var(--rowH)' }}
+                      className="border-b border-black text-center"
+                      style={{
+                        height: 'var(--rowH)',
+                        letterSpacing: '-0.5px',
+                      }}
                     >
                       {instruction?.sizeValues?.[r]?.[6] || ''}
                     </div>
@@ -599,7 +611,7 @@ const InstructionTemplateShell = React.forwardRef<
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
+                  gridTemplateColumns: `14mm repeat(${SIZE_COLS}, 1fr) 14mm`,
                   gridTemplateRows: `var(--headH) var(--headH)`,
                 }}
               >
@@ -631,7 +643,7 @@ const InstructionTemplateShell = React.forwardRef<
                 {Array.from({ length: SIZE_COLS }).map((_, i) => (
                   <div
                     key={i}
-                    className="border-b border-r border-black text-center flex items-center justify-center px-[2px]"
+                    className="bg-[#E2E1E0] border-b border-r border-black text-center flex items-center justify-center px-[2px]"
                   >
                     {instruction?.sizeNames?.[i] || ''}
                   </div>
@@ -641,29 +653,38 @@ const InstructionTemplateShell = React.forwardRef<
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
+                  gridTemplateColumns: `14mm repeat(${SIZE_COLS}, 1fr) 14mm`,
                 }}
               >
                 {Array.from({ length: 7 }).map((_, r) => (
                   <React.Fragment key={r}>
                     <div
-                      className="border-b border-r border-black bg-[#E2E1E0] text-center px-[2px]"
-                      style={{ height: 'var(--rowH)' }}
+                      className="border-b border-r border-black bg-[#E2E1E0] text-center"
+                      style={{
+                        height: 'var(--rowH)',
+                        letterSpacing: '-0.5px',
+                      }}
                     >
                       {instruction?.colorValues?.[r]?.[0] || ''}
                     </div>
                     {Array.from({ length: SIZE_COLS }).map((__, c) => (
                       <div
                         key={c}
-                        className="border-b border-r border-black text-center px-[2px]"
-                        style={{ height: 'var(--rowH)' }}
+                        className="border-b border-r border-black text-center"
+                        style={{
+                          height: 'var(--rowH)',
+                          letterSpacing: '-0.5px',
+                        }}
                       >
                         {instruction?.colorValues?.[r]?.[c + 1] || ''}
                       </div>
                     ))}
                     <div
-                      className="border-b border-black text-center px-[2px]"
-                      style={{ height: 'var(--rowH)' }}
+                      className="border-b border-black text-center"
+                      style={{
+                        height: 'var(--rowH)',
+                        letterSpacing: '-0.5px',
+                      }}
                     >
                       {instruction?.colorValues?.[r]?.[6] || ''}
                     </div>
@@ -674,7 +695,7 @@ const InstructionTemplateShell = React.forwardRef<
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `12mm repeat(${SIZE_COLS}, 1fr) 10mm`,
+                  gridTemplateColumns: `14mm repeat(${SIZE_COLS}, 1fr) 14mm`,
                 }}
               >
                 <div className="bg-[#E2E1E0] border-t-0 border-r border-black px-[2px] text-center font-medium">
@@ -710,19 +731,24 @@ const InstructionTemplateShell = React.forwardRef<
             {/* SWATCH */}
             <div
               className="border-l border-b border-black box-border"
-              style={{ height: 'var(--bottomBodyH)', padding: '2mm' }}
+              style={{ height: 'var(--bottomBodyH)' }}
             >
-              <div className="grid grid-cols-3 grid-rows-2 gap-[2mm] h-full">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="w-full h-full relative">
-                    {instruction?.swatchSet?.[i]?.image && (
-                      <Image
-                        src={instruction.swatchSet[i].image}
-                        alt={`swatch ${i + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    )}
+              <div className="flex flex-wrap gap-[4px] h-full items-center py-[4px] pl-[4px]">
+                {instruction?.swatchSet?.map((swatch) => (
+                  <div
+                    key={swatch.id}
+                    className="relative aspect-square"
+                    style={{
+                      width: `calc(100% / ${instruction?.swatchSet?.length} - 4px)`,
+                    }}
+                  >
+                    <Image
+                      src={swatch.image}
+                      alt={`swatch ${swatch.id}`}
+                      fill
+                      sizes="20vw"
+                      priority
+                    />
                   </div>
                 ))}
               </div>
@@ -738,12 +764,12 @@ const InstructionTemplateShell = React.forwardRef<
                 style={{ borderCollapse: 'collapse', borderSpacing: 0 }}
               >
                 <colgroup>
-                  <col style={{ width: '18mm' }} />
-                  <col />
-                  <col style={{ width: '20mm' }} />
-                  <col style={{ width: '24mm' }} />
-                  <col style={{ width: '20mm' }} />
-                  <col style={{ width: '20mm' }} />
+                  <col style={{ width: '14mm' }} />
+                  <col style={{ width: '22mm' }} />
+                  <col style={{ width: '14mm' }} />
+                  <col style={{ width: '22mm' }} />
+                  <col style={{ width: '14mm' }} />
+                  <col style={{ width: '14mm' }} />
                 </colgroup>
                 <thead>
                   <tr>
@@ -751,7 +777,7 @@ const InstructionTemplateShell = React.forwardRef<
                       (h) => (
                         <th
                           key={h}
-                          className="p-0 text-center border-black border-r border-b"
+                          className="bg-[#E2E1E0] p-0 text-center border-black border-r border-b"
                           style={{
                             height: 'var(--headH)',
                             lineHeight: '1',
@@ -773,6 +799,7 @@ const InstructionTemplateShell = React.forwardRef<
                           style={{
                             height: 'var(--rowH)',
                             lineHeight: 'var(--rowH)',
+                            letterSpacing: '-0.5px',
                           }}
                         >
                           {instruction?.fabricValues?.[r]?.[c] || ''}
@@ -795,17 +822,17 @@ const InstructionTemplateShell = React.forwardRef<
               >
                 <colgroup>
                   <col style={{ width: '26%' }} />
-                  <col style={{ width: '18%' }} />
+                  <col style={{ width: '17%' }} />
                   <col style={{ width: '14%' }} />
                   <col style={{ width: '27%' }} />
-                  <col style={{ width: '15%' }} />
+                  <col style={{ width: '16%' }} />
                 </colgroup>
                 <thead>
                   <tr>
                     {['자재명', '규격', '칼라', '사용부위', '요척'].map((h) => (
                       <th
                         key={h}
-                        className="p-0 text-center border-black border-r border-b last:border-r-0"
+                        className="bg-[#E2E1E0] p-0 text-center border-black border-r border-b last:border-r-0"
                         style={{
                           height: 'var(--headH)',
                           lineHeight: 'var(--headH)',
@@ -826,6 +853,7 @@ const InstructionTemplateShell = React.forwardRef<
                           style={{
                             height: 'var(--rowH)',
                             lineHeight: 'var(--rowH)',
+                            letterSpacing: '-0.5px',
                           }}
                         >
                           {instruction?.materialValues?.[r]?.[c] || ''}
