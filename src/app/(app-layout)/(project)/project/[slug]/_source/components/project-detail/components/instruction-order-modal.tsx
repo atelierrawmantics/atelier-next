@@ -790,7 +790,6 @@ const InstructionTemplateShell = React.forwardRef<
                       fill
                       sizes="20vw"
                       priority
-                      loading="eager"
                     />
                   </div>
                 ))}
@@ -838,7 +837,7 @@ const InstructionTemplateShell = React.forwardRef<
                       {Array.from({ length: 6 }).map((__, c) => (
                         <td
                           key={c}
-                          className="p-0 border-black border-r border-b"
+                          className="p-0 border-black border-r border-b text-center"
                           style={{
                             height: 'var(--rowH)',
                             lineHeight: 'var(--rowH)',
@@ -892,7 +891,7 @@ const InstructionTemplateShell = React.forwardRef<
                       {Array.from({ length: 6 }).map((__, c) => (
                         <td
                           key={c}
-                          className="p-0 border-black border-r border-b last:border-r-0"
+                          className="p-0 border-black border-r border-b last:border-r-0 text-center"
                           style={{
                             height: 'var(--rowH)',
                             lineHeight: 'var(--rowH)',
