@@ -92,14 +92,14 @@ const WorkOrderCursorBox = () => {
     >
       {/* button */}
       <div className={cn('h-full', 'flex items-end')}>
-        <Button
-          variant={'solid-primary'}
+        <div
           className={cn(
             'w-[128px] sm:w-[145px] h-[29px] sm:h-[32px]',
             'px-[12px] py-[8px]',
             'rounded-[6px]',
             'bg-[linear-gradient(220deg,#F1DDE0_-3.82%,#F9E4A6_102.79%)]',
             'shadow-[1px_1px_8px_0_rgba(27,28,29,0.80),1px_1px_8px_0_rgba(27,28,29,0.20)]',
+            'inline-flex justify-center items-center',
           )}
         >
           <p
@@ -113,7 +113,7 @@ const WorkOrderCursorBox = () => {
           >
             {`Create Work Order`}
           </p>
-        </Button>
+        </div>
       </div>
 
       {/* cursor */}
@@ -145,14 +145,14 @@ const ProjectProgressCursorBox = () => {
     >
       {/* button */}
       <div className={cn('h-full', 'flex items-end')}>
-        <Button
-          variant={'solid-primary'}
+        <div
           className={cn(
             'w-[113px] sm:w-[129px] h-[29px] sm:h-[32px]',
             'px-[12px] py-[8px]',
             'rounded-[6px]',
             'bg-[linear-gradient(215deg,#D5E3FC_0.31%,#F6FAF6_104.05%)]',
             'shadow-[1px_1px_8px_0_rgba(27,28,29,0.80),1px_1px_8px_0_rgba(27,28,29,0.20)]',
+            'inline-flex justify-center items-center',
           )}
         >
           <p
@@ -166,7 +166,7 @@ const ProjectProgressCursorBox = () => {
           >
             {`Project Progress`}
           </p>
-        </Button>
+        </div>
       </div>
 
       {/* cursor */}
@@ -198,14 +198,14 @@ const ArDiagramCursorBox = () => {
     >
       {/* button */}
       <div className={cn('h-full', 'flex items-end sm:items-start')}>
-        <Button
-          variant={'solid-primary'}
+        <div
           className={cn(
             'w-[146px] sm:w-[167px] h-[29px] sm:h-[32px]',
             'px-[12px] py-[8px]',
             'rounded-[6px]',
             'bg-[linear-gradient(208deg,#DDEFE0_6.35%,#FFFAF9_103.74%)]',
             'shadow-[1px_1px_8px_0_rgba(27,28,29,0.80),1px_1px_8px_0_rgba(27,28,29,0.20)]',
+            'inline-flex justify-center items-center',
           )}
         >
           <p
@@ -219,7 +219,7 @@ const ArDiagramCursorBox = () => {
           >
             {`AI Diagram Generator`}
           </p>
-        </Button>
+        </div>
       </div>
 
       {/* cursor */}
