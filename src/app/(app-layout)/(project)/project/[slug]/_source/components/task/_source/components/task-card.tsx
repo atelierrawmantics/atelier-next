@@ -65,7 +65,9 @@ export const TaskCard = ({ task, isSelected = false }: TaskCardProps) => {
         <p className="typo-pre-caption-2 text-grey-9">{name}</p>
       </div>
       <div className="flex justify-between items-center w-full gap-4">
-        <h3 className="typo-pre-body-5 text-grey-9 flex-1">{description}</h3>
+        <h3 className="typo-pre-body-5 text-grey-9 flex-1 line-clamp-2">
+          {description}
+        </h3>
       </div>
     </div>
   )
