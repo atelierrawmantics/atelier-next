@@ -359,7 +359,7 @@ const InstructionTemplateShell = React.forwardRef<
   HTMLDivElement,
   { instruction?: InstructionType }
 >(({ instruction }, ref) => {
-  const RIGHT_W = '80mm'
+  const RIGHT_W = '84mm'
   const SWATCH_W = '130mm'
   const SIZE_COLS = 5
 
@@ -477,7 +477,7 @@ const InstructionTemplateShell = React.forwardRef<
             <div
               className="grid"
               style={{
-                gridTemplateColumns: '16.3mm 1fr 9.5mm 1fr 10mm 1fr 9.5mm 22mm',
+                gridTemplateColumns: '16.3mm 1fr 9.5mm 1fr 10mm 1fr 9.5mm 18mm',
               }}
             >
               <div
@@ -600,7 +600,7 @@ const InstructionTemplateShell = React.forwardRef<
                 {Array.from({ length: 15 }).map((_, r) => (
                   <React.Fragment key={r}>
                     <div
-                      className="border-b border-r border-black bg-[#E2E1E0] text-center"
+                      className="border-b border-r border-black bg-[#E2E1E0] text-center  flex justify-center items-center h-full"
                       style={{
                         height: 'var(--rowH)',
                         letterSpacing: '-0.5px',
@@ -611,7 +611,7 @@ const InstructionTemplateShell = React.forwardRef<
                     {Array.from({ length: 5 }).map((__, c) => (
                       <div
                         key={c}
-                        className="border-b border-r border-black text-center"
+                        className="border-b border-r border-black text-center flex justify-center items-center h-full"
                         style={{
                           height: 'var(--rowH)',
                           letterSpacing: '-0.5px',
@@ -621,7 +621,7 @@ const InstructionTemplateShell = React.forwardRef<
                       </div>
                     ))}
                     <div
-                      className="border-b border-black text-center"
+                      className="border-b border-black text-center flex justify-center items-center h-full"
                       style={{
                         height: 'var(--rowH)',
                         letterSpacing: '-0.5px',
@@ -684,35 +684,31 @@ const InstructionTemplateShell = React.forwardRef<
               >
                 {Array.from({ length: 7 }).map((_, r) => (
                   <React.Fragment key={r}>
-                    <div
-                      className="border-b border-r border-black bg-[#E2E1E0] text-center"
-                      style={{
-                        height: 'var(--rowH)',
-                        letterSpacing: '-0.5px',
-                      }}
-                    >
+                    <div className="border-b border-r border-black bg-[#E2E1E0] text-center flex justify-center items-center h-full">
                       {instruction?.colorValues?.[r]?.[0] || ''}
                     </div>
                     {Array.from({ length: SIZE_COLS }).map((__, c) => (
                       <div
                         key={c}
-                        className="border-b border-r border-black text-center"
-                        style={{
-                          height: 'var(--rowH)',
-                          letterSpacing: '-0.5px',
-                        }}
+                        className="border-b border-r border-black text-center flex justify-center items-center h-full"
                       >
-                        {instruction?.colorValues?.[r]?.[c + 1] || ''}
+                        {instruction?.colorValues?.[r]?.[c + 1] ?
+                          Number(
+                            instruction?.colorValues?.[r]?.[c + 1],
+                          ).toLocaleString()
+                        : ''}
                       </div>
                     ))}
                     <div
-                      className="border-b border-black text-center"
+                      className="border-b border-black text-center flex justify-center items-center h-full"
                       style={{
                         height: 'var(--rowH)',
                         letterSpacing: '-0.5px',
                       }}
                     >
-                      {instruction?.colorValues?.[r]?.[6] || ''}
+                      {Number(
+                        instruction?.colorValues?.[r]?.[6],
+                      ).toLocaleString() || ''}
                     </div>
                   </React.Fragment>
                 ))}
@@ -727,10 +723,30 @@ const InstructionTemplateShell = React.forwardRef<
                 <div className="bg-[#E2E1E0] border-t-0 border-r border-black px-[2px] text-center font-bold">
                   TOTAL
                 </div>
-                {Array.from({ length: SIZE_COLS }).map((_, i) => (
-                  <div key={i} className="border-t-0  border-r border-black" />
-                ))}
-                <div className="border-t-0 border-black" />
+                {Array.from({ length: SIZE_COLS + 1 }).map((_, i) => {
+                  // 각 사이즈별 토탈값 계산
+                  let totalForSize = 0
+                  for (let rowIndex = 0; rowIndex < 7; rowIndex++) {
+                    const value = instruction?.colorValues?.[rowIndex]?.[
+                      i + 1
+                    ] as string
+                    // 숫자가 아닌 값은 0으로 처리
+                    const numValue = parseInt(value) || 0
+                    totalForSize += numValue
+                  }
+
+                  return (
+                    <div
+                      key={i}
+                      className="border-t-0 border-r last:border-r-0 border-black text-center"
+                      style={{
+                        letterSpacing: '-0.5px',
+                      }}
+                    >
+                      {totalForSize > 0 ? totalForSize.toLocaleString() : ''}
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -774,6 +790,7 @@ const InstructionTemplateShell = React.forwardRef<
                       fill
                       sizes="20vw"
                       priority
+                      loading="eager"
                     />
                   </div>
                 ))}

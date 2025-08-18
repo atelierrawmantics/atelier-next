@@ -703,9 +703,9 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
                       if (colIndex === 0) {
                         return 6
                       } else if (colIndex === totalColumns - 1) {
-                        return 11
+                        return 8
                       } else {
-                        return 7
+                        return 6
                       }
                     }}
                   />
