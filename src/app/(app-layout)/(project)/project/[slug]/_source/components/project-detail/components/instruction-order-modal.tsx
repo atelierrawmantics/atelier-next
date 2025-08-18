@@ -188,8 +188,8 @@ export const InstructionOrderModal = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="rounded-none sm:rounded-[12px] w-full min-w-[1280px] sm:max-h-[800px] pb-[40px] h-full overflow-x-hidden">
-        <AlertDialogHeader className="flex flex-row items-center justify-between py-[12px] pl-[20px] pr-[8px] h-fit">
+      <AlertDialogContent className="rounded-none sm:rounded-[12px] w-full min-w-[calc(100%-80px)] md:min-w-[1280px] sm:max-h-[800px] pb-[40px] h-full">
+        <AlertDialogHeader className="flex flex-row items-center justify-between py-[12px] pl-[20px] pr-[8px] h-fit border-b border-border-basic-1">
           <AlertDialogTitle className="typo-pre-heading-2 text-grey-10">
             작업지시서 미리보기
           </AlertDialogTitle>
@@ -210,7 +210,7 @@ export const InstructionOrderModal = ({
           </div>
         </AlertDialogHeader>
 
-        <div className="px-[16px] p-[20px] overflow-y-auto overflow-x-hidden">
+        <div className="px-[16px] p-[20px] overflow-y-auto overflow-x-auto">
           <InstructionTemplateShell
             ref={instructionRef}
             instruction={instruction}
