@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unknown-property */
 import React, { useLayoutEffect, useRef, useState } from 'react'
 
 import Image from 'next/image'
@@ -373,7 +372,7 @@ const InstructionTemplateShell = React.forwardRef<
                 }}
               >
                 <div
-                  className="border-b border-black px-[2px] bg-[#E2E1E0] flex items-center justify-center"
+                  className="border-b border-black font-bold px-[2px] bg-[#E2E1E0] flex items-center justify-center"
                   style={{ height: 'var(--headFat)' }}
                 >
                   년도
@@ -386,7 +385,7 @@ const InstructionTemplateShell = React.forwardRef<
                 </div>
 
                 <div
-                  className="px-[2px] bg-[#E2E1E0] flex items-center justify-center"
+                  className="font-bold px-[2px] bg-[#E2E1E0] flex items-center justify-center"
                   style={{ height: 'var(--headFat)' }}
                 >
                   시즌
@@ -428,7 +427,7 @@ const InstructionTemplateShell = React.forwardRef<
                   >
                     {/* 라벨 바 높이 업 */}
                     <div
-                      className="bg-[#E2E1E0] text-center border-b border-black flex items-center justify-center"
+                      className="bg-[#E2E1E0] font-bold text-center border-b border-black flex items-center justify-center"
                       style={{ height: 'var(--signLabelH)' }}
                     >
                       {h}
@@ -455,7 +454,7 @@ const InstructionTemplateShell = React.forwardRef<
               }}
             >
               <div
-                className="bg-[#E2E1E0] px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
+                className="bg-[#E2E1E0] font-bold px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
                 style={{ height: 'var(--infoHeaderH)' }}
               >
                 Style #
@@ -467,7 +466,7 @@ const InstructionTemplateShell = React.forwardRef<
                 {instruction?.style || ''}
               </div>
               <div
-                className="bg-[#E2E1E0] px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
+                className="bg-[#E2E1E0] font-bold px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
                 style={{ height: 'var(--infoHeaderH)' }}
               >
                 품명
@@ -479,7 +478,7 @@ const InstructionTemplateShell = React.forwardRef<
                 {instruction?.variant || ''}
               </div>
               <div
-                className="bg-[#E2E1E0] px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
+                className="bg-[#E2E1E0] font-bold px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
                 style={{ height: 'var(--infoHeaderH)' }}
               >
                 ITEM
@@ -491,7 +490,7 @@ const InstructionTemplateShell = React.forwardRef<
                 {instruction?.item || ''}
               </div>
               <div
-                className="bg-[#E2E1E0] px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
+                className="bg-[#E2E1E0] font-bold px-[2px] border-t border-b-0 border-l border-black flex items-center justify-center"
                 style={{ height: 'var(--infoHeaderH)' }}
               >
                 차수
@@ -505,7 +504,7 @@ const InstructionTemplateShell = React.forwardRef<
             </div>
 
             <div
-              className="border-t border-r border-b-0 border-black px-[2px] bg-[#E2E1E0] text-center font-medium flex items-center justify-center"
+              className="border-t border-r border-b-0 border-black px-[2px] bg-[#E2E1E0] text-center font-bold flex items-center justify-center"
               style={{ height: 'var(--infoHeaderH)' }}
             >
               SIZE SPEC (CM)
@@ -549,7 +548,7 @@ const InstructionTemplateShell = React.forwardRef<
                   gridTemplateColumns: `14mm repeat(${SIZE_COLS}, 1fr) 14mm`,
                 }}
               >
-                <div className="bg-[#E2E1E0] border-b border-r border-black px-[2px] text-center font-medium">
+                <div className="bg-[#E2E1E0] border-b border-r border-black px-[2px] text-center font-bold">
                   PART
                 </div>
                 {Array.from({ length: SIZE_COLS }).map((_, i) => (
@@ -560,7 +559,7 @@ const InstructionTemplateShell = React.forwardRef<
                     {instruction?.sizeNames?.[i] || ''}
                   </div>
                 ))}
-                <div className="bg-[#E2E1E0] border-b border-black px-[2px] text-center font-medium">
+                <div className="bg-[#E2E1E0] border-b border-black px-[2px] text-center font-bold">
                   편차
                 </div>
               </div>
@@ -617,7 +616,7 @@ const InstructionTemplateShell = React.forwardRef<
               >
                 {/* COLOR: 좌측, 세로 2칸 병합 */}
                 <div
-                  className="bg-[#E2E1E0] border-b border-r border-black px-[2px] font-medium flex items-center justify-center"
+                  className="bg-[#E2E1E0]  border-b border-r border-black px-[2px] font-bold flex items-center justify-center"
                   style={{ gridRow: '1 / span 2' }}
                 >
                   COLOR
@@ -625,7 +624,7 @@ const InstructionTemplateShell = React.forwardRef<
 
                 {/* SIZE: 상단, 사이즈 칼럼 전체 병합 */}
                 <div
-                  className="bg-[#E2E1E0] border-b border-r border-black px-[2px] text-center font-medium"
+                  className="bg-[#E2E1E0] border-b border-r border-black px-[2px] text-center font-bold"
                   style={{ gridColumn: `2 / span ${SIZE_COLS}` }}
                 >
                   SIZE
@@ -633,7 +632,7 @@ const InstructionTemplateShell = React.forwardRef<
 
                 {/* 수량: 우측, 세로 2칸 병합 */}
                 <div
-                  className="bg-[#E2E1E0] border-b border-black px-[2px] text-center font-medium row-span-2 flex items-center justify-center"
+                  className="bg-[#E2E1E0] border-b border-black px-[2px] text-center font-bold row-span-2 flex items-center justify-center"
                   style={{ gridRow: '1 / span 0' }}
                 >
                   수량
@@ -698,7 +697,7 @@ const InstructionTemplateShell = React.forwardRef<
                   gridTemplateColumns: `14mm repeat(${SIZE_COLS}, 1fr) 14mm`,
                 }}
               >
-                <div className="bg-[#E2E1E0] border-t-0 border-r border-black px-[2px] text-center font-medium">
+                <div className="bg-[#E2E1E0] border-t-0 border-r border-black px-[2px] text-center font-bold">
                   TOTAL
                 </div>
                 {Array.from({ length: SIZE_COLS }).map((_, i) => (
@@ -717,13 +716,13 @@ const InstructionTemplateShell = React.forwardRef<
             }}
           >
             {/* 타이틀행 */}
-            <div className="border-t-0 py-[4px] border-l  border-b border-black bg-[#E2E1E0] flex items-center justify-center text-center">
+            <div className="border-t-0 py-[4px] border-l font-bold  border-b border-black bg-[#E2E1E0] flex items-center justify-center text-center">
               SWATCH
             </div>
-            <div className="border-t-0 py-[4px] border-l border-b border-r border-black bg-[#E2E1E0] flex items-center justify-center text-center">
+            <div className="border-t-0 py-[4px] border-l font-bold border-b border-r border-black bg-[#E2E1E0] flex items-center justify-center text-center">
               원단상세정보
             </div>
-            <div className="border-t-0 py-[4px] border-r border-b border-black bg-[#E2E1E0] flex items-center justify-center text-center">
+            <div className="border-t-0 py-[4px] border-r font-bold border-b border-black bg-[#E2E1E0] flex items-center justify-center text-center">
               부자재
             </div>
 
