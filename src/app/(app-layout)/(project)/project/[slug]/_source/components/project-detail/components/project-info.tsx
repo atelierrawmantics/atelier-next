@@ -16,6 +16,12 @@ import {
   useProjectModal,
 } from '@/app/(app-layout)/(project)/_source/hooks/use-project-modal'
 import { CommonAlert } from '@/components/common-alert'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useProjectInstructionRetrieveQuery } from '@/generated/apis/Instruction/Instruction.query'
@@ -97,9 +103,11 @@ const ProjectInfoSkeleton = () => (
 const ProjectInfoHeader = ({
   onOpenUpdateModal,
   isReadOnly,
+  isAccordionTrigger = false,
 }: {
   onOpenUpdateModal: () => void
   isReadOnly?: boolean
+  isAccordionTrigger?: boolean
 }) => {
   const router = useRouter()
   const { slug } = useParams<{ slug: string }>()
@@ -148,13 +156,8 @@ const ProjectInfoHeader = ({
     ))
   }
 
-  return (
-    <div
-      className={cn(
-        'flex items-center justify-between',
-        'p-[20px] border-b border-border-basic-1',
-      )}
-    >
+  const headerContent = (
+    <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-[8px]">
         <p className="typo-pre-body-3 text-grey-9">프로젝트 정보</p>
       </div>
@@ -168,6 +171,25 @@ const ProjectInfoHeader = ({
           </Button>
         </div>
       )}
+    </div>
+  )
+
+  if (isAccordionTrigger) {
+    return (
+      <AccordionTrigger className="p-[20px] rounded-[6px]">
+        {headerContent}
+      </AccordionTrigger>
+    )
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex items-center justify-between',
+        'p-[20px] border-b border-border-basic-1',
+      )}
+    >
+      {headerContent}
     </div>
   )
 }
@@ -373,8 +395,6 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
     }
   }
 
-  console.log({ isDownloadingPDF })
-
   return (
     <LoadingView isLoading={isLoading} fallback={<ProjectInfoSkeleton />}>
       <div
@@ -383,12 +403,27 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
           className,
         )}
       >
-        <div
-          className={cn(
-            'flex flex-col',
-            'bg-background-basic-1 rounded-[6px] border-1 border-border-basic-1',
-          )}
+        {/* sm 브레이크포인트에서만 아코디언으로 동작 */}
+        <Accordion
+          type="single"
+          collapsible
+          className="hidden sm:flex md:hidden bg-background-basic-1 border-b border-r border-l rounded-[6px]"
+          defaultValue="project-info"
         >
+          <AccordionItem value="project-info" className="w-full rounded-[6px]">
+            <ProjectInfoHeader
+              onOpenUpdateModal={openProjectUpdateModal}
+              isReadOnly={isReadOnly}
+              isAccordionTrigger={true}
+            />
+            <AccordionContent className="rounded-b-[6px]">
+              <ProjectInfoContent />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        {/* md 이상에서는 기존 레이아웃 유지 */}
+        <div className="hidden md:flex flex-col bg-background-basic-1 rounded-[6px] border-1 border-border-basic-1">
           <ProjectInfoHeader
             onOpenUpdateModal={openProjectUpdateModal}
             isReadOnly={isReadOnly}
