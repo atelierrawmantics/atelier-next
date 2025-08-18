@@ -3,6 +3,7 @@ import React, { useLayoutEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 
+import ReactDOM from 'react-dom/client'
 import generatePDF from 'react-to-pdf'
 
 import {
@@ -14,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { InstructionType } from '@/generated/apis/@types/data-contracts'
 import { useProjectInstructionRetrieveQuery } from '@/generated/apis/Instruction/Instruction.query'
-import { DownloadSimpleIcon, XIcon } from '@/generated/icons/MyIcons'
+import { XIcon } from '@/generated/icons/MyIcons'
 
 interface InstructionOrderModalProps {
   isOpen: boolean
@@ -26,165 +27,14 @@ export const InstructionOrderModal = ({
   onClose,
 }: InstructionOrderModalProps) => {
   const { slug } = useParams<{ slug: string }>()
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
   const instructionRef = useRef<HTMLDivElement>(null)
+
   const { data: instruction } = useProjectInstructionRetrieveQuery({
     variables: {
       projectSlug: slug,
       id: 'me',
     },
   })
-
-  const handleDownloadPDF = async () => {
-    if (isGeneratingPDF) return
-
-    if (!instructionRef.current) {
-      console.error('Instruction template ref not found')
-      return
-    }
-
-    console.log('Element found:', instructionRef.current)
-    console.log('Element size:', {
-      width: instructionRef.current.offsetWidth,
-      height: instructionRef.current.offsetHeight,
-      scrollWidth: instructionRef.current.scrollWidth,
-      scrollHeight: instructionRef.current.scrollHeight,
-    })
-
-    setIsGeneratingPDF(true)
-
-    try {
-      // PDF 생성 전에 oklch 색상 제거
-      const element = instructionRef.current
-      if (element) {
-        // 모든 oklch CSS 변수를 hex로 변환하는 스타일 추가
-        const overrideStyle = document.createElement('style')
-        overrideStyle.textContent = `
-            * {
-              --background: #ffffff !important;
-              --foreground: #000000 !important;
-              --card: #ffffff !important;
-              --card-foreground: #000000 !important;
-              --popover: #ffffff !important;
-              --popover-foreground: #000000 !important;
-              --primary: #000000 !important;
-              --primary-foreground: #ffffff !important;
-              --secondary: #f5f5f5 !important;
-              --secondary-foreground: #000000 !important;
-              --muted: #f5f5f5 !important;
-              --muted-foreground: #666666 !important;
-              --accent: #f5f5f5 !important;
-              --accent-foreground: #000000 !important;
-              --destructive: #dc2626 !important;
-              --border: #e5e5e5 !important;
-              --input: #e5e5e5 !important;
-              --ring: #b3b3b3 !important;
-              --sidebar: #ffffff !important;
-              --sidebar-foreground: #000000 !important;
-              --sidebar-primary: #000000 !important;
-              --sidebar-primary-foreground: #ffffff !important;
-              --sidebar-accent: #f5f5f5 !important;
-              --sidebar-accent-foreground: #000000 !important;
-              --sidebar-border: #e5e5e5 !important;
-              --sidebar-ring: #b3b3b3 !important;
-            }
-          `
-        element.appendChild(overrideStyle)
-      }
-      // A4 landscape 크기 계산 (297mm x 210mm)
-      const a4Width = 297
-      const a4Height = 210
-
-      // 컨텐츠 크기에 맞는 스케일 계산
-      const contentWidth = element.scrollWidth
-      const contentHeight = element.scrollHeight
-
-      // A4 용지에 정확히 맞도록 스케일 계산
-      // 컨텐츠가 이미 A4 크기로 설정되어 있으므로 스케일 1 사용
-      const scale = 1.0
-
-      console.log('Content size:', { contentWidth, contentHeight })
-      console.log('Final scale:', scale)
-      console.log('A4 size (mm):', { a4Width, a4Height })
-      console.log('Scaled content size:', {
-        scaledWidth: contentWidth * scale,
-        scaledHeight: contentHeight * scale,
-      })
-
-      const options = {
-        filename: `작업지시서_${instruction?.style || 'unknown'}.pdf`,
-        page: {
-          margin: 10,
-          format: 'a4',
-          orientation: 'landscape' as const,
-          // width: '297mm',
-          // height: '210mm',
-        },
-        canvas: {
-          scale: scale,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          scrollX: 0,
-          scrollY: 0,
-          windowWidth: contentWidth,
-          windowHeight: contentHeight,
-          width: contentWidth,
-          height: contentHeight,
-        },
-        overrides: {
-          pdf: {
-            compress: true,
-            unit: 'mm' as const,
-          },
-        },
-      }
-
-      console.log('Starting PDF generation with options:', options)
-
-      // 이미지들이 모두 로드될 때까지 대기
-      const images = instructionRef.current.querySelectorAll('img')
-      console.log('Found images:', images.length)
-
-      if (images.length > 0) {
-        await Promise.all(
-          Array.from(images).map(
-            (img) =>
-              new Promise((resolve) => {
-                if (img.complete) {
-                  resolve(null)
-                } else {
-                  img.onload = () => resolve(null)
-                  img.onerror = () => resolve(null)
-                }
-              }),
-          ),
-        )
-        console.log('All images loaded')
-      }
-
-      await generatePDF(instructionRef, options)
-      console.log('PDF generated successfully')
-
-      // 임시 스타일 제거
-      if (element) {
-        const overrideStyle = element.querySelector('style')
-        if (overrideStyle) {
-          overrideStyle.remove()
-        }
-      }
-    } catch (error: any) {
-      console.error('PDF generation failed:', error)
-      console.error('Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-      })
-      alert(`PDF 생성에 실패했습니다: ${error.message}`)
-    } finally {
-      setIsGeneratingPDF(false)
-    }
-  }
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -193,21 +43,10 @@ export const InstructionOrderModal = ({
           <AlertDialogTitle className="typo-pre-heading-2 text-grey-10">
             작업지시서 미리보기
           </AlertDialogTitle>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline-primary"
-              size="sm"
-              onClick={handleDownloadPDF}
-              disabled={isGeneratingPDF}
-              className="flex items-center gap-2"
-            >
-              <DownloadSimpleIcon className="size-4" />
-              {isGeneratingPDF ? 'PDF 생성 중...' : 'PDF 다운로드'}
-            </Button>
-            <Button variant="ghost" size="fit" onClick={onClose} asChild>
-              <XIcon className="size-[40px]" />
-            </Button>
-          </div>
+
+          <Button variant="ghost" size="fit" onClick={onClose} asChild>
+            <XIcon className="size-[40px]" />
+          </Button>
         </AlertDialogHeader>
 
         <div className="px-[16px] p-[20px] overflow-y-auto overflow-x-auto">
@@ -219,6 +58,196 @@ export const InstructionOrderModal = ({
       </AlertDialogContent>
     </AlertDialog>
   )
+}
+
+// 모달 없이 PDF 다운로드하는 함수
+export const downloadInstructionPDF = async ({
+  instruction,
+  projectName,
+}: {
+  instruction: InstructionType
+  projectName: string
+}): Promise<boolean> => {
+  return new Promise((resolve) => {
+    try {
+      // 임시 div 생성
+      const tempDiv = document.createElement('div')
+      tempDiv.style.position = 'absolute'
+      tempDiv.style.left = '-9999px'
+      tempDiv.style.top = '-9999px'
+      tempDiv.style.width = '100%'
+      tempDiv.style.height = '100%'
+      tempDiv.style.overflow = 'auto'
+      tempDiv.style.zIndex = '9999'
+      tempDiv.style.height = '842px'
+      tempDiv.style.width = '1328px'
+      document.body.appendChild(tempDiv)
+
+      // useRef와 동일한 방식으로 ref 객체 생성
+      const tempRef = { current: null as HTMLDivElement | null }
+
+      // 실제 모달과 동일한 환경에서 InstructionTemplateShell 렌더링
+      const root = ReactDOM.createRoot(tempDiv)
+      root.render(
+        <div className="px-[16px] p-[20px] overflow-y-auto overflow-x-auto">
+          <InstructionTemplateShell
+            instruction={instruction}
+            ref={(ref) => {
+              if (ref) {
+                tempRef.current = ref
+                // 컴포넌트가 마운트된 후 실제 모달의 handleDownloadPDF 로직 실행
+                setTimeout(async () => {
+                  try {
+                    const element = tempRef.current
+                    if (!element) {
+                      resolve(false)
+                      return
+                    }
+
+                    console.log('Element found:', element)
+                    console.log('Element size:', {
+                      width: element.offsetWidth,
+                      height: element.offsetHeight,
+                      scrollWidth: element.scrollWidth,
+                      scrollHeight: element.scrollHeight,
+                    })
+
+                    // 실제 모달의 handleDownloadPDF 로직과 동일하게 실행
+                    if (element) {
+                      // 모든 oklch CSS 변수를 hex로 변환하는 스타일 추가
+                      const overrideStyle = document.createElement('style')
+                      overrideStyle.textContent = `
+                          * {
+                            --background: #ffffff !important;
+                            --foreground: #000000 !important;
+                            --card: #ffffff !important;
+                            --card-foreground: #000000 !important;
+                            --popover: #ffffff !important;
+                            --popover-foreground: #000000 !important;
+                            --primary: #000000 !important;
+                            --primary-foreground: #ffffff !important;
+                            --secondary: #f5f5f5 !important;
+                            --secondary-foreground: #000000 !important;
+                            --muted: #f5f5f5 !important;
+                            --muted-foreground: #666666 !important;
+                            --accent: #f5f5f5 !important;
+                            --accent-foreground: #000000 !important;
+                            --destructive: #dc2626 !important;
+                            --border: #e5e5e5 !important;
+                            --input: #e5e5e5 !important;
+                            --ring: #b3b3b3 !important;
+                            --sidebar: #ffffff !important;
+                            --sidebar-foreground: #000000 !important;
+                            --sidebar-primary: #000000 !important;
+                            --sidebar-primary-foreground: #ffffff !important;
+                            --sidebar-accent: #f5f5f5 !important;
+                            --sidebar-accent-foreground: #000000 !important;
+                            --sidebar-border: #e5e5e5 !important;
+                            --sidebar-ring: #b3b3b3 !important;
+                          }
+                        `
+                      element.appendChild(overrideStyle)
+                    }
+
+                    const contentWidth = element.scrollWidth
+                    const contentHeight = element.scrollHeight
+
+                    // 실제 모달과 동일한 PDF 옵션 사용
+                    const options = {
+                      filename: `${projectName}_작업지시서.pdf`,
+                      page: {
+                        margin: 10,
+                        format: 'a4',
+                        orientation: 'landscape' as const,
+                      },
+                      canvas: {
+                        scale: 1.0,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        scrollX: 0,
+                        scrollY: 0,
+                        windowWidth: contentWidth,
+                        windowHeight: contentHeight,
+                        width: contentWidth,
+                        height: contentHeight,
+                      },
+                      overrides: {
+                        pdf: {
+                          compress: true,
+                          unit: 'mm' as const,
+                        },
+                      },
+                    }
+
+                    console.log(
+                      'Starting PDF generation with options:',
+                      options,
+                    )
+
+                    // 이미지들이 모두 로드될 때까지 대기
+                    const images = element.querySelectorAll('img')
+                    console.log('Found images:', images.length)
+
+                    if (images.length > 0) {
+                      await Promise.all(
+                        Array.from(images).map(
+                          (img) =>
+                            new Promise((resolve) => {
+                              if (img.complete) {
+                                resolve(null)
+                              } else {
+                                img.onload = () => resolve(null)
+                                img.onerror = () => resolve(null)
+                              }
+                            }),
+                        ),
+                      )
+                      console.log('All images loaded')
+                    }
+
+                    await generatePDF(tempRef, options)
+                    console.log('PDF generated successfully')
+
+                    // 임시 스타일 제거
+                    if (element) {
+                      const overrideStyle = element.querySelector('style')
+                      if (overrideStyle) {
+                        overrideStyle.remove()
+                      }
+                    }
+
+                    // 임시 요소 정리
+                    root.unmount()
+                    document.body.removeChild(tempDiv)
+
+                    // 성공 상태 리턴
+                    resolve(true)
+                  } catch (error: any) {
+                    console.error('PDF generation failed:', error)
+                    alert('PDF 생성에 실패했습니다: ' + error.message)
+
+                    // 임시 요소 정리
+                    root.unmount()
+                    document.body.removeChild(tempDiv)
+
+                    // 실패 상태 리턴
+                    resolve(false)
+                  }
+                }, 100)
+              } else {
+                resolve(false)
+              }
+            }}
+          />
+        </div>,
+      )
+    } catch (error: any) {
+      console.error('PDF generation failed:', error)
+      alert('PDF 생성에 실패했습니다: ' + error.message)
+      resolve(false)
+    }
+  })
 }
 
 export function usePageScale({
@@ -282,9 +311,7 @@ export function useScaleToWidth(pageWidthPx: number) {
 
 const mmToPx = (mm: number) => (mm / 25.4) * 96
 
-export const PageFrame: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const PageFrame = ({ children }: { children: React.ReactNode }) => {
   // 29.71 × 21.01 cm = 297.1 × 210.1 mm (landscape)
   const W_MM = 297.1
   const H_MM = 210.1
@@ -337,7 +364,7 @@ const InstructionTemplateShell = React.forwardRef<
   const SIZE_COLS = 5
 
   return (
-    <div className="flex w-full justify-center" ref={ref}>
+    <div className="flex w-full h-full justify-center" ref={ref}>
       <div
         className="bg-white"
         style={{

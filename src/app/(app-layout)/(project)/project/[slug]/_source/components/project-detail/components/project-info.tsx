@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { useParams, useRouter } from 'next/navigation'
 
 import { useQueryClient } from '@tanstack/react-query'
@@ -16,6 +18,7 @@ import {
 import { CommonAlert } from '@/components/common-alert'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useProjectInstructionRetrieveQuery } from '@/generated/apis/Instruction/Instruction.query'
 import {
   QUERY_KEY_PROJECT_API,
   useProjectDestroyMutation,
@@ -33,7 +36,10 @@ import {
 import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
 
-import { InstructionOrderModal } from './instruction-order-modal'
+import {
+  InstructionOrderModal,
+  downloadInstructionPDF,
+} from './instruction-order-modal'
 
 const ProjectInfoHeaderSkeleton = () => (
   <div className="flex items-center justify-between p-[20px] border-b border-border-basic-1">
@@ -225,6 +231,7 @@ interface ProjectInfoProps {
 }
 
 export const ProjectInfo = ({ className }: ProjectInfoProps) => {
+  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false)
   const queryClient = useQueryClient()
 
   const { slug } = useParams<{ slug: string }>()
@@ -233,6 +240,14 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
       slug,
     },
   })
+
+  const { data: instruction } = useProjectInstructionRetrieveQuery({
+    variables: {
+      projectSlug: slug,
+      id: 'me',
+    },
+  })
+
   const { mutate: createProjectShare, isPending: isPendingCreateProjectShare } =
     useProjectShareCreateMutation({})
 
@@ -340,6 +355,26 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
     })
   }
 
+  const handlePdfDownload = async () => {
+    if (!instruction) return
+    setIsDownloadingPDF(true)
+    try {
+      const success = await downloadInstructionPDF({
+        instruction,
+        projectName: project?.name || '',
+      })
+      if (!success) {
+        console.error('PDF download failed')
+      }
+    } catch (error) {
+      console.error('PDF download failed:', error)
+    } finally {
+      setIsDownloadingPDF(false)
+    }
+  }
+
+  console.log({ isDownloadingPDF })
+
   return (
     <LoadingView isLoading={isLoading} fallback={<ProjectInfoSkeleton />}>
       <div
@@ -360,8 +395,14 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
           />
           <ProjectInfoContent />
         </div>
-        <div className="flex gap-[6px] justify-end">
-          <Button variant="outline-grey" size="sm" className="w-fit">
+        <div className="flex gap-[6px] justify-end md:pl-[65px]">
+          <Button
+            variant="outline-grey"
+            size="sm"
+            className="w-[106px] md:w-full"
+            onClick={handlePdfDownload}
+            loading={isDownloadingPDF}
+          >
             <DownloadSimpleIcon className="size-[16px]" />
             <p>PDF 다운로드</p>
           </Button>
@@ -370,7 +411,7 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
               <Button
                 variant="outline-grey"
                 size="sm"
-                className="w-fit hidden md:flex"
+                className="w-[107px] md:w-full hidden sm:flex"
                 onClick={handleCreateProjectShare}
                 loading={isPendingCreateProjectShare}
               >
@@ -380,7 +421,7 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
               <Button
                 variant="solid-primary"
                 size="sm"
-                className="w-fit hidden md:flex"
+                className="w-fit hidden sm:flex"
                 onClick={() =>
                   openInstructionOrderModal(({ isOpen, close }) => (
                     <InstructionOrderModal isOpen={isOpen} onClose={close} />
