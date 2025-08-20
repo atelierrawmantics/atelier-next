@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button'
 import { LOGOIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
+import { PrivacyPolicyModal } from './privacy-policy-modal'
+import { TermsModal } from './terms-modal'
+
 const Footer = () => {
   return (
     <div
@@ -75,6 +78,12 @@ const Footer = () => {
             <p>전화번호: 02-2285-1110</p>
             <p>이메일: rawmantics@naver.com</p>
             <p>대표: 박윤희</p>
+            <TermsModal>
+              <p className="underline cursor-pointer">이용약관</p>
+            </TermsModal>
+            <PrivacyPolicyModal>
+              <p className="underline cursor-pointer">개인정보처리방침</p>
+            </PrivacyPolicyModal>
           </div>
           <p className={cn('typo-pre-caption-2 text-grey-7')}>
             {'COPYRIGHT 2025 Atelier. ALL RIGHTS RESERVED'}
