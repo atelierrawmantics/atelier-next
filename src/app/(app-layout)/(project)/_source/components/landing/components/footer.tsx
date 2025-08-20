@@ -67,7 +67,15 @@ const Footer = () => {
         </div>
 
         {/* copyright */}
-        <div className={cn('w-full')}>
+        <div className={cn('w-full', 'flex flex-col gap-[12px]')}>
+          <div className="w-full typo-pre-caption-2 text-grey-7 flex flex-wrap gap-x-[20px]">
+            <p>상호명: 아뜰리에</p>
+            <p>사업장소재지: 05005 서울 광진구 광나루로17길 14-6 201호</p>
+            <p>통신판매업신고: 2024-서울광진-1252</p>
+            <p>전화번호: 02-2285-1110</p>
+            <p>이메일: rawmantics@naver.com</p>
+            <p>대표: 박윤희</p>
+          </div>
           <p className={cn('typo-pre-caption-2 text-grey-7')}>
             {'COPYRIGHT 2025 Atelier. ALL RIGHTS RESERVED'}
           </p>
