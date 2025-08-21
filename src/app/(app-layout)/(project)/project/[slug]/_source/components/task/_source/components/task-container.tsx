@@ -17,6 +17,7 @@ import { useQueryClient } from '@tanstack/react-query'
 
 import {
   TaskStatusEnumType,
+  TaskStatusEnumTypeMap,
   TaskType,
 } from '@/generated/apis/@types/data-contracts'
 import {
@@ -44,19 +45,34 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
 
   const { mutate: updateTask } = useProjectTaskPartialUpdateMutation({
     options: {
-      onSuccess: () => {
+      onSuccess: (res) => {
+        const { isAlarm, managerPhone, status } = res || {}
         setActiveTask(null)
         qc.invalidateQueries({
           queryKey: QUERY_KEY_TASK_API.PROJECT_TASK_LIST({
             projectSlug: slug,
           }),
         })
-        toast('진행 현황 변경 알림톡이 발송되었습니다.', {
-          action: {
-            label: '닫기',
-            onClick: () => {},
-          },
-        })
+
+        if (status) {
+          toast(
+            `태스크가 ${TaskStatusEnumTypeMap[status]} 상태로 변경되었어요.`,
+            {
+              action: {
+                label: '닫기',
+                onClick: () => {},
+              },
+            },
+          )
+        }
+        if (isAlarm && managerPhone) {
+          toast('진행 현황 변경 알림톡이 발송되었습니다.', {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          })
+        }
       },
     },
   })
