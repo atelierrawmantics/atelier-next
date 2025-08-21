@@ -1,23 +1,11 @@
 'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'
+import { BgDot } from '@/components/bg-dot'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import { MY_IMAGES } from '@/generated/path/images'
 import { cn } from '@/lib/utils'
 
 import { AppLayoutHeader } from './app-layout-header/app-layout-header'
-
-const BgDot = () => {
-  return (
-    <div
-      className="fixed top-0 w-screen h-screen z-[-1] bg-accent-deepgrey2"
-      style={{
-        backgroundImage: `url(${MY_IMAGES.DOT.src})`,
-        backgroundPosition: '100% 75%',
-      }}
-    />
-  )
-}
 
 const AppContentInner = ({ children }: { children: React.ReactNode }) => {
   return (
