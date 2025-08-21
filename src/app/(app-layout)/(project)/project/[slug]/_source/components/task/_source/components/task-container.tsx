@@ -24,6 +24,7 @@ import {
   useProjectTaskPartialUpdateMutation,
 } from '@/generated/apis/Task/Task.query'
 import { InfoFillIcon } from '@/generated/icons/MyIcons'
+import { toast } from '@/hooks/useToast'
 
 import { isColumnData, isTaskData } from '../../../../utils/dnd'
 import { TaskCard } from './task-card'
@@ -49,6 +50,12 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
           queryKey: QUERY_KEY_TASK_API.PROJECT_TASK_LIST({
             projectSlug: slug,
           }),
+        })
+        toast('진행 현황 변경 알림톡이 발송되었습니다.', {
+          action: {
+            label: '닫기',
+            onClick: () => {},
+          },
         })
       },
     },

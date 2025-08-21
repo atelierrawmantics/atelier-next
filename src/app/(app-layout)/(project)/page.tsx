@@ -25,6 +25,7 @@ export default function HomePage() {
         contentClassName="pb-0"
       >
         <Project />
+        bu
       </ProjectContent>
     : <Landing />
 }
