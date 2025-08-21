@@ -275,12 +275,12 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
 
           {target === 'me' ?
             <Form {...formToMe}>
-              <form id="task-form-to-me">
+              <form>
                 <TaskFormToMe isEditing={isEditing} />
               </form>
             </Form>
           : <Form {...formToManager}>
-              <form id="task-form-to-manager">
+              <form>
                 <TaskFormToManager isEditing={isEditing} />
               </form>
             </Form>
@@ -316,9 +316,7 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
 
           {isEditing && (
             <Button
-              form={
-                target === 'me' ? 'task-form-to-me' : 'task-form-to-manager'
-              }
+              type="button"
               disabled={!isValid || !isDirty}
               loading={isUpdating}
               onClick={() => {
