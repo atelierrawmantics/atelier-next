@@ -3,6 +3,7 @@ import {
   TaskStatusEnumTypeMap,
 } from '@/generated/apis/@types/data-contracts'
 import { theme } from '@/generated/theme-token'
+import { cn } from '@/lib/utils'
 
 type StatusConfig = {
   label: string
@@ -14,6 +15,7 @@ type StatusConfig = {
 interface TaskStatusBadgeProps {
   status: TaskStatusEnumType
   hasDot?: boolean
+  className?: string
 }
 
 const STATUS_CONFIGS: Record<keyof typeof TaskStatusEnumTypeMap, StatusConfig> =
@@ -47,12 +49,17 @@ const STATUS_CONFIGS: Record<keyof typeof TaskStatusEnumTypeMap, StatusConfig> =
 export const TaskStatusBadge = ({
   status,
   hasDot = true,
+  className,
 }: TaskStatusBadgeProps) => {
   const config = STATUS_CONFIGS[status]
 
   return (
     <div
-      className={`h-6 flex items-center justify-center gap-1 px-2 py-0 rounded-full ${config.labelBgColor}`}
+      className={cn(
+        'h-6 flex items-center justify-center gap-1 px-2 py-0 rounded-full',
+        config.labelBgColor,
+        className,
+      )}
     >
       {hasDot && (
         <div className={`w-1.5 h-1.5 rounded-full ${config.statusColor}`} />
