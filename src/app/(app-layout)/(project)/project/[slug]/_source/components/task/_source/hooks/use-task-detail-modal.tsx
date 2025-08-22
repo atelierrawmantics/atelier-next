@@ -106,6 +106,12 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
               projectSlug: slug,
             }),
           })
+          toast('태스크가 수정되었어요.', {
+            action: {
+              label: '닫기',
+              onClick: () => {},
+            },
+          })
         },
         onError: () => {
           toast(
@@ -169,13 +175,22 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
   const isDirty = target === 'me' ? isDirtyToMe : isDirtyToManager
   const isValid = target === 'me' ? isValidToMe : isValidToManager
 
-  const handleSubmit = (
-    data: TaskFormToMeDataType | TaskFormToManagerDataType,
-  ) => {
+  const onSubmitToMe = (data: TaskFormToMeDataType) => {
     updateTask({
       projectSlug: slug,
       slug: taskSlug,
       data,
+    })
+  }
+
+  const onSubmitToManager = (data: TaskFormToManagerDataType) => {
+    updateTask({
+      projectSlug: slug,
+      slug: taskSlug,
+      data: {
+        ...data,
+        managerPhone: data.managerPhone.replace(/-/g, ''),
+      },
     })
   }
 
@@ -275,14 +290,10 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
 
           {target === 'me' ?
             <Form {...formToMe}>
-              <form>
-                <TaskFormToMe isEditing={isEditing} />
-              </form>
+              <TaskFormToMe isEditing={isEditing} />
             </Form>
           : <Form {...formToManager}>
-              <form>
-                <TaskFormToManager isEditing={isEditing} />
-              </form>
+              <TaskFormToManager isEditing={isEditing} />
             </Form>
           }
         </div>
@@ -321,9 +332,9 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
               loading={isUpdating}
               onClick={() => {
                 if (target === 'me') {
-                  handleSubmitToMe(handleSubmit)()
+                  handleSubmitToMe(onSubmitToMe)()
                 } else {
-                  handleSubmitToManager(handleSubmit)()
+                  handleSubmitToManager(onSubmitToManager)()
                 }
               }}
             >
@@ -449,7 +460,7 @@ const TaskFormToManager = ({ isEditing }: { isEditing: boolean }) => {
               <FormControl>
                 <Input
                   placeholder="담당자 이름을 입력하세요"
-                  readOnly={!isEditing}
+                  readOnly
                   value={field.value}
                   onChange={(e) => {
                     setValue('managerName', e.target.value, {
@@ -472,7 +483,7 @@ const TaskFormToManager = ({ isEditing }: { isEditing: boolean }) => {
               <FormControl>
                 <Input
                   placeholder="휴대폰 번호를 입력하세요"
-                  readOnly={!isEditing}
+                  readOnly
                   maxLength={13}
                   onChange={(e) => {
                     setValue(
