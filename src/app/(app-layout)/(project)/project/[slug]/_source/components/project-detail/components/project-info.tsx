@@ -434,7 +434,7 @@ export const ProjectInfo = ({ className }: ProjectInfoProps) => {
           <Button
             variant="outline-grey"
             size="sm"
-            className="w-[106px] md:w-full"
+            className="w-[106px]"
             onClick={handlePdfDownload}
             loading={isDownloadingPDF}
           >
