@@ -13,7 +13,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import { InstructionType } from '@/generated/apis/@types/data-contracts'
 import { useProjectInstructionRetrieveQuery } from '@/generated/apis/Instruction/Instruction.query'
 import { XIcon } from '@/generated/icons/MyIcons'

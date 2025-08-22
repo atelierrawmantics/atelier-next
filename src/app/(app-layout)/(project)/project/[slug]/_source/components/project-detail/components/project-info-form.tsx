@@ -534,10 +534,44 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
     extractSeasonStyleData,
   )
 
-  const handleSchematicSave = createSaveHandler(
-    '도식화 이미지',
-    extractSchematicData,
-  )
+  const handleSchematicSave = async () => {
+    const sectionData = await extractSchematicData()
+
+    try {
+      await updateInstruction({
+        projectSlug: slug,
+        id: 'me',
+        data: sectionData,
+      })
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEY_INSTRUCTION_API.PROJECT_INSTRUCTION_RETRIEVE({
+          projectSlug: slug,
+          id: 'me',
+        }),
+      })
+
+      // 도식화 이미지 저장 후 파일 상태 초기화
+      setSchematicFile(null)
+
+      toast('도식화 이미지이(가) 저장되었어요.', {
+        action: {
+          label: '닫기',
+          onClick: () => {},
+        },
+      })
+    } catch {
+      toast(
+        '도식화 이미지 저장에 실패했어요.',
+        {
+          action: {
+            label: '닫기',
+            onClick: () => {},
+          },
+        },
+        'error',
+      )
+    }
+  }
 
   const handleSizeSpecSave = createSaveHandler(
     '사이즈 스펙',
@@ -559,7 +593,45 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
     extractAccessoryData,
   )
 
-  const handleSwatchSave = createSaveHandler('SWATCH', extractSwatchData)
+  const handleSwatchSave = async () => {
+    const sectionData = await extractSwatchData()
+
+    try {
+      await updateInstruction({
+        projectSlug: slug,
+        id: 'me',
+        data: sectionData,
+      })
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEY_INSTRUCTION_API.PROJECT_INSTRUCTION_RETRIEVE({
+          projectSlug: slug,
+          id: 'me',
+        }),
+      })
+
+      // 스와치 저장 후 상태 초기화
+      setSwatchFiles([])
+      setDeletedSwatchIds([])
+
+      toast('SWATCH이(가) 저장되었어요.', {
+        action: {
+          label: '닫기',
+          onClick: () => {},
+        },
+      })
+    } catch {
+      toast(
+        'SWATCH 저장에 실패했어요.',
+        {
+          action: {
+            label: '닫기',
+            onClick: () => {},
+          },
+        },
+        'error',
+      )
+    }
+  }
 
   // 각 섹션별 리셋 핸들러
   const handleSeasonStyleReset = () => {
@@ -582,13 +654,13 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   }
 
   const handleStyleColorReset = () =>
-    setValue('colorValues', createEmptyArray(5, 7))
+    setValue('colorValues', createEmptyArray(7, 7))
 
   const handleFabricReset = () =>
     setValue('fabricValues', createEmptyArray(6, 6))
 
   const handleAccessoryReset = () =>
-    setValue('materialValues', createEmptyArray(5, 5))
+    setValue('materialValues', createEmptyArray(6, 5))
 
   const handleSwatchReset = () => {
     setValue('swatchSet', [])
