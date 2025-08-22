@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { EmptyView, LoadingView } from '@toktokhan-dev/react-universal'
 
 import dayjs from 'dayjs'
-import { CheckIcon, DownloadIcon } from 'lucide-react'
+import { CheckIcon, DownloadIcon, Loader2Icon } from 'lucide-react'
 
 import { InfinityContent } from '@/components/infinite-content'
 import { Button } from '@/components/ui/button'
@@ -272,6 +272,11 @@ export const SchematicHistoryDrawer = () => {
                   hasMore={hasNextPage}
                   isFetching={isFetchingNextPage}
                   onFetchMore={fetchNextPage}
+                  spinner={
+                    <div className="flex justify-center items-center w-full">
+                      <Loader2Icon className="animate-spin" />
+                    </div>
+                  }
                 >
                   {groupedSchematicData.map((group) => (
                     <div key={group.date} className="flex flex-col gap-[12px]">

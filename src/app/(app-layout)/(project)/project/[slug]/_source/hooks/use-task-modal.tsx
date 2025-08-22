@@ -59,7 +59,7 @@ interface TaskCreateModalProps {
 }
 
 const target_description = {
-  me: `'나에게 할당'한 태스크에는 알림톡이 발송되지 않으며, 할당 대상은 한 번 설정하면 변경할 수 없습니다.`,
+  me: `나에게 할당'한 태스크에는 알림톡이 발송되지 않으며, 할당 대상은 한 번 설정하면 변경할 수 없습니다.`,
   manager:
     '담당자 할당 시 이름, 휴대폰 번호, 수신 동의가 필수이며, 알림톡은 동의한 경우에만 발송됩니다. 담당자 정보와 할당 대상은 이후 변경이 어렵습니다.',
 }
@@ -205,21 +205,16 @@ const TaskCreateModal = ({
 
           {target === 'me' ?
             <Form {...formToMe}>
-              <form id="task-form-to-me">
-                <TaskFormToMe />
-              </form>
+              <TaskFormToMe />
             </Form>
           : <Form {...formToManager}>
-              <form id="task-form-to-manager">
-                <TaskFormToManager />
-              </form>
+              <TaskFormToManager />
             </Form>
           }
         </div>
 
         <AlertDialogFooter className="p-[12px_16px_16px_16px] border-t border-border-basic-1">
           <Button
-            form={target === 'me' ? 'task-form-to-me' : 'task-form-to-manager'}
             disabled={target === 'me' ? !isValidToMe : !isValidToManager}
             type="button"
             onClick={() => {

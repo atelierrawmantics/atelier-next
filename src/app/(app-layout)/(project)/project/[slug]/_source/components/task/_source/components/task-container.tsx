@@ -162,7 +162,7 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
   }, [data])
 
   return (
-    <div className="w-full container mx-auto pt-[16px] sm:pt-[20px] md:pt-[36px] flex flex-col h-screen">
+    <div className="w-full container mx-auto pt-[16px] sm:pt-[20px] md:pt-[36px] flex flex-col min-h-full">
       <div className="hidden md:block h-full">
         <DndContext
           sensors={sensors}

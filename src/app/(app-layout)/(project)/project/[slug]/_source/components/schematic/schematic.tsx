@@ -236,9 +236,10 @@ export const Schematic = () => {
       <div
         className={cn(
           'container',
-          'text-center w-full h-full',
+          'text-center w-full min-h-full',
           'flex-1 flex-col items-center justify-center',
           'hidden sm:flex',
+          'pt-[8.5%]',
         )}
       >
         {/* 1. 로딩 UI: mutate 요청 중이고 폴링이 pending 상태일 때 */}

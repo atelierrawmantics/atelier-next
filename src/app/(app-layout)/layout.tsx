@@ -9,5 +9,5 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const refreshToken = cookies().get(COOKIE_KEYS.AUTH.REFRESH_TOKEN)?.value
   const isLoggedIn = !!accessToken && !!refreshToken
 
-  return isLoggedIn ? <AppContent>{children}</AppContent> : <>{children}</>
+  return <AppContent isLoggedIn={isLoggedIn}>{children}</AppContent>
 }

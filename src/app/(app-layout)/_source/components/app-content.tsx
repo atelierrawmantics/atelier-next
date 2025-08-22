@@ -7,17 +7,24 @@ import { cn } from '@/lib/utils'
 
 import { AppLayoutHeader } from './app-layout-header/app-layout-header'
 
-const AppContentInner = ({ children }: { children: React.ReactNode }) => {
+interface AppContentInnerProps {
+  isLoggedIn: boolean
+  children: React.ReactNode
+}
+
+const AppContentInner = ({ isLoggedIn, children }: AppContentInnerProps) => {
   return (
     <div className="h-[100dvh] overflow-hidden flex flex-col">
       {/* 헤더 - 최상단 고정 */}
-      <div className="bg-white border-b border-border-basic-1">
-        <AppLayoutHeader />
-      </div>
+      {isLoggedIn && (
+        <div className="bg-white border-b border-border-basic-1">
+          <AppLayoutHeader />
+        </div>
+      )}
 
       <div className="flex w-full flex-1 overflow-hidden">
         {/* 사이드바 - 헤더 아래 고정 */}
-        <AppSidebar />
+        {isLoggedIn && <AppSidebar />}
 
         {/* 콘텐츠 영역 - 헤더와 사이드바를 제외한 영역 */}
         <div className={cn('flex flex-col', 'flex-1 h-full')}>
@@ -32,10 +39,16 @@ const AppContentInner = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export const AppContent = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <SidebarProvider defaultOpen={false}>
-      <AppContentInner>{children}</AppContentInner>
-    </SidebarProvider>
-  )
+export const AppContent = ({
+  children,
+  isLoggedIn,
+}: {
+  children: React.ReactNode
+  isLoggedIn: boolean
+}) => {
+  return isLoggedIn ?
+      <SidebarProvider defaultOpen={false}>
+        <AppContentInner isLoggedIn={isLoggedIn}>{children}</AppContentInner>
+      </SidebarProvider>
+    : <AppContentInner isLoggedIn={isLoggedIn}>{children}</AppContentInner>
 }

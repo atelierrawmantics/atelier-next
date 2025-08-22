@@ -31,7 +31,7 @@ const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = '240px'
 const SIDEBAR_WIDTH_MOBILE = '60px'
-const SIDEBAR_WIDTH_ICON = '24px'
+const SIDEBAR_WIDTH_ICON = '60px'
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
 
 type SidebarContextProps = {
