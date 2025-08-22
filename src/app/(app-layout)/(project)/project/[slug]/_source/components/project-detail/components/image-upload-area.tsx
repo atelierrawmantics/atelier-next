@@ -11,6 +11,7 @@ interface ImageUploadAreaProps {
   title?: string
   description?: string
   subDescription?: string
+  isReadOnly?: boolean
 }
 
 export const ImageUploadArea = ({
@@ -20,6 +21,7 @@ export const ImageUploadArea = ({
   title = '도식화는 AI로 생성하거나 직접 이미지를 첨부할 수 있습니다. (최대 1개까지 등록 가능)',
   description = 'AI 도식화를 생성하려면 상단의 [AI 도식화 도우미] 탭을 이용해 주세요.',
   subDescription = '지원 형식: jpg, png',
+  isReadOnly = false,
 }: ImageUploadAreaProps) => {
   return (
     <div className="w-full">
@@ -49,9 +51,11 @@ export const ImageUploadArea = ({
           </div>
           <div className="flex flex-col items-center justify-center">
             <p className="typo-pre-body-5 text-grey-9">{title}</p>
-            <p className="typo-body-6 text-grey-8">{description}</p>
+            <p className="typo-body-6 text-grey-8">
+              {isReadOnly ? '' : description}
+            </p>
             <p className="typo-pre-caption-2 text-grey-7 mt-[8px]">
-              {subDescription}
+              {isReadOnly ? '' : subDescription}
             </p>
           </div>
         </div>

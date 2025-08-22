@@ -402,7 +402,19 @@ export const useTaskDetailModal = () => {
 }
 
 const TaskFormToMe = ({ isEditing }: { isEditing: boolean }) => {
+  const { slug } = useParams<{ slug: string }>()
   const { control, setValue } = useFormContext()
+
+  const { data: projectData } = useProjectRetrieveQuery({
+    variables: {
+      slug: slug,
+    },
+    options: {
+      enabled: !!slug,
+    },
+  })
+  const { isOwned, isShared } = projectData || {}
+  const isReadOnly = !isOwned && isShared
 
   return (
     <div className="flex flex-col gap-[24px]">
@@ -420,7 +432,7 @@ const TaskFormToMe = ({ isEditing }: { isEditing: boolean }) => {
                 </FormLabel>
                 <FormControl>
                   <Component
-                    placeholder={field.placeholder}
+                    placeholder={isReadOnly ? '' : field.placeholder}
                     maxLength={field.maxLength}
                     size={'size' in field ? field.size : undefined}
                     variant={'variant' in field ? field.variant : undefined}

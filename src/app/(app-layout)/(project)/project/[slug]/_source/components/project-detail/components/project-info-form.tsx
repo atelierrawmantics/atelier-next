@@ -28,10 +28,7 @@ import {
   useProjectInstructionPartialUpdateMutation,
   useProjectInstructionRetrieveQuery,
 } from '@/generated/apis/Instruction/Instruction.query'
-import {
-  QUERY_KEY_PROJECT_API,
-  useProjectRetrieveQuery,
-} from '@/generated/apis/Project/Project.query'
+import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import { SwatchesIcon, XIcon } from '@/generated/icons/MyIcons'
 import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
@@ -727,6 +724,16 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               isLoading={isUpdateInstructionPending}
             >
               <ImageUploadArea
+                title={
+                  isReadOnly ? '등록된 도식화 이미지가 없어요.' : (
+                    '도식화는 AI로 생성하거나 직접 이미지를 첨부할 수 있습니다. (최대 1개까지 등록 가능)'
+                  )
+                }
+                description={
+                  'AI 도식화를 생성하려면 상단의 [AI 도식화 도우미] 탭을 이용해 주세요.'
+                }
+                subDescription={isReadOnly ? '' : '지원 형식: jpg, png'}
+                isReadOnly={isReadOnly}
                 imageUrl={schematic ? schematic.image : null}
                 onDelete={
                   isReadOnly ? undefined : (
@@ -948,9 +955,14 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
                 fallback={
                   <ImageUploadArea
                     icon={<SwatchesIcon className="size-[28px]" />}
-                    title="스와치 이미지를 첨부해 주세요. (최대 6개까지 등록 가능)"
+                    title={
+                      isReadOnly ? '등록된 스와치 이미지가 없어요.' : (
+                        '스와치 이미지를 첨부해 주세요. (최대 6개까지 등록 가능)'
+                      )
+                    }
                     description=""
-                    subDescription="지원 형식: jpg, png"
+                    subDescription={'지원 형식: jpg, png'}
+                    isReadOnly={isReadOnly}
                   />
                 }
               >
