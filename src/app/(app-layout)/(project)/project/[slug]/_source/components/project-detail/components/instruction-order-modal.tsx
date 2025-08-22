@@ -584,40 +584,14 @@ const InstructionTemplateShell = React.forwardRef<
               <div className="relative aspect-[3/2] max-w-full w-full h-full">
                 {instruction?.schematic?.image &&
                   instruction?.schematic?.id && (
-                    <>
-                      {imageLoadingStates[
-                        `schematic-${instruction.schematic.id}`
-                      ] !== false && (
-                        <Skeleton className="absolute inset-0 w-[calc(100%-40px)] h-[calc(100%-40px)] top-[20px] left-[20px]" />
-                      )}
-                      <Image
-                        src={instruction.schematic.image}
-                        alt="schematic"
-                        fill
-                        style={{ objectPosition: 'center' }}
-                        sizes="20vw"
-                        priority
-                        onLoad={() =>
-                          handleImageLoad(
-                            `schematic-${instruction.schematic?.id}`,
-                          )
-                        }
-                        onError={() =>
-                          handleImageError(
-                            `schematic-${instruction.schematic?.id}`,
-                          )
-                        }
-                        className={
-                          (
-                            imageLoadingStates[
-                              `schematic-${instruction.schematic?.id}`
-                            ] !== false
-                          ) ?
-                            'opacity-0'
-                          : 'opacity-100'
-                        }
-                      />
-                    </>
+                    <Image
+                      src={instruction.schematic.image}
+                      alt="schematic"
+                      fill
+                      style={{ objectPosition: 'center' }}
+                      sizes="20vw"
+                      priority
+                    />
                   )}
               </div>
             </div>
@@ -842,22 +816,13 @@ const InstructionTemplateShell = React.forwardRef<
                       width: `calc(100% / ${instruction?.swatchSet?.length} - 4px)`,
                     }}
                   >
-                    {imageLoadingStates[`swatch-${swatch.id}`] !== false && (
-                      <Skeleton className="absolute inset-0 w-full h-full" />
-                    )}
                     <Image
                       src={swatch.image}
                       alt={`swatch ${swatch.id}`}
                       fill
                       sizes="20vw"
                       priority
-                      onLoad={() => handleImageLoad(`swatch-${swatch.id}`)}
-                      onError={() => handleImageError(`swatch-${swatch.id}`)}
-                      className={
-                        imageLoadingStates[`swatch-${swatch.id}`] !== false ?
-                          'opacity-0'
-                        : 'opacity-100'
-                      }
+                      className="opacity-100"
                     />
                   </div>
                 ))}
