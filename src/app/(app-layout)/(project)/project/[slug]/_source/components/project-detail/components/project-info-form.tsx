@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 
+import { useQueryClient } from '@tanstack/react-query'
 import {
   EmptyView,
   LoadingView,
@@ -23,10 +24,14 @@ import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
+  QUERY_KEY_INSTRUCTION_API,
   useProjectInstructionPartialUpdateMutation,
   useProjectInstructionRetrieveQuery,
 } from '@/generated/apis/Instruction/Instruction.query'
-import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
+import {
+  QUERY_KEY_PROJECT_API,
+  useProjectRetrieveQuery,
+} from '@/generated/apis/Project/Project.query'
 import { SwatchesIcon, XIcon } from '@/generated/icons/MyIcons'
 import { toast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils'
@@ -144,6 +149,11 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   // 삭제된 스와치 ID들을 추적
   const [deletedSwatchIds, setDeletedSwatchIds] = useState<number[]>([])
 
+  // 초기 데이터를 저장할 상태 추가
+  const [initialData, setInitialData] = useState<any>(null)
+
+  const queryClient = useQueryClient()
+
   const { slug } = useParams<{ slug: string }>()
   const { data: projectData, isLoading: isProjectLoading } =
     useProjectRetrieveQuery({
@@ -196,44 +206,122 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   })
   const swatchSet = useWatch({ control: form.control, name: 'swatchSet' })
 
-  // 각 섹션별 isDirty 상태 계산
+  // 각 섹션별 isDirty 상태 계산 - 초기 데이터와 비교
   const isSeasonStyleDirty = useMemo(() => {
-    return [year, season, style, variant, item, generation].some(
-      (value) => value && value.trim() !== '',
-    )
-  }, [year, season, style, variant, item, generation])
+    if (!initialData) return false
 
-  const isSchematicDirty = Boolean(schematic)
+    const initial = {
+      year: initialData.year || '',
+      season: initialData.season || '',
+      style: initialData.style || '',
+      variant: initialData.variant || '',
+      item: initialData.item || '',
+      generation: initialData.generation || '',
+    }
+
+    const current = {
+      year: year || '',
+      season: season || '',
+      style: style || '',
+      variant: variant || '',
+      item: item || '',
+      generation: generation || '',
+    }
+
+    return JSON.stringify(initial) !== JSON.stringify(current)
+  }, [year, season, style, variant, item, generation, initialData])
+
+  const isSchematicDirty = useMemo(() => {
+    if (!initialData) return false
+
+    const initialSchematic = initialData.schematic
+    const currentSchematic = schematic
+
+    // 둘 다 null이거나 undefined면 변경 없음
+    if (!initialSchematic && !currentSchematic) return false
+
+    // 하나만 null이면 변경 있음
+    if (!initialSchematic || !currentSchematic) return true
+
+    // 둘 다 객체이고 image 속성이 있으면 비교
+    if (initialSchematic.image && currentSchematic.image) {
+      return initialSchematic.image !== currentSchematic.image
+    }
+
+    return false
+  }, [schematic, initialData])
 
   const isSizeSpecDirty = useMemo(() => {
-    const hasSizeValues = sizeValues?.some((row: string[]) =>
-      row.slice(1, 6).some((cell: string) => cell && cell.trim() !== ''),
+    if (!initialData) return false
+
+    const initialSizeNames = initialData.sizeNames || []
+    const initialSizeValues = initialData.sizeValues || []
+
+    const currentSizeNames = sizeNames || []
+    const currentSizeValues = sizeValues || []
+
+    return (
+      JSON.stringify(initialSizeNames) !== JSON.stringify(currentSizeNames) ||
+      JSON.stringify(initialSizeValues) !== JSON.stringify(currentSizeValues)
     )
-    const hasSizeNames = sizeNames?.some(
-      (name: string) => name && name.trim() !== '',
-    )
-    return hasSizeValues || hasSizeNames
-  }, [sizeValues, sizeNames])
+  }, [sizeValues, sizeNames, initialData])
 
   const isStyleColorDirty = useMemo(() => {
-    return colorValues?.some((row: string[]) =>
-      row.some((cell: string) => cell && cell.trim() !== ''),
+    if (!initialData) return false
+
+    const initialColorValues = initialData.colorValues || []
+    const currentColorValues = colorValues || []
+
+    return (
+      JSON.stringify(initialColorValues) !== JSON.stringify(currentColorValues)
     )
-  }, [colorValues])
+  }, [colorValues, initialData])
 
   const isFabricDirty = useMemo(() => {
-    return fabricValues?.some((row: string[]) =>
-      row.some((cell: string) => cell && cell.trim() !== ''),
+    if (!initialData) return false
+
+    const initialFabricValues = initialData.fabricValues || []
+    const currentFabricValues = fabricValues || []
+
+    return (
+      JSON.stringify(initialFabricValues) !==
+      JSON.stringify(currentFabricValues)
     )
-  }, [fabricValues])
+  }, [fabricValues, initialData])
 
   const isAccessoryDirty = useMemo(() => {
-    return materialValues?.some((row: string[]) =>
-      row.some((cell: string) => cell && cell.trim() !== ''),
-    )
-  }, [materialValues])
+    if (!initialData) return false
 
-  const isSwatchDirty = (swatchSet || []).length > 0
+    const initialMaterialValues = initialData.materialValues || []
+    const currentMaterialValues = materialValues || []
+
+    return (
+      JSON.stringify(initialMaterialValues) !==
+      JSON.stringify(currentMaterialValues)
+    )
+  }, [materialValues, initialData])
+
+  const isSwatchDirty = useMemo(() => {
+    if (!initialData) return false
+
+    const initialSwatchSet = initialData.swatchSet || []
+    const currentSwatchSet = swatchSet || []
+
+    // 삭제된 항목이 있으면 변경된 것으로 간주
+    if (deletedSwatchIds.length > 0) return true
+
+    // 새로 추가된 파일이 있으면 변경된 것으로 간주
+    if (swatchFiles.length > 0) return true
+
+    // 기존 항목들의 개수가 다르면 변경된 것으로 간주
+    if (initialSwatchSet.length !== currentSwatchSet.length) return true
+
+    // 각 항목의 이미지 URL을 비교
+    const initialImages = initialSwatchSet.map((item: any) => item.image).sort()
+    const currentImages = currentSwatchSet.map((item: any) => item.image).sort()
+
+    return JSON.stringify(initialImages) !== JSON.stringify(currentImages)
+  }, [swatchSet, initialData, deletedSwatchIds, swatchFiles])
 
   // 이미지 업로드 핸들러들
   const handleSchematicUpload = async (
@@ -407,44 +495,17 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
     return async () => {
       const sectionData = await dataExtractor()
 
-      const hasActualData = (data: unknown): boolean => {
-        if (typeof data === 'string') {
-          return data.trim() !== ''
-        }
-        if (Array.isArray(data)) {
-          return data.some((item) => hasActualData(item))
-        }
-        if (data instanceof File) {
-          return true
-        }
-        if (data === null) {
-          return true // null도 유효한 데이터로 처리 (삭제 의도)
-        }
-        if (typeof data === 'object' && data !== null) {
-          return Object.values(data).some((value) => hasActualData(value))
-        }
-        return false
-      }
-
-      const hasUserInput = Object.values(sectionData).some((value) =>
-        hasActualData(value),
-      )
-
-      if (!hasUserInput) {
-        console.log('저장할 데이터가 없습니다.')
-        return
-      }
-
-      console.log('업데이트 요청 전송:', {
-        projectSlug: slug,
-        id: 'me',
-        data: sectionData,
-      })
       try {
         await updateInstruction({
           projectSlug: slug,
           id: 'me',
           data: sectionData,
+        })
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEY_INSTRUCTION_API.PROJECT_INSTRUCTION_RETRIEVE({
+            projectSlug: slug,
+            id: 'me',
+          }),
         })
         toast(sectionName + '이(가) 저장되었어요.', {
           action: {
@@ -538,6 +599,8 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   useEffect(() => {
     if (instructionData) {
       reset(instructionData)
+      // 초기 데이터 저장
+      setInitialData(instructionData)
     }
   }, [instructionData, reset])
 

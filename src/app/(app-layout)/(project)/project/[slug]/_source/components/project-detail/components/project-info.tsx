@@ -162,7 +162,7 @@ const ProjectInfoHeader = ({
         <p className="typo-pre-body-3 text-grey-9">프로젝트 정보</p>
       </div>
       {!isReadOnly && (
-        <div className="flex gap-[12px]">
+        <div className="flex gap-[12px]" onClick={(e) => e.stopPropagation()}>
           <Button variant="ghost" size="fit" onClick={onOpenUpdateModal}>
             <PencilSimpleIcon className="size-[20px]" />
           </Button>

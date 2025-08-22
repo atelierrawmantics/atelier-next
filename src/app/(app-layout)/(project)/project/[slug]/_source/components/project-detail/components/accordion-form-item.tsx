@@ -5,11 +5,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
 import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import { cn } from '@/lib/utils'
-
-const BUTTON_STYLES =
-  'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 cursor-pointer'
 
 // 재사용 가능한 아코디언 아이템 컴포넌트
 interface AccordionFormItemProps {
@@ -55,6 +53,7 @@ export const AccordionFormItem = ({
 
   const { isShared, isOwned } = projectData || {}
   const isReadOnly = isShared && !isOwned
+
   const handleReset = (e: React.MouseEvent) => {
     e.stopPropagation()
     onReset()
@@ -93,20 +92,14 @@ export const AccordionFormItem = ({
               onClick={(e) => e.stopPropagation()}
             >
               {hasImageUpload && (
-                <div
-                  className={cn(
-                    BUTTON_STYLES,
-                    isImageUploadDisabled && 'opacity-50 cursor-not-allowed',
-                  )}
+                <Button
+                  variant="outline-grey"
+                  size="sm"
+                  className="w-fit"
+                  disabled={isImageUploadDisabled}
+                  onClick={handleImageUpload}
                 >
-                  <label
-                    htmlFor={imageUploadId}
-                    onClick={handleImageUpload}
-                    className={cn(
-                      'cursor-pointer',
-                      isImageUploadDisabled && 'cursor-not-allowed',
-                    )}
-                  >
+                  <label htmlFor={imageUploadId} onClick={handleImageUpload}>
                     이미지 첨부
                     <input
                       id={imageUploadId}
@@ -114,23 +107,28 @@ export const AccordionFormItem = ({
                       accept="image/*"
                       className="hidden"
                       onChange={onImageUpload}
-                      readOnly={isImageUploadDisabled}
+                      disabled={isImageUploadDisabled}
                     />
                   </label>
-                </div>
+                </Button>
               )}
-              <div
-                className={cn(
-                  BUTTON_STYLES,
-                  !isDirty && 'opacity-50 cursor-not-allowed',
-                )}
-                onClick={isDirty ? handleReset : undefined}
+              <Button
+                variant="outline-grey"
+                size="sm"
+                className="w-fit"
+                onClick={handleReset}
               >
                 초기화
-              </div>
-              <div className={BUTTON_STYLES} onClick={handleSave}>
+              </Button>
+              <Button
+                variant="outline-grey"
+                size="sm"
+                className="w-fit"
+                disabled={!isDirty}
+                onClick={handleSave}
+              >
                 저장
-              </div>
+              </Button>
             </div>
           )}
         </div>
