@@ -69,7 +69,7 @@ const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<PromptFormData>({
     defaultValues: {
       prompt: '',
@@ -83,10 +83,16 @@ const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSubmit(onSubmitForm)()
+      e.stopPropagation()
+      // form submit을 직접 트리거하지 않고 현재 값을 직접 처리
+      const currentValue = e.currentTarget.value
+      if (currentValue) {
+        onSubmit(currentValue.trim())
+        reset()
+      }
     }
   }
 
@@ -104,7 +110,7 @@ const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
         >
           <Textarea
             {...register('prompt')}
-            onKeyDown={handleKeyPress}
+            onKeyPress={handleKeyPress}
             placeholder="생성할 도식화를 입력해 주세요."
             className={cn(
               'flex-1 h-full resize-none',
@@ -130,9 +136,6 @@ const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
             </Button>
           </div>
         </div>
-        {errors.prompt && (
-          <p className="mt-2 text-sm text-red-500">{errors.prompt.message}</p>
-        )}
       </form>
     </div>
   )
@@ -188,7 +191,7 @@ export const Schematic = () => {
     } else if (schematic?.status === 'PENDING' && !isPolling) {
       startPolling()
     }
-  }, [schematic?.status, isPolling])
+  }, [schematic?.status])
 
   // 컴포넌트 언마운트 시 폴링 정리
   useEffect(() => {
@@ -198,6 +201,7 @@ export const Schematic = () => {
   }, [])
 
   const handlePromptSubmit = (prompt: string) => {
+    if (isPolling || isPending) return
     createSchematic(
       {
         projectSlug: slug,
@@ -206,11 +210,6 @@ export const Schematic = () => {
         },
       },
       {
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: QUERY_KEY_SCHEMATIC_API.PROJECT_SCHEMATIC_LIST_INFINITE(),
-          })
-        },
         onError: () => {
           toast(
             '유효한 도식화 생성 요청을 해주세요.',
@@ -245,7 +244,7 @@ export const Schematic = () => {
       >
         {/* 1. 로딩 UI: mutate 요청 중이고 폴링이 pending 상태일 때 */}
         {!showDefaultUI && (
-          <div className="relative aspect-[3/2] w-full h-[400px] flex items-center justify-center">
+          <div className="relative aspect-[3/2] h-[400px] flex items-center justify-center">
             {hasSuccessImage && (
               <>
                 <Image
@@ -295,7 +294,7 @@ export const Schematic = () => {
           </div>
         )}
 
-        <PromptInput onSubmit={handlePromptSubmit} isPending={isLoading} />
+        <PromptInput onSubmit={handlePromptSubmit} isPending={isPending} />
       </div>
       <SchematicMo className="flex sm:hidden" />
     </>
