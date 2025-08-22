@@ -44,7 +44,8 @@ const GettingStart = () => {
     <section
       ref={containerRef}
       className={cn(
-        'w-full',
+        'w-full max-w-[1280px]',
+        'mx-[auto]',
         'px-[20px] sm:px-[40px] pb-[40px]',
         'overflow-hidden',
       )}

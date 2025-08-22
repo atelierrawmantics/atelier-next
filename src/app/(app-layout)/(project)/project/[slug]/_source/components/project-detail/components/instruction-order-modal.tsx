@@ -44,7 +44,7 @@ export const InstructionOrderModal = ({
             작업지시서 미리보기
           </AlertDialogTitle>
 
-          <Button variant="ghost" size="fit" onClick={onClose} asChild>
+          <Button variant="ghost" size="fit" onClick={onClose}>
             <XIcon className="size-[40px]" />
           </Button>
         </AlertDialogHeader>

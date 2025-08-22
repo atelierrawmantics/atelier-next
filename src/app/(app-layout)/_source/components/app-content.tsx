@@ -1,5 +1,7 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
+
 import { AppSidebar } from '@/components/app-sidebar'
 import { BgDot } from '@/components/bg-dot'
 import { SidebarProvider } from '@/components/ui/sidebar'
@@ -46,9 +48,15 @@ export const AppContent = ({
   children: React.ReactNode
   isLoggedIn: boolean
 }) => {
-  return isLoggedIn ?
+  const pathname = usePathname()
+  const isRootPath = pathname === '/'
+
+  return (
+    isLoggedIn ?
       <SidebarProvider defaultOpen={false}>
         <AppContentInner isLoggedIn={isLoggedIn}>{children}</AppContentInner>
       </SidebarProvider>
+    : isRootPath ? <>{children}</>
     : <AppContentInner isLoggedIn={isLoggedIn}>{children}</AppContentInner>
+  )
 }

@@ -57,7 +57,6 @@ const HeroCursorBox = () => {
               'text-[12px] sm:text-[18px] md:text-[16px]',
             )}
             style={{
-              fontFamily: 'DM Sans',
               fontWeight: '600',
               lineHeight: '140%',
               letterSpacing: '-0.12px',
@@ -105,7 +104,6 @@ const WorkOrderCursorBox = () => {
           <p
             className={cn('text-grey-10', 'text-[12px] sm:text-[14px]')}
             style={{
-              fontFamily: 'DM Sans',
               fontWeight: '600',
               lineHeight: '140%',
               letterSpacing: '-0.12px',
@@ -158,7 +156,6 @@ const ProjectProgressCursorBox = () => {
           <p
             className={cn('text-grey-10', 'text-[12px] sm:text-[14px]')}
             style={{
-              fontFamily: 'DM Sans',
               fontWeight: '600',
               lineHeight: '140%',
               letterSpacing: '-0.12px',
@@ -211,7 +208,6 @@ const ArDiagramCursorBox = () => {
           <p
             className={cn('text-grey-10', 'text-[12px] sm:text-[14px]')}
             style={{
-              fontFamily: 'DM Sans',
               fontWeight: '600',
               lineHeight: '140%',
               letterSpacing: '-0.12px',

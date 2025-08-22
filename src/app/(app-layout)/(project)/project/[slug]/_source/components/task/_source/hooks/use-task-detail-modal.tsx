@@ -238,7 +238,7 @@ const TaskCreateModal = ({ isOpen, onClose, data }: TaskCreateModalProps) => {
             </AlertDialogTitle>
             <TaskStatusBadge status={data?.status} hasDot={false} />
           </div>
-          <Button variant="ghost" size="fit" onClick={onClose} asChild>
+          <Button variant="ghost" size="fit" onClick={onClose}>
             <XIcon className="size-[40px]" />
           </Button>
         </AlertDialogHeader>

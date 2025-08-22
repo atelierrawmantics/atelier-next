@@ -37,7 +37,10 @@ const FeatureWorkOrder = () => {
   }, [])
 
   return (
-    <section ref={containerRef} className={cn('w-full', 'overflow-hidden')}>
+    <section
+      ref={containerRef}
+      className={cn('w-full max-w-[1280px]', 'mx-[auto]', 'overflow-hidden')}
+    >
       <div ref={contentRef} className={cn(COMMON_FADE_STYLE)}>
         <FeatureLayout
           type={'work-order'}

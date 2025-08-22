@@ -156,7 +156,7 @@ const TaskCreateModal = ({
           <AlertDialogTitle className="typo-pre-heading-2 text-grey-10">
             {data?.projectName}
           </AlertDialogTitle>
-          <Button variant="ghost" size="fit" onClick={onClose} asChild>
+          <Button variant="ghost" size="fit" onClick={onClose}>
             <XIcon className="size-[40px]" />
           </Button>
         </AlertDialogHeader>

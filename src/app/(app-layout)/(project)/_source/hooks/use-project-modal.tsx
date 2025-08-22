@@ -197,7 +197,7 @@ export const ProjectCreateModal = ({
           <AlertDialogTitle className="typo-pre-heading-2 text-grey-10">
             {data?.headerTitle}
           </AlertDialogTitle>
-          <Button variant="ghost" size="fit" onClick={handleClose} asChild>
+          <Button variant="ghost" size="fit" onClick={handleClose}>
             <XIcon className="size-[40px]" />
           </Button>
         </AlertDialogHeader>
