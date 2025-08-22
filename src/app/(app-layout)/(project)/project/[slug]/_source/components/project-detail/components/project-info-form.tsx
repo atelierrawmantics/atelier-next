@@ -182,8 +182,10 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
   const { mutateAsync: uploadFiles } = useUploadFilesToS3Mutation({})
   const { mutateAsync: uploadFile } = useUploadFileToS3Mutation({})
 
-  const { mutateAsync: updateInstruction } =
-    useProjectInstructionPartialUpdateMutation({})
+  const {
+    mutateAsync: updateInstruction,
+    isPending: isUpdateInstructionPending,
+  } = useProjectInstructionPartialUpdateMutation({})
 
   // 로딩 상태 계산
   const isLoading = isProjectLoading || isInstructionLoading
@@ -694,6 +696,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               onSave={handleSeasonStyleSave}
               isDirty={isSeasonStyleDirty}
               isFirstItem={true}
+              isLoading={isUpdateInstructionPending}
             >
               <div className="flex flex-col gap-[8px]">
                 {SECTION_CONFIGS['season-style'].fields.map((field) => (
@@ -721,6 +724,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               isDirty={isSchematicDirty}
               maxImageCount={SECTION_CONFIGS.schematic.maxImageCount}
               currentImageCount={schematic ? 1 : 0}
+              isLoading={isUpdateInstructionPending}
             >
               <ImageUploadArea
                 imageUrl={schematic ? schematic.image : null}
@@ -742,6 +746,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               onReset={handleSizeSpecReset}
               onSave={handleSizeSpecSave}
               isDirty={isSizeSpecDirty}
+              isLoading={isUpdateInstructionPending}
             >
               {/* 헤더 */}
               <div className="grid grid-cols-7 gap-[4px] items-center space-y-[4px]">
@@ -810,6 +815,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               onReset={handleStyleColorReset}
               onSave={handleStyleColorSave}
               isDirty={isStyleColorDirty}
+              isLoading={isUpdateInstructionPending}
             >
               <TableHeader
                 headers={SECTION_CONFIGS['style-color'].tableConfig.headers}
@@ -855,6 +861,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               onReset={handleFabricReset}
               onSave={handleFabricSave}
               isDirty={isFabricDirty}
+              isLoading={isUpdateInstructionPending}
             >
               <TableHeader
                 headers={SECTION_CONFIGS['fabric-details'].tableConfig.headers}
@@ -890,6 +897,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               onReset={handleAccessoryReset}
               onSave={handleAccessorySave}
               isDirty={isAccessoryDirty}
+              isLoading={isUpdateInstructionPending}
             >
               <TableHeader
                 headers={SECTION_CONFIGS['accessory-info'].tableConfig.headers}
@@ -933,6 +941,7 @@ export const ProjectInfoForm = ({ className }: ProjectInfoFormProps) => {
               isDirty={isSwatchDirty}
               maxImageCount={SECTION_CONFIGS.swatch.maxImageCount}
               currentImageCount={(swatchSet || []).length}
+              isLoading={isUpdateInstructionPending}
             >
               <EmptyView
                 data={swatchSet}

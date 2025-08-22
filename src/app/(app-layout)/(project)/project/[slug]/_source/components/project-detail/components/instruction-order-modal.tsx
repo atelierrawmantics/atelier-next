@@ -359,39 +359,9 @@ const InstructionTemplateShell = React.forwardRef<
   HTMLDivElement,
   { instruction?: InstructionType }
 >(({ instruction }, ref) => {
-  const [imageLoadingStates, setImageLoadingStates] = useState<
-    Record<string, boolean>
-  >({})
   const RIGHT_W = '84mm'
   const SWATCH_W = '130mm'
   const SIZE_COLS = 5
-
-  const handleImageLoad = (imageId: string) => {
-    setImageLoadingStates((prev) => ({ ...prev, [imageId]: false }))
-  }
-
-  const handleImageError = (imageId: string) => {
-    setImageLoadingStates((prev) => ({ ...prev, [imageId]: false }))
-  }
-
-  // instruction이 변경될 때 이미지 로딩 상태 초기화
-  React.useEffect(() => {
-    if (instruction) {
-      const newLoadingStates: Record<string, boolean> = {}
-
-      // 스키마틱 이미지 로딩 상태 초기화
-      if (instruction.schematic?.id) {
-        newLoadingStates[`schematic-${instruction.schematic.id}`] = true
-      }
-
-      // 스와치 이미지들 로딩 상태 초기화
-      instruction.swatchSet?.forEach((swatch) => {
-        newLoadingStates[`swatch-${swatch.id}`] = true
-      })
-
-      setImageLoadingStates(newLoadingStates)
-    }
-  }, [instruction])
 
   return (
     <div className="flex w-full h-full justify-center" ref={ref}>
@@ -806,13 +776,15 @@ const InstructionTemplateShell = React.forwardRef<
               className="border-l border-b border-black box-border"
               style={{ height: 'var(--bottomBodyH)' }}
             >
-              <div className="flex flex-wrap gap-[4px] h-full items-center py-[4px] pl-[4px]">
+              <div className="flex gap-[4px] h-full items-center py-[4px] pl-[4px]">
                 {instruction?.swatchSet?.map((swatch) => (
                   <div
                     key={swatch.id}
-                    className="relative aspect-square"
+                    className="relative flex-shrink-0 aspect-square"
                     style={{
                       width: `calc(100% / ${instruction?.swatchSet?.length} - 4px)`,
+                      maxWidth: `calc(var(--bottomBodyH) - 12px)`,
+                      maxHeight: `calc(var(--bottomBodyH) - 12px)`,
                     }}
                   >
                     <Image
@@ -821,7 +793,7 @@ const InstructionTemplateShell = React.forwardRef<
                       fill
                       sizes="20vw"
                       priority
-                      className="opacity-100"
+                      className="opacity-100 object-cover"
                     />
                   </div>
                 ))}

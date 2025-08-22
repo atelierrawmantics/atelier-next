@@ -24,6 +24,7 @@ interface AccordionFormItemProps {
   isDirty?: boolean
   maxImageCount?: number
   currentImageCount?: number
+  isLoading?: boolean
 }
 
 export const AccordionFormItem = ({
@@ -40,6 +41,7 @@ export const AccordionFormItem = ({
   isDirty = false,
   maxImageCount,
   currentImageCount = 0,
+  isLoading = false,
 }: AccordionFormItemProps) => {
   const { slug } = useParams<{ slug: string }>()
   const { data: projectData } = useProjectRetrieveQuery({
@@ -123,9 +125,10 @@ export const AccordionFormItem = ({
               <Button
                 variant="outline-grey"
                 size="sm"
-                className="w-fit"
+                className="w-[41px]"
                 disabled={!isDirty}
                 onClick={handleSave}
+                loading={isLoading}
               >
                 저장
               </Button>
