@@ -126,7 +126,7 @@ export const ProjectCreateModal = ({
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting, isDirty },
+    formState: { isSubmitting, isDirty, isValid },
     reset,
   } = form
 
@@ -257,6 +257,7 @@ export const ProjectCreateModal = ({
             type="submit"
             form="project-form"
             loading={isLoading}
+            disabled={!isDirty || !isValid || isSubmitting}
             onClick={handleProjectFormSubmit}
           >
             {data?.footerText}
