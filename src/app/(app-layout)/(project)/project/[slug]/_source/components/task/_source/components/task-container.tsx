@@ -20,6 +20,7 @@ import {
   TaskStatusEnumTypeMap,
   TaskType,
 } from '@/generated/apis/@types/data-contracts'
+import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import {
   QUERY_KEY_TASK_API,
   useProjectTaskPartialUpdateMutation,
@@ -42,6 +43,13 @@ const COLUMN_LIST = ['pending', 'in_progress', 'completed', 'issue']
 export const TaskContainer = ({ data }: TaskContainerProps) => {
   const qc = useQueryClient()
   const { slug } = useParams<{ slug: string }>()
+
+  const { data: project } = useProjectRetrieveQuery({
+    variables: { slug },
+  })
+
+  const { isShared, isOwned } = project || {}
+  const isReadOnly = Boolean(isShared && !isOwned)
 
   const { mutate: updateTask } = useProjectTaskPartialUpdateMutation({
     options: {
@@ -89,7 +97,7 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
   )
 
   const handleDragStart = (event: DragStartEvent) => {
-    if (!tasks) return
+    if (!tasks || isReadOnly) return
 
     const { active } = event
 
@@ -104,7 +112,7 @@ export const TaskContainer = ({ data }: TaskContainerProps) => {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
-    if (!tasks || !over) return
+    if (!tasks || !over || isReadOnly) return
 
     const foundTask =
       isTaskData(active.data.current) ? active.data.current.task : null
