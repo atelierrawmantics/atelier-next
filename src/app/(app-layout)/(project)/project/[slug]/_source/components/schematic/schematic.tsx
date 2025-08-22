@@ -91,12 +91,12 @@ const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
   }
 
   return (
-    <div className="w-full mt-[16px]">
-      <form onSubmit={handleSubmit(onSubmitForm)}>
+    <div className="w-full max-w-[960px] mt-[16px]">
+      <form>
         <div
           className={cn(
             textareaVariants(),
-            'flex items-end gap-[20px]',
+            'flex items-start gap-[20px]',
             'h-[140px] p-[16px]',
             'border border-border-basic-2 rounded-[16px]',
             'bg-background-basic-1',
@@ -124,6 +124,7 @@ const PromptInput = ({ onSubmit, isPending }: PromptInputProps) => {
               variant="solid-primary"
               size="icon-lg"
               title="전송"
+              onClick={handleSubmit(onSubmitForm)}
             >
               <ArrowUpIcon className="size-[24px]" />
             </Button>
@@ -239,43 +240,41 @@ export const Schematic = () => {
           'text-center w-full min-h-full',
           'flex-1 flex-col items-center justify-center',
           'hidden sm:flex',
-          'pt-[8.5%]',
+          'pt-[4vh]',
         )}
       >
         {/* 1. 로딩 UI: mutate 요청 중이고 폴링이 pending 상태일 때 */}
-        {isLoading && (
-          <div className="flex flex-col items-center justify-end w-full h-full pb-[20px] pt-[80px]">
-            <div className="relative aspect-[3/2] max-w-full w-full sm:w-auto h-auto sm:h-full">
-              <div className="flex items-center justify-center w-full h-full bg-secondary-1">
+        {!showDefaultUI && (
+          <div className="relative aspect-[3/2] w-full h-[400px] flex items-center justify-center">
+            {hasSuccessImage && (
+              <>
+                <Image
+                  src={schematic.image}
+                  alt="생성된 도식화"
+                  fill
+                  objectFit="cover"
+                  unoptimized
+                />
+                <HistoryItemDropDownMenu
+                  id={schematic.id}
+                  image={schematic.image}
+                  isDelete={false}
+                />
+              </>
+            )}
+
+            {isLoading && (
+              <div className="flex items-center justify-center aspect-[3/2] h-full bg-secondary-1">
                 <Loader2Icon className="animate-spin" />
               </div>
-            </div>
+            )}
           </div>
-        )}
-
-        {/* 2. 이미지 UI: 상태가 success이고 이미지가 있을 때 */}
-        {hasSuccessImage && (
-          <div className="flex flex-col items-center justify-end w-full h-full pb-[20px] pt-[80px]">
-            <div className="relative aspect-[3/2] max-w-full w-full sm:w-auto h-auto sm:h-full">
-              <Image
-                src={schematic.image}
-                alt="생성된 도식화"
-                fill
-                objectFit="cover"
-                unoptimized
-              />
-              <HistoryItemDropDownMenu
-                id={schematic.id}
-                image={schematic.image}
-                isDelete={false}
-              />
-            </div>
-          </div>
+          // </div>
         )}
 
         {/* 3. 기본 UI: 최초에 어떤 요청도 발생하지 않았을 때 */}
         {showDefaultUI && (
-          <div className="flex flex-col justify-end items-center w-full h-full gap-[16px]">
+          <div className="flex flex-col justify-center items-center w-full h-[400px] gap-[16px]">
             <div className="flex items-center justify-center size-[56px] rounded-full bg-primary-3">
               <MagicWandFillIcon />
             </div>
