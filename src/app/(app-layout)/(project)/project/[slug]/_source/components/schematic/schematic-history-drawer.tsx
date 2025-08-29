@@ -102,7 +102,7 @@ export const HistoryItemDropDownMenu = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="z-1 absolute top-0 right-0">
+      <DropdownMenuTrigger className="z-1 absolute top-[16px] right-[16px]">
         <Button variant="ghost" size="fit" type="button">
           <DotsThreeIcon className="bg-white size-[32px]" />
         </Button>
