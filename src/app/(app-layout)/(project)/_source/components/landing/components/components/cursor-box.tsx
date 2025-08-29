@@ -93,7 +93,7 @@ const WorkOrderCursorBox = () => {
       <div className={cn('h-full', 'flex items-end')}>
         <div
           className={cn(
-            'w-[128px] sm:w-[145px] h-[29px] sm:h-[32px]',
+            'w-fit h-[29px] sm:h-[32px]',
             'px-[12px] py-[8px]',
             'rounded-[6px]',
             'bg-[linear-gradient(220deg,#F1DDE0_-3.82%,#F9E4A6_102.79%)]',
@@ -145,7 +145,7 @@ const ProjectProgressCursorBox = () => {
       <div className={cn('h-full', 'flex items-end')}>
         <div
           className={cn(
-            'w-[113px] sm:w-[129px] h-[29px] sm:h-[32px]',
+            'w-fit h-[29px] sm:h-[32px]',
             'px-[12px] py-[8px]',
             'rounded-[6px]',
             'bg-[linear-gradient(215deg,#D5E3FC_0.31%,#F6FAF6_104.05%)]',
@@ -197,7 +197,7 @@ const ArDiagramCursorBox = () => {
       <div className={cn('h-full', 'flex items-end sm:items-start')}>
         <div
           className={cn(
-            'w-[146px] sm:w-[167px] h-[29px] sm:h-[32px]',
+            'w-fit h-[29px] sm:h-[32px]',
             'px-[12px] py-[8px]',
             'rounded-[6px]',
             'bg-[linear-gradient(208deg,#DDEFE0_6.35%,#FFFAF9_103.74%)]',
