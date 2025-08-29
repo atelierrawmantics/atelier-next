@@ -83,7 +83,6 @@ const FeatureLayout = ({
                 'relative',
                 'w-full',
                 'aspect-[335/260]',
-                'pl-[30px] sm:pl-[80px] pt-[43px] sm:pt-[80px]',
                 'flex flex-col items-end justify-end',
                 'rounded-[24px] sm:rounded-[40px]',
                 'overflow-hidden',
