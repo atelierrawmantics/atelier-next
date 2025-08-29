@@ -101,7 +101,11 @@ export const AccordionFormItem = ({
                   disabled={isImageUploadDisabled}
                   onClick={handleImageUpload}
                 >
-                  <label htmlFor={imageUploadId} onClick={handleImageUpload}>
+                  <label
+                    htmlFor={imageUploadId}
+                    onClick={handleImageUpload}
+                    className="cursor-pointer"
+                  >
                     이미지 첨부
                     <input
                       id={imageUploadId}
