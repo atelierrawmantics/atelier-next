@@ -1,13 +1,22 @@
 'use client'
 
+import { useParams } from 'next/navigation'
+
 import { PlusIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { useProjectRetrieveQuery } from '@/generated/apis/Project/Project.query'
 import { ArticleIcon } from '@/generated/icons/MyIcons'
 
 import { useTaskModal } from '../../../../hooks/use-task-modal'
 
 export const EmptyTask = () => {
+  const { slug } = useParams<{ slug: string }>()
+  const { data: project } = useProjectRetrieveQuery({
+    variables: { slug },
+  })
+  const { isOwned } = project || {}
+
   const { openTaskCreateModal } = useTaskModal()
 
   return (
@@ -20,26 +29,30 @@ export const EmptyTask = () => {
           <p className="typo-pre-body-5 text-grey-9">
             생성된 태스크가 없습니다.
           </p>
-          <p className="typo-pre-body-6 text-grey-8">
-            업무 관리를 시작하려면 태스크를 생성해주세요.
-          </p>
+          {isOwned && (
+            <p className="typo-pre-body-6 text-grey-8">
+              업무 관리를 시작하려면 태스크를 생성해주세요.
+            </p>
+          )}
         </div>
-        <Button
-          variant="solid-primary"
-          size="sm"
-          className="w-[96px]"
-          onClick={() => {
-            openTaskCreateModal({
-              data: {
-                projectName: '태스크 생성',
-              },
-              onClose: () => {},
-            })
-          }}
-        >
-          <PlusIcon className="size-[16px]" />
-          태스크 생성
-        </Button>
+        {isOwned && (
+          <Button
+            variant="solid-primary"
+            size="sm"
+            className="w-[96px]"
+            onClick={() => {
+              openTaskCreateModal({
+                data: {
+                  projectName: '태스크 생성',
+                },
+                onClose: () => {},
+              })
+            }}
+          >
+            <PlusIcon className="size-[16px]" />
+            태스크 생성
+          </Button>
+        )}
       </div>
     </div>
   )
