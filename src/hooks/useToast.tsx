@@ -17,7 +17,7 @@ export const toast = (
   sonnerToast(message, {
     action: options?.action,
     position: options?.position || 'bottom-center',
-    duration: 20000000,
+    duration: options?.duration || 2000,
     icon: options?.icon || icon,
     style: options?.style || {
       width: '399px',
