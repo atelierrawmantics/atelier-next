@@ -44,10 +44,10 @@ const HeroCursorBox = () => {
       <div className={cn('h-full', 'flex items-start')}>
         <div
           className={cn(
-            'w-[98px] sm:w-[132px] md:w-[122px] h-[33px] sm:h-[41px] md:h-[38px]',
-            'px-[12px] py-[8px]',
             'rounded-[6px]',
             buttonVariants({ variant: 'solid-primary' }),
+            'w-[98px] sm:w-[132px] md:w-[122px] h-[33px] sm:h-[41px] md:h-[38px]',
+            'px-[12px] py-[8px]',
             'cursor-text hover:cursor-text hover:bg-primary-4',
           )}
         >
