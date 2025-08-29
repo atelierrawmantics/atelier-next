@@ -88,6 +88,7 @@ const FeatureLayout = ({
                 'rounded-[24px] sm:rounded-[40px]',
                 'overflow-hidden',
                 bgColor,
+                'shadow-[0_20px_80px_0_rgba(27,28,29,0.04),0_4px_10px_0_rgba(27,28,29,0.04)]',
               )}
             >
               <div
