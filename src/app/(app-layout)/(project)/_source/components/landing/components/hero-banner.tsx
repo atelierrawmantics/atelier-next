@@ -1,7 +1,174 @@
+import Image from 'next/image'
+
 import Badge from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 import CursorBox from './components/cursor-box'
+
+const BannerPC = () => {
+  return (
+    <div
+      className={cn(
+        'relative',
+        'hidden md:block',
+        'w-full max-w-[1280px]',
+        'aspect-[1280/625]',
+      )}
+    >
+      <CursorBox theme={'hero'} />
+      <div
+        className={cn(
+          'w-full h-full',
+          'flex gap-[16px] justify-center items-end',
+        )}
+      >
+        {/* left */}
+        <div
+          className={cn(
+            'relative',
+            'flex-7 h-full',
+            'aspect-[859/625]',
+            'rounded-t-[20px]',
+            'overflow-hidden',
+            'shadow-[0_20px_80px_0_rgba(27,28,29,0.04),0_4px_10px_0_rgba(27,28,29,0.04)]',
+          )}
+        >
+          <Image
+            fill
+            className={cn('object-cover')}
+            src={'/images/landing/section1_content_pc_1.png'}
+            alt={'hero banner'}
+          />
+        </div>
+
+        {/* right */}
+        <div
+          className={cn(
+            'flex-3 h-full',
+            'pb-[30px]',
+            'flex flex-col gap-[12px] items-end',
+          )}
+        >
+          {/* right-top */}
+          <div
+            className={cn(
+              'relative',
+              'w-full',
+              'aspect-[405/552]',
+              'rounded-[20px]',
+              'overflow-hidden',
+              'shadow-[0_20px_80px_0_rgba(27,28,29,0.04),0_4px_10px_0_rgba(27,28,29,0.04)]',
+            )}
+          >
+            <Image
+              fill
+              className={cn('object-cover')}
+              src={'/images/landing/section1_content_pc_2.png'}
+              alt={'hero banner'}
+            />
+          </div>
+
+          {/* right-bottom */}
+          <div
+            className={cn(
+              'relative',
+              'h-full max-h-[30px]',
+              'aspect-[106/30]',
+              'rounded-[6px]',
+              'overflow-hidden',
+              'shadow-[0_20px_80px_0_rgba(27,28,29,0.04),0_4px_10px_0_rgba(27,28,29,0.04)]',
+            )}
+          >
+            <Image
+              fill
+              className={cn('object-cover')}
+              src={'/images/landing/section1_content_pc_3.png'}
+              alt={'hero banner'}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const BannerTab = () => {
+  return (
+    <div
+      className={cn(
+        'relative',
+        'hidden sm:block md:hidden',
+        'w-full',
+        'aspect-[569/619]',
+      )}
+    >
+      <CursorBox theme={'hero'} />
+      <div
+        className={cn(
+          'w-full h-full',
+          'flex gap-[16px] justify-center items-end',
+        )}
+      >
+        <div
+          className={cn(
+            'relative',
+            'flex-1 h-full',
+            'aspect-[569/619]',
+            'rounded-tl-[20px]',
+            'overflow-hidden',
+            'shadow-[0_20px_80px_0_rgba(27,28,29,0.04),0_4px_10px_0_rgba(27,28,29,0.04)]',
+          )}
+        >
+          <Image
+            fill
+            className={cn('object-cover')}
+            src={'/images/landing/section1_content_tab.png'}
+            alt={'hero banner'}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const BannerMobile = () => {
+  return (
+    <div
+      className={cn(
+        'relative',
+        'block sm:hidden',
+        'w-full',
+        'aspect-[298/325]',
+      )}
+    >
+      <CursorBox theme={'hero'} />
+      <div
+        className={cn(
+          'w-full h-full',
+          'flex gap-[16px] justify-center items-end',
+        )}
+      >
+        <div
+          className={cn(
+            'relative',
+            'flex-1 h-full',
+            'aspect-[298/325]',
+            'rounded-tl-[20px]',
+            'overflow-hidden',
+            'shadow-[0_20px_80px_0_rgba(27,28,29,0.04),0_4px_10px_0_rgba(27,28,29,0.04)]',
+          )}
+        >
+          <Image
+            fill
+            className={cn('object-cover')}
+            src={'/images/landing/section1_content_mo.png'}
+            alt={'hero banner'}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const HeroBanner = () => {
   return (
@@ -10,13 +177,20 @@ const HeroBanner = () => {
     >
       <div
         className={cn(
-          'w-full h-[676px] sm:h-[968px] md:h-[1000px]',
+          'w-full h-fit',
           'bg-[linear-gradient(215deg,#D5E3FC_0.31%,#F6FAF6_104.05%)]',
           'rounded-[24px] sm:rounded-[56px]',
           'overflow-hidden',
         )}
       >
-        <div className="relative w-full h-full">
+        <div
+          className={cn(
+            'hero-content-wrapper',
+            'relative',
+            'w-full',
+            'flex flex-col justify-between align-center gap-[82px] sm:gap-[108px] md:gap-[60px]',
+          )}
+        >
           {/* text */}
           <div
             className={cn(
@@ -60,22 +234,14 @@ const HeroBanner = () => {
           {/* image */}
           <div
             className={cn(
-              'absolute',
-              'bottom-[-20%] sm:bottom-[-2%] md:bottom-0 left-[40px] sm:left-[120px] md:left-[50%] md:translate-x-[-50%]',
-              'h-[450px] sm:h-[618px] md:h-[40vw]',
-              'max-h-[625px]',
-              'aspect-[1280/625]',
-              // repeat
-              'bg-no-repeat',
-              // size
-              '[background-size:cover]',
-              'md:[background-size:contain]',
-              // position
-              '[background-position:bottom_center]',
-              "bg-[url('/images/landing/section1_content.png')]",
+              'w-full',
+              'pl-[11%] sm:pl-[17.2%] md:px-[14.5%]',
+              'flex flex-col justify-end',
             )}
           >
-            <CursorBox theme={'hero'} />
+            <BannerPC />
+            <BannerTab />
+            <BannerMobile />
           </div>
         </div>
       </div>

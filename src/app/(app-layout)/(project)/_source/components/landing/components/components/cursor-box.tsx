@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { CursorIcon } from '@/generated/icons/MyIcons'
 import { cn } from '@/lib/utils'
 
@@ -10,7 +10,7 @@ const GradientCursorIcon = ({ color }: { color: string }) => {
   return (
     <>
       <div
-        className={cn('absolute inset-0', `bg-[${color}]`)}
+        className={cn('absolute z-10 inset-0', `bg-[${color}]`)}
         style={{
           WebkitMaskImage: 'url(/icons/Cursor.svg)',
           WebkitMaskRepeat: 'no-repeat',
@@ -22,7 +22,7 @@ const GradientCursorIcon = ({ color }: { color: string }) => {
       />
       <CursorIcon
         className={cn(
-          'absolute inset-0',
+          'absolute z-10 inset-0',
           'w-[25px] sm:w-[32px] h-[30px] sm:h-[38px]',
           'text-transparent',
         )}
@@ -35,7 +35,7 @@ const HeroCursorBox = () => {
   return (
     <div
       className={cn(
-        'absolute left-[80px] sm:left-[-63px] md:left-[-53px] top-[-63px] sm:top-[-76px] md:top-[-83px]',
+        'absolute z-10 left-[50%] sm:left-[-63px] md:left-[-53px] top-[-63px] sm:top-[-76px] md:top-[-83px] translate-x-[-50%] sm:translate-x-0',
         'h-[88px]',
         'flex',
       )}
@@ -84,7 +84,7 @@ const WorkOrderCursorBox = () => {
   return (
     <div
       className={cn(
-        'absolute right-0 sm:right-[70px] md:left-[-100px] bottom-[-48px] sm:bottom-[70px] md:bottom-[50px]',
+        'absolute z-10 right-0 sm:right-[70px] md:left-[-100px] bottom-[-48px] sm:bottom-[70px] md:bottom-[50px]',
         'w-fit h-[80px] md:h-[88px]',
         'flex flex-row-reverse md:flex-row',
       )}
@@ -136,7 +136,7 @@ const ProjectProgressCursorBox = () => {
   return (
     <div
       className={cn(
-        'absolute right-0 sm:right-[70px] md:right-[34px] bottom-[-48px] sm:bottom-[70px] md:bottom-[30px]',
+        'absolute z-10 right-0 sm:right-[70px] md:right-[34px] bottom-[-48px] sm:bottom-[70px] md:bottom-[30px]',
         'w-fit h-[80px]',
         'flex flex-row-reverse',
       )}
@@ -188,7 +188,7 @@ const ArDiagramCursorBox = () => {
   return (
     <div
       className={cn(
-        'absolute left-0 sm:left-[40px] md:left-[-50px] bottom-[-48px] sm:bottom-[245px] md:bottom-[130px]',
+        'absolute z-10 left-0 sm:left-[40px] md:left-[-50px] bottom-[-48px] sm:bottom-[245px] md:bottom-[130px]',
         'w-fit h-[80px]',
         'flex',
       )}
