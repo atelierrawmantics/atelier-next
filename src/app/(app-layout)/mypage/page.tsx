@@ -7,8 +7,10 @@ export const metadata = {
 
 export default function MyPage() {
   return (
-    <div className="container w-screen h-[100dvh] flex justify-center items-center">
-      <ProfileForm />
+    <div className="w-full h-full overflow-auto">
+      <div className="container w-full h-fit flex flex-col items-center">
+        <ProfileForm />
+      </div>
     </div>
   )
 }

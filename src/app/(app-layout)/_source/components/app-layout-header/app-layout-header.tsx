@@ -14,7 +14,7 @@ export const AppLayoutHeader = () => {
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="fit" asChild>
           <Link href="/">
-            <LOGOIcon className="w-[100px] h-[24px] my-[4px]" />
+            <LOGOIcon className="w-[80px] h-[20px] md:w-[100px] md:h-[24px] my-[4px]" />
           </Link>
         </Button>
         <div className="md:hidden">

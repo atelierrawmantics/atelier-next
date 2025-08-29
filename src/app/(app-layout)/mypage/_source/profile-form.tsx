@@ -185,12 +185,12 @@ export const ProfileForm = () => {
 
   return (
     <Form {...form}>
-      <div className="flex flex-col max-w-[448px] w-full items-center gap-[16px]">
-        <div className="flex flex-col gap-[12px] w-full items-center bg-grey-0 p-[40px] rounded-[12px]">
-          <div className="size-[56px] rounded-full bg-secondary-3 flex items-center justify-center">
-            <UserIcon className="size-[32px]" />
-          </div>
-          <h1 className="typo-pre-body-3 text-grey-9">프로필 관리</h1>
+      <div className="flex flex-col max-w-[448px] w-full items-center gap-[16px] py-[80px] md:pb-[224px] md:pt-[187px] overflow-y-auto">
+        <div className="size-[56px] rounded-full bg-secondary-3 flex items-center justify-center">
+          <UserIcon className="size-[32px]" />
+        </div>
+        <h1 className="typo-pre-body-3 text-grey-9">프로필 관리</h1>
+        <div className="flex flex-col gap-[12px] w-full items-center bg-grey-0 p-[40px] rounded-[12px] mt-[4px]">
           <div className="flex flex-col gap-[24px] w-full items-center mt-[12px]">
             <FormField
               control={control}
