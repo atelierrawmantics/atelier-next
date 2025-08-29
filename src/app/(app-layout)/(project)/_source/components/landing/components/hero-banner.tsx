@@ -38,6 +38,8 @@ const BannerPC = () => {
             className={cn('object-cover')}
             src={'/images/landing/section1_content_pc_1.png'}
             alt={'hero banner'}
+            priority
+            loading="eager"
           />
         </div>
 
@@ -65,6 +67,8 @@ const BannerPC = () => {
               className={cn('object-cover')}
               src={'/images/landing/section1_content_pc_2.png'}
               alt={'hero banner'}
+              priority
+              loading="eager"
             />
           </div>
 
@@ -84,6 +88,8 @@ const BannerPC = () => {
               className={cn('object-cover')}
               src={'/images/landing/section1_content_pc_3.png'}
               alt={'hero banner'}
+              priority
+              loading="eager"
             />
           </div>
         </div>
@@ -124,6 +130,8 @@ const BannerTab = () => {
             className={cn('object-cover')}
             src={'/images/landing/section1_content_tab.png'}
             alt={'hero banner'}
+            priority
+            loading="eager"
           />
         </div>
       </div>
@@ -163,6 +171,8 @@ const BannerMobile = () => {
             className={cn('object-cover')}
             src={'/images/landing/section1_content_mo.png'}
             alt={'hero banner'}
+            priority
+            loading="eager"
           />
         </div>
       </div>
