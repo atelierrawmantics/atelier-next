@@ -36,7 +36,9 @@ function SidebarContentComponent() {
             >
               <Link href="/">
                 <FolderIcon className="size-[20px] text-transparent" />
-                <span>프로젝트 관리</span>
+                <span className="h-[22.4px] overflow-hidden">
+                  프로젝트 관리
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -50,7 +52,7 @@ function SidebarContentComponent() {
             >
               <Link href="/mypage">
                 <UserIcon className="size-[20px]" />
-                <span>마이페이지</span>
+                <span className="h-[22.4px] overflow-hidden">마이페이지</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

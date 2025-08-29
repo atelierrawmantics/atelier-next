@@ -185,7 +185,7 @@ export const ProfileForm = () => {
 
   return (
     <Form {...form}>
-      <div className="flex flex-col max-w-[448px] w-full items-center gap-[16px] py-[80px] md:pb-[224px] md:pt-[187px] overflow-y-auto">
+      <div className="flex flex-col max-w-[448px] w-full items-center gap-[16px] py-[80px] overflow-y-auto">
         <div className="size-[56px] rounded-full bg-secondary-3 flex items-center justify-center">
           <UserIcon className="size-[32px]" />
         </div>
