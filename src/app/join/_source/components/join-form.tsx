@@ -303,7 +303,7 @@ export const JoinForm = () => {
                     <FormControl>
                       <VerificationInput
                         required
-                        className="max-w-[295px] w-full"
+                        className="max-w-[295px] w-full mt-[12px]"
                         isTimerActive={isDisabledToSendVerification}
                         onTimerExpired={handleTimerExpired}
                         {...field}
