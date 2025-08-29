@@ -30,6 +30,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { TaskStatusEnumType } from '@/generated/apis/@types/data-contracts'
 import {
   QUERY_KEY_TASK_API,
@@ -102,7 +107,11 @@ const TaskCreateModal = ({
   const [target, setTarget] = useState<'me' | 'manager'>('me')
 
   const formToMe = useTaskFormToMe()
-  const formToManager = useTaskFormToManager()
+  const formToManager = useTaskFormToManager({
+    defaultValues: {
+      isAlarm: true,
+    },
+  })
 
   const {
     handleSubmit: handleSubmitToMe,
@@ -388,42 +397,43 @@ const TaskFormToManager = () => {
         name="isAlarm"
         render={({ field }) => (
           <FormItem>
-            <FormLabel aria-required={true}>제3자 알림톡 수신 동의</FormLabel>
+            <div className="flex gap-[4px] items-center">
+              <FormLabel aria-required={true}>제3자 알림톡 수신 동의</FormLabel>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoFillIcon className="min-w-[20px] size-[20px] text-grey-5" />
+                </TooltipTrigger>
+                <TooltipContent className="w-[268px] py-[4px] px-[8px]">
+                  <p className="typo-pre-body-6 text-grey-0 whitespace-pre-line">
+                    {
+                      '담당자에게 업무 관련 알림톡이 발송되며,\n수신에 동의하지 않을 경우 알림톡 전송이\n제한됩니다. 정확한 업무 전달을 위해 반드시\n담당자의 사전 동의를 받고 선택해주세요.'
+                    }
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+
             <FormControl>
-              <div className="flex gap-2 items-center  h-12">
-                <div className="flex gap-3">
-                  <input
-                    type="radio"
-                    name="isAlarm"
-                    value="true"
-                    id="agree"
-                    checked={field.value === true}
-                    onChange={(e) => {
-                      setValue('isAlarm', e.target.value === 'true', {
-                        shouldValidate: true,
-                      })
-                      field.onChange(e.target.value === 'true')
-                    }}
-                  />
-                  <label htmlFor="agree">동의</label>
+              <RadioGroup
+                value={field.value === true ? 'true' : 'false'}
+                className="flex gap-[32px] py-[13px]"
+                onValueChange={(value) => {
+                  const boolValue = value === 'true'
+                  setValue('isAlarm', boolValue, {
+                    shouldValidate: true,
+                  })
+                  field.onChange(boolValue)
+                }}
+              >
+                <div className="flex items-center gap-[12px]">
+                  <RadioGroupItem value="true" id="agree" />
+                  <Label htmlFor="agree">동의</Label>
                 </div>
-                <div className="flex gap-3">
-                  <input
-                    type="radio"
-                    name="isAlarm"
-                    value="false"
-                    id="disagree"
-                    checked={field.value === false}
-                    onChange={(e) => {
-                      setValue('isAlarm', e.target.value === 'true', {
-                        shouldValidate: true,
-                      })
-                      field.onChange(e.target.value === 'true')
-                    }}
-                  />
-                  <label htmlFor="disagree">동의하지 않음</label>
+                <div className="flex items-center gap-[12px]">
+                  <RadioGroupItem value="false" id="disagree" />
+                  <Label htmlFor="disagree">동의하지 않음</Label>
                 </div>
-              </div>
+              </RadioGroup>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -465,7 +475,7 @@ const TaskFormToManager = () => {
                 size="lg"
                 variant="outline-grey"
                 className="min-h-[200px] resize-none"
-                placeholder="담당자 이메일을 입력하세요"
+                placeholder="태스크에 대한 설명을 입력해 주세요 (최대 500자)"
                 value={field.value}
                 onChange={(e) => {
                   setValue('description', e.target.value, {
