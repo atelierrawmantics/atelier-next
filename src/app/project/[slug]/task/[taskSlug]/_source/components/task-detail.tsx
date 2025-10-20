@@ -45,6 +45,12 @@ export const TaskDetail = () => {
             projectSlug: slug,
           }),
         })
+        qc.invalidateQueries({
+          queryKey: QUERY_KEY_TASK_API.PROJECT_TASK_RETRIEVE({
+            projectSlug: slug,
+            slug: taskSlug,
+          }),
+        })
 
         if (status) {
           toast(
